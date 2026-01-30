@@ -1,0 +1,356 @@
+.game-screen {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+/* Board Section - Left Side */
+.board-section {
+  flex: 0 0 60%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg);
+  background: linear-gradient(180deg, var(--bg-primary) 0%, #1a1a2e 100%);
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.exit-button {
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--font-size-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.exit-button:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.game-info-header {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.difficulty-tag,
+.coach-tag {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.difficulty-tag {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+}
+
+.coach-tag {
+  background: var(--accent-green);
+  color: var(--white);
+}
+
+.board-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.board-wrapper {
+  background: linear-gradient(135deg, var(--wood-dark) 0%, var(--wood-medium) 50%, var(--wood-dark) 100%);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* Game Over Banner */
+.game-over-banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-lg);
+}
+
+.game-over-text {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-gold);
+}
+
+.new-game-button {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--accent-gold);
+  color: var(--black);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.new-game-button:hover {
+  background: var(--light-square);
+}
+
+/* Chat Section - Right Side */
+.chat-section {
+  flex: 0 0 40%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-light);
+}
+
+/* Chat Header */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.coach-avatar {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #b8860b 100%);
+  border-radius: var(--radius-round);
+  font-size: 1.5rem;
+}
+
+.coach-info h3 {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--text-primary);
+}
+
+.coach-status {
+  font-size: var(--font-size-xs);
+  color: var(--accent-green);
+}
+
+/* Move History */
+.move-history {
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.move-history-header {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-sm);
+}
+
+.move-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  max-height: 80px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+.move-pair {
+  display: flex;
+  gap: var(--space-xs);
+  padding: 2px var(--space-xs);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.move-number {
+  color: var(--text-muted);
+}
+
+.white-move,
+.black-move {
+  color: var(--text-primary);
+  min-width: 40px;
+}
+
+.no-moves {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Messages Container */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Message Bubbles - iMessage/WhatsApp Style */
+.message {
+  display: flex;
+  gap: var(--space-sm);
+  max-width: 85%;
+  animation: messageIn 0.3s ease;
+}
+
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.coach-message {
+  align-self: flex-start;
+}
+
+.user-message {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #b8860b 100%);
+  border-radius: var(--radius-round);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.message-bubble {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 18px;
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  position: relative;
+}
+
+.coach-message .message-bubble {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
+}
+
+.user-message .message-bubble {
+  background: linear-gradient(135deg, #0b93f6 0%, #0077e6 100%);
+  color: var(--white);
+  border-bottom-right-radius: 4px;
+}
+
+/* Chat Input */
+.chat-input-container {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-light);
+}
+
+.chat-input {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.chat-input:focus {
+  border-color: var(--accent-gold);
+}
+
+.chat-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-input::placeholder {
+  color: var(--text-muted);
+}
+
+.send-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0b93f6 0%, #0077e6 100%);
+  color: var(--white);
+  border-radius: var(--radius-round);
+  font-size: var(--font-size-lg);
+  transition: all var(--transition-fast);
+}
+
+.send-button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .game-screen {
+    flex-direction: column;
+  }
+
+  .board-section {
+    flex: none;
+    min-height: auto;
+  }
+
+  .chat-section {
+    flex: none;
+    height: 50vh;
+    border-left: none;
+    border-top: 1px solid var(--border-light);
+  }
+}
+
+@media (max-width: 768px) {
+  .board-section {
+    padding: var(--space-md);
+  }
+
+  .board-wrapper {
+    padding: var(--space-sm);
+  }
+
+  .chat-header {
+    padding: var(--space-md);
+  }
+
+  .coach-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}

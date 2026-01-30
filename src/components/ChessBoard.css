@@ -1,0 +1,18 @@
+.chessboard-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--wood-dark) 0%, var(--wood-medium) 50%, var(--wood-dark) 100%);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-board);
+}
+
+/* Override default react-chessboard styles for better theming */
+.chessboard-wrapper :global(.piece) {
+  cursor: grab;
+}
+
+.chessboard-wrapper :global(.piece):active {
+  cursor: grabbing;
+}

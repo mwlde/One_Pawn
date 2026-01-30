@@ -1,6 +1,6 @@
 export { default as HomeScreen } from './HomeScreen';
-export { default as PlayScreen } from './PlayScreen';
-export { default as PuzzlesScreen } from './PuzzlesScreen';
-export { default as AnalysisScreen } from './AnalysisScreen';
-export { default as LearnScreen } from './LearnScreen';
+export { default as PreGameOptionsScreen } from './PreGameOptionsScreen';
+export { default as GameScreen } from './GameScreen';
+export { default as LearnOpeningsScreen } from './LearnOpeningsScreen';
+export { default as PastGamesScreen } from './PastGamesScreen';
 export { default as SettingsScreen } from './SettingsScreen';

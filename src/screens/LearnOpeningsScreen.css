@@ -1,0 +1,206 @@
+.openings-screen {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg-primary) 0%, #1a1a2e 100%);
+  padding: var(--space-lg);
+}
+
+.openings-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.openings-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  position: relative;
+}
+
+.openings-header .back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--font-size-md);
+  padding: var(--space-sm) 0;
+  transition: color var(--transition-fast);
+}
+
+.openings-header .back-button:hover {
+  color: var(--text-primary);
+}
+
+.openings-header h1 {
+  font-size: var(--font-size-2xl);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.openings-header p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Layout */
+.openings-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--space-xl);
+}
+
+/* Openings List */
+.openings-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.opening-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.opening-card:hover {
+  background: var(--bg-elevated);
+}
+
+.opening-card.selected {
+  border-color: var(--accent-gold);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.opening-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.opening-name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.opening-eco {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.opening-difficulty {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Opening Details */
+.opening-details {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: flex-start;
+}
+
+.opening-board {
+  background: linear-gradient(135deg, var(--wood-dark) 0%, var(--wood-medium) 50%, var(--wood-dark) 100%);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.opening-info {
+  flex: 1;
+}
+
+.opening-info h2 {
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.opening-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+}
+
+.moves-section h3 {
+  font-size: var(--font-size-md);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.moves-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.move-badge {
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.practice-button {
+  padding: var(--space-md) var(--space-xl);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #b8860b 100%);
+  color: var(--black);
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
+
+.practice-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .openings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .openings-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .opening-card {
+    flex: 1 1 calc(50% - var(--space-sm));
+    min-width: 200px;
+  }
+
+  .opening-details {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .opening-info {
+    text-align: center;
+  }
+
+  .moves-display {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .opening-card {
+    flex: 1 1 100%;
+  }
+}

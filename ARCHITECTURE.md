@@ -42,6 +42,7 @@ The trade-off is that the engine binary must be downloaded once per user. This i
 - **Exposed surface:** a small number of functions callable from JavaScript. Initially just `getBestMove(fen, depth)`. Additions require an update to this document.
 - **Threading:** the engine itself is single-threaded. Concurrency is provided by running the engine inside a Web Worker on the JavaScript side.
 - **Build output:** `engine.js` + `engine.wasm`, both placed in the Next.js `/public` directory.
+- **Second build target:** the same engine sources also build as a native command-line executable at `engine/build/onepawn-engine`, via `engine/build-native.sh`. This is a development tool only. It is never deployed and needs no Emscripten, which makes the engine testable and debuggable with ordinary native tooling. The two build scripts are separate so that neither can break the other.
 
 ### Data and auth
 
@@ -276,9 +277,10 @@ one-pawn/
     /ui                      Generic UI primitives
   /engine                    C++ engine source
     /src                     .cpp and .h files
-    /build                   Emscripten output (gitignored)
+    /build                   Build output, both WASM and native (gitignored)
     /tests                   C++ unit tests
-    CMakeLists.txt
+    build.sh                 Emscripten build, produces /public/engine.{js,wasm}
+    build-native.sh          Native command-line build for local development
   /engine-wasm               JavaScript glue for the WASM engine
     engine.worker.ts         Web Worker
     useEngine.ts             React hook

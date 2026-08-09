@@ -52,6 +52,10 @@ struct Move {
   bool isCapture = false;
 };
 
+// True for either castling kind. Both make/unmake and the legality filter ask
+// this, and neither cares which side.
+bool isCastle(const Move& move);
+
 // Long algebraic notation: origin square, destination square, and a lowercase
 // piece letter when the move promotes. e2e4, g1f3, e7e8q.
 //

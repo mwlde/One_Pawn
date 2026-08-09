@@ -81,6 +81,10 @@ Color pieceColor(Piece piece);
 PieceType pieceType(Piece piece);
 Piece makePiece(Color color, PieceType type);
 
+// The other side. Sits here beside the piece helpers because both make/unmake
+// and legality checking need it, and a private copy in each was one too many.
+Color opposite(Color color);
+
 // Square helpers. file and rank are both 0-7.
 Square makeSquare(int file, int rank);
 int fileOf(Square square);

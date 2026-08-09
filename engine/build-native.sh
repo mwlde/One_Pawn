@@ -23,6 +23,7 @@ CXX="${CXX:-c++}"
 "$CXX" -std=c++17 -O2 -Wall -Wextra -Wpedantic \
   engine/src/board.cpp \
   engine/src/move.cpp \
+  engine/src/position.cpp \
   engine/src/movegen.cpp \
   engine/src/main.cpp \
   -o engine/build/onepawn-engine

@@ -12,6 +12,10 @@ char promotionChar(PieceType type) {
 
 }  // namespace
 
+bool isCastle(const Move& move) {
+  return move.kind == MoveKind::CastleKingside || move.kind == MoveKind::CastleQueenside;
+}
+
 // The second parameter is left unnamed. In C++ that declares "this argument
 // exists but is not used", which keeps -Wunused-parameter quiet without
 // resorting to a cast-to-void.

@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include "position.h"
+
 namespace {
 
 // A step expressed as a file and rank delta rather than a single index offset.
@@ -31,7 +33,9 @@ constexpr std::array<Step, 8> KNIGHT_STEPS{
 
 bool onBoard(int file, int rank) { return file >= 0 && file < 8 && rank >= 0 && rank < 8; }
 
-Move makeMove(Square from, Square to, bool isCapture) {
+// Named buildMove, not makeMove: it constructs a Move object and touches no
+// board. position.h's makeMove is the one that plays a move.
+Move buildMove(Square from, Square to, bool isCapture) {
   Move move;
   move.from = from;
   move.to = to;
@@ -72,10 +76,10 @@ void generateRayMoves(const Board& board, Square from, Color us, const Steps& st
       const Piece target = board.squares[to];
 
       if (isEmpty(target)) {
-        moves.push_back(makeMove(from, to, false));
+        moves.push_back(buildMove(from, to, false));
       } else {
         if (pieceColor(target) != us) {
-          moves.push_back(makeMove(from, to, true));
+          moves.push_back(buildMove(from, to, true));
         }
         break;
       }
@@ -103,9 +107,9 @@ void generateStepMoves(const Board& board, Square from, Color us, const Steps& s
     const Piece target = board.squares[to];
 
     if (isEmpty(target)) {
-      moves.push_back(makeMove(from, to, false));
+      moves.push_back(buildMove(from, to, false));
     } else if (pieceColor(target) != us) {
-      moves.push_back(makeMove(from, to, true));
+      moves.push_back(buildMove(from, to, true));
     }
   }
 }
@@ -147,13 +151,13 @@ void generatePawnMoves(const Board& board, Square from, Color us, std::vector<Mo
   // board and needs no bounds check.
   const Square push = makeSquare(file, rank + geometry.forward);
   if (isEmpty(board.squares[push])) {
-    addPawnMove(makeMove(from, push, false), geometry.promotionRank, moves);
+    addPawnMove(buildMove(from, push, false), geometry.promotionRank, moves);
 
     // Both squares must be empty. A pawn does not jump.
     if (rank == geometry.startRank) {
       const Square doublePush = makeSquare(file, rank + 2 * geometry.forward);
       if (isEmpty(board.squares[doublePush])) {
-        Move move = makeMove(from, doublePush, false);
+        Move move = buildMove(from, doublePush, false);
         move.kind = MoveKind::DoublePawnPush;
         moves.push_back(move);
       }
@@ -168,12 +172,12 @@ void generatePawnMoves(const Board& board, Square from, Color us, std::vector<Mo
     const Piece target = board.squares[to];
 
     if (!isEmpty(target) && pieceColor(target) != us) {
-      addPawnMove(makeMove(from, to, true), geometry.promotionRank, moves);
+      addPawnMove(buildMove(from, to, true), geometry.promotionRank, moves);
     } else if (to == board.enPassantTarget) {
       // The en passant target square is empty, so the ordinary capture test
       // above can never produce this move. The captured pawn sits beside the
       // mover, on the target's file and the mover's rank.
-      Move move = makeMove(from, to, true);
+      Move move = buildMove(from, to, true);
       move.kind = MoveKind::EnPassant;
       moves.push_back(move);
     }
@@ -204,22 +208,105 @@ void generateCastlingMoves(const Board& board, Square from, Color us, std::vecto
     return isEmpty(board.squares[makeSquare(file, homeRank)]);
   };
 
-  if (kingside && squareIsEmpty(5) && squareIsEmpty(6)) {
-    Move move = makeMove(from, makeSquare(6, homeRank), false);
+  // A castling right in a FEN does not guarantee the rook is still there, and
+  // a right without its rook is not a movement-rule question but a broken
+  // position. Checking here rather than in the legality filter keeps a promise
+  // to makeMove: a castling move it receives always has a rook to move.
+  // Without it, make would shift an empty square onto f1 and corrupt the board.
+  const Piece ourRook = makePiece(us, PieceType::Rook);
+  const auto rookIsHome = [&](int file) {
+    return board.squares[makeSquare(file, homeRank)] == ourRook;
+  };
+
+  if (kingside && rookIsHome(7) && squareIsEmpty(5) && squareIsEmpty(6)) {
+    Move move = buildMove(from, makeSquare(6, homeRank), false);
     move.kind = MoveKind::CastleKingside;
     moves.push_back(move);
   }
 
   // b1 must be empty as well. The rook passes over it, even though the king
   // does not, which is why this side checks three squares and not two.
-  if (queenside && squareIsEmpty(1) && squareIsEmpty(2) && squareIsEmpty(3)) {
-    Move move = makeMove(from, makeSquare(2, homeRank), false);
+  if (queenside && rookIsHome(0) && squareIsEmpty(1) && squareIsEmpty(2) && squareIsEmpty(3)) {
+    Move move = buildMove(from, makeSquare(2, homeRank), false);
     move.kind = MoveKind::CastleQueenside;
     moves.push_back(move);
   }
 }
 
+// True if `square` holds exactly `piece`. Folds the bounds check in, so the
+// attack tests below read as one condition rather than two.
+bool holdsPiece(const Board& board, int file, int rank, Piece piece) {
+  return onBoard(file, rank) && board.squares[makeSquare(file, rank)] == piece;
+}
+
+// The first piece met walking outward from `from`, or Empty if the ray runs off
+// the board without meeting one.
+Piece firstPieceOnRay(const Board& board, Square from, const Step& step) {
+  int file = fileOf(from) + step.fileDelta;
+  int rank = rankOf(from) + step.rankDelta;
+
+  while (onBoard(file, rank)) {
+    const Piece piece = board.squares[makeSquare(file, rank)];
+    if (!isEmpty(piece)) return piece;
+    file += step.fileDelta;
+    rank += step.rankDelta;
+  }
+  return Piece::Empty;
+}
+
+// True if the first piece along `step` is one of `attacker`'s, and of a type
+// that slides in that direction.
+bool raySliderAttacks(const Board& board, Square square, const Step& step, Color attacker,
+                      PieceType slider) {
+  const Piece piece = firstPieceOnRay(board, square, step);
+  if (isEmpty(piece) || pieceColor(piece) != attacker) return false;
+  const PieceType type = pieceType(piece);
+  return type == slider || type == PieceType::Queen;
+}
+
 }  // namespace
+
+// Looks outward from the square rather than looping over every enemy piece.
+//
+// This works because attack is symmetric for every piece except the pawn. If a
+// rook on a8 attacks a1, then walking a rook's rays from a1 reaches that rook
+// before anything else. So the question "does a rook attack me" becomes "is the
+// first piece along one of my rook rays an enemy rook or queen", which costs
+// eight short walks instead of a scan of all 64 squares.
+//
+// Pawns are the exception, because a pawn captures forwards only. To find White
+// pawns attacking a square you look one rank *down* from it, against White's
+// direction of travel.
+bool isSquareAttacked(const Board& board, Square square, Color attacker) {
+  const int file = fileOf(square);
+  const int rank = rankOf(square);
+
+  // Fixed-cost tests first. They are cheaper than the ray walks and, for pawns
+  // and knights, the commonest attackers in a real position.
+  const int pawnRank = rank - pawnGeometry(attacker).forward;
+  const Piece enemyPawn = makePiece(attacker, PieceType::Pawn);
+  if (holdsPiece(board, file - 1, pawnRank, enemyPawn)) return true;
+  if (holdsPiece(board, file + 1, pawnRank, enemyPawn)) return true;
+
+  const Piece enemyKnight = makePiece(attacker, PieceType::Knight);
+  for (const Step& step : KNIGHT_STEPS) {
+    if (holdsPiece(board, file + step.fileDelta, rank + step.rankDelta, enemyKnight)) return true;
+  }
+
+  const Piece enemyKing = makePiece(attacker, PieceType::King);
+  for (const Step& step : ALL_STEPS) {
+    if (holdsPiece(board, file + step.fileDelta, rank + step.rankDelta, enemyKing)) return true;
+  }
+
+  for (const Step& step : ROOK_STEPS) {
+    if (raySliderAttacks(board, square, step, attacker, PieceType::Rook)) return true;
+  }
+  for (const Step& step : BISHOP_STEPS) {
+    if (raySliderAttacks(board, square, step, attacker, PieceType::Bishop)) return true;
+  }
+
+  return false;
+}
 
 std::vector<Move> generatePseudoLegalMoves(const Board& board) {
   std::vector<Move> moves;
@@ -253,4 +340,63 @@ std::vector<Move> generatePseudoLegalMoves(const Board& board) {
   }
 
   return moves;
+}
+
+Square findKing(const Board& board, Color color) {
+  const Piece king = makePiece(color, PieceType::King);
+  for (Square square = 0; square < BOARD_SIZE; ++square) {
+    if (board.squares[square] == king) return square;
+  }
+  return NO_SQUARE;
+}
+
+bool isInCheck(const Board& board) {
+  const Square king = findKing(board, board.sideToMove);
+  return king != NO_SQUARE && isSquareAttacked(board, king, opposite(board.sideToMove));
+}
+
+// Legality is a property of the position *after* the move, so the only way to
+// answer it is to play the move and look. That is why this needs make/unmake
+// and the pseudo-legal generator does not.
+//
+// This is the slow, obviously-correct approach: every move is played. Engines
+// eventually replace it with pin detection, which reasons about which pieces
+// could possibly expose the king and skips the rest. That is an optimisation to
+// make once perft says this version is right, not before.
+std::vector<Move> generateLegalMoves(const Board& board) {
+  const Color us = board.sideToMove;
+  const Color them = opposite(us);
+  const bool inCheck = isInCheck(board);
+
+  // makeMove needs a board it may modify, and the caller's must come back
+  // unchanged. One copy per call is the honest way to promise that. A search
+  // would instead own a mutable board and never take this copy.
+  Board working = board;
+
+  std::vector<Move> legal;
+  for (const Move& move : generatePseudoLegalMoves(board)) {
+    // Castling is the one move with legality conditions of its own, and they
+    // are about the position *before* the move, so they are tested first.
+    //
+    // Only the transit square is checked here. The starting square is covered
+    // by inCheck and the destination by the general test below, which together
+    // give the familiar "cannot castle out of, through, or into check". The
+    // queenside b-file square is deliberately absent: the rook crosses it, the
+    // king does not, and only the king's path matters.
+    if (isCastle(move)) {
+      if (inCheck) continue;
+      const Square transit =
+          makeSquare((fileOf(move.from) + fileOf(move.to)) / 2, rankOf(move.from));
+      if (isSquareAttacked(board, transit, them)) continue;
+    }
+
+    const UndoRecord undo = makeMove(working, move);
+    const Square king = findKing(working, us);
+    const bool exposed = king != NO_SQUARE && isSquareAttacked(working, king, them);
+    unmakeMove(working, move, undo);
+
+    if (!exposed) legal.push_back(move);
+  }
+
+  return legal;
 }

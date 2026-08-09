@@ -209,6 +209,8 @@ Piece makePiece(Color color, PieceType type) {
   return static_cast<Piece>(base + static_cast<int>(type));
 }
 
+Color opposite(Color color) { return color == Color::White ? Color::Black : Color::White; }
+
 Square makeSquare(int file, int rank) { return rank * 8 + file; }
 
 int fileOf(Square square) { return square % 8; }

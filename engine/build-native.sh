@@ -25,6 +25,7 @@ CXX="${CXX:-c++}"
   engine/src/move.cpp \
   engine/src/position.cpp \
   engine/src/movegen.cpp \
+  engine/src/perft.cpp \
   engine/src/main.cpp \
   -o engine/build/onepawn-engine
 

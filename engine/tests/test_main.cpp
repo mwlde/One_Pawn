@@ -27,6 +27,7 @@ int main() {
   run(runMakeUnmakeTests, "make/unmake tests");
   run(runAttackTests, "attack tests");
   run(runPerftTests, "perft tests");
+  run(runEvaluateTests, "evaluation tests");
 
   return report();
 }

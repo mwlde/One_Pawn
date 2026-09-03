@@ -30,6 +30,7 @@ CXX="${CXX:-c++}"
   engine/tests/test_position.cpp \
   engine/tests/test_movegen.cpp \
   engine/tests/test_perft.cpp \
+  engine/tests/test_evaluate.cpp \
   engine/tests/test_main.cpp \
   -o engine/build/onepawn-tests
 

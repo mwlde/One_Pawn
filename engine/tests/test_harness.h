@@ -123,8 +123,9 @@ inline Move requireMove(const Board& board, const std::string& notation) {
   throw std::invalid_argument("no legal move '" + notation + "' in this position");
 }
 
-// Each test file exposes one of these. test_main.cpp calls all three, so
+// Each test file exposes one of these. test_main.cpp calls all of them, so
 // adding a file means adding a declaration here and a line there.
 void runMakeUnmakeTests();
 void runAttackTests();
 void runPerftTests();
+void runEvaluateTests();

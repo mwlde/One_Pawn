@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "board.h"
+#include "evaluate.h"
 #include "move.h"
 #include "movegen.h"
 #include "perft.h"
@@ -17,6 +18,7 @@ const char* const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w 
 const char* const PSEUDO_FLAG = "--pseudo";
 const char* const PERFT_COMMAND = "perft";
 const char* const DIVIDE_COMMAND = "perft-divide";
+const char* const EVAL_COMMAND = "eval";
 
 // A FEN contains spaces, so an unquoted one arrives split across several argv
 // entries. Rejoining them means both quoted and unquoted invocations behave
@@ -112,10 +114,19 @@ void runPerft(Board& board, int depth, bool divide) {
   std::cout << "time: " << elapsed.count() << "s\n";
 }
 
+// The sign is only meaningful alongside whose turn it is, so both are printed.
+// A bare "-900" reads as "Black is winning" to anyone who has not just read
+// evaluate.h, and it means that only when White is to move.
+void printEvaluation(const Board& board) {
+  const char* const side = (board.sideToMove == Color::White) ? "White" : "Black";
+  std::cout << "evaluation: " << evaluate(board) << " centipawns, " << side << " to move\n";
+}
+
 void printUsage() {
   std::cerr << "usage: onepawn-engine [--pseudo] [FEN]\n";
   std::cerr << "       onepawn-engine perft <depth> [FEN]\n";
   std::cerr << "       onepawn-engine perft-divide <depth> [FEN]\n";
+  std::cerr << "       onepawn-engine eval [FEN]\n";
   std::cerr << "       with no FEN, the starting position is used\n";
   std::cerr << "       --pseudo lists pseudo-legal moves instead of legal ones\n";
 }
@@ -127,6 +138,15 @@ int main(int argc, char* argv[]) {
   const bool isPerft = (command == PERFT_COMMAND || command == DIVIDE_COMMAND);
 
   try {
+    if (command == EVAL_COMMAND) {
+      bool ignored = false;  // --pseudo means nothing here; evaluation lists no moves
+      const std::string joined = joinArguments(argc, argv, 2, ignored);
+      const Board board = parseFen(joined.empty() ? STARTING_FEN : joined);
+
+      printEvaluation(board);
+      return 0;
+    }
+
     if (isPerft) {
       if (argc < 3) {
         throw std::invalid_argument(command + " needs a depth");

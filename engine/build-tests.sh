@@ -26,6 +26,7 @@ CXX="${CXX:-c++}"
   engine/src/position.cpp \
   engine/src/movegen.cpp \
   engine/src/perft.cpp \
+  engine/src/evaluate.cpp \
   engine/tests/test_position.cpp \
   engine/tests/test_movegen.cpp \
   engine/tests/test_perft.cpp \

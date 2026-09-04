@@ -129,3 +129,4 @@ void runMakeUnmakeTests();
 void runAttackTests();
 void runPerftTests();
 void runEvaluateTests();
+void runSearchTests();

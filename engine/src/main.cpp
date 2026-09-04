@@ -10,6 +10,7 @@
 #include "move.h"
 #include "movegen.h"
 #include "perft.h"
+#include "search.h"
 
 namespace {
 
@@ -19,6 +20,7 @@ const char* const PSEUDO_FLAG = "--pseudo";
 const char* const PERFT_COMMAND = "perft";
 const char* const DIVIDE_COMMAND = "perft-divide";
 const char* const EVAL_COMMAND = "eval";
+const char* const SEARCH_COMMAND = "search";
 
 // A FEN contains spaces, so an unquoted one arrives split across several argv
 // entries. Rejoining them means both quoted and unquoted invocations behave
@@ -122,11 +124,70 @@ void printEvaluation(const Board& board) {
   std::cout << "evaluation: " << evaluate(board) << " centipawns, " << side << " to move\n";
 }
 
+// Turns a raw score into something readable, keeping the number alongside it.
+//
+// Mate scores are encoded as a distance from MATE_SCORE (see search.h), so the
+// plies to mate are recovered by subtracting. Chess counts mates in moves, not
+// plies, and the mating side makes the last one, so two plies of mate is still
+// "mate in 1" and the division rounds up.
+std::string describeScore(int score) {
+  const int magnitude = (score < 0) ? -score : score;
+  if (magnitude < MATE_THRESHOLD) {
+    return std::to_string(score) + " centipawns";
+  }
+
+  const int plies = MATE_SCORE - magnitude;
+  const int moves = (plies + 1) / 2;
+  const std::string suffix = " (" + std::to_string(score) + ")";
+
+  // Zero plies means the mate has already happened: the side to move is mated
+  // on the board in front of us, not in some number of moves' time.
+  if (plies == 0) return std::string(score > 0 ? "opponent is mated" : "checkmate") + suffix;
+
+  return std::string(score > 0 ? "mate in " : "mated in ") + std::to_string(moves) + suffix;
+}
+
+void runSearch(Board& board, int depth) {
+  // steady_clock for the same reason perft uses it: this is an interval, and
+  // system_clock can be stepped backwards by NTP mid-search.
+  const auto start = std::chrono::steady_clock::now();
+  const Move best = findBestMove(board, depth);
+  const std::chrono::duration<double, std::milli> elapsed =
+      std::chrono::steady_clock::now() - start;
+
+  const int score = lastSearchScore();
+
+  if (isNullMove(best)) {
+    // Either the game is already over or zero plies were requested. The score
+    // tells the two apart, but so does the depth, and saying which is which is
+    // the point of printing anything at all here.
+    if (depth <= 0) std::cout << "best move: none (depth 0 is a static evaluation)\n";
+    else if (score == 0) std::cout << "best move: none (stalemate)\n";
+    else std::cout << "best move: none (checkmate)\n";
+  } else {
+    std::cout << "best move: " << moveToString(best, board) << '\n';
+  }
+
+  std::cout << "score:     " << describeScore(score) << '\n';
+  std::cout << "nodes:     " << lastSearchNodes() << '\n';
+  std::cout << "time:      " << elapsed.count() << " ms\n";
+
+  // A search fast enough to measure as zero would divide by it. Reporting a
+  // rate over an unmeasurable interval would be a made-up number anyway.
+  if (elapsed.count() > 0.0) {
+    const double nps = static_cast<double>(lastSearchNodes()) / (elapsed.count() / 1000.0);
+    std::cout << "nps:       " << static_cast<uint64_t>(nps) << '\n';
+  } else {
+    std::cout << "nps:       n/a (too fast to measure)\n";
+  }
+}
+
 void printUsage() {
   std::cerr << "usage: onepawn-engine [--pseudo] [FEN]\n";
   std::cerr << "       onepawn-engine perft <depth> [FEN]\n";
   std::cerr << "       onepawn-engine perft-divide <depth> [FEN]\n";
   std::cerr << "       onepawn-engine eval [FEN]\n";
+  std::cerr << "       onepawn-engine search <depth> [FEN]\n";
   std::cerr << "       with no FEN, the starting position is used\n";
   std::cerr << "       --pseudo lists pseudo-legal moves instead of legal ones\n";
 }
@@ -136,6 +197,7 @@ void printUsage() {
 int main(int argc, char* argv[]) {
   const std::string command = (argc > 1) ? argv[1] : "";
   const bool isPerft = (command == PERFT_COMMAND || command == DIVIDE_COMMAND);
+  const bool isSearch = (command == SEARCH_COMMAND);
 
   try {
     if (command == EVAL_COMMAND) {
@@ -147,17 +209,19 @@ int main(int argc, char* argv[]) {
       return 0;
     }
 
-    if (isPerft) {
+    // perft and search share an argument shape: a depth, then an optional FEN.
+    if (isPerft || isSearch) {
       if (argc < 3) {
         throw std::invalid_argument(command + " needs a depth");
       }
       const int depth = parseDepth(argv[2]);
 
-      bool ignored = false;  // --pseudo means nothing here; perft counts legal moves
+      bool ignored = false;  // --pseudo means nothing here; neither lists moves
       const std::string joined = joinArguments(argc, argv, 3, ignored);
       Board board = parseFen(joined.empty() ? STARTING_FEN : joined);
 
-      runPerft(board, depth, command == DIVIDE_COMMAND);
+      if (isSearch) runSearch(board, depth);
+      else runPerft(board, depth, command == DIVIDE_COMMAND);
       return 0;
     }
 

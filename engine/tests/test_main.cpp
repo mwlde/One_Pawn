@@ -28,6 +28,7 @@ int main() {
   run(runAttackTests, "attack tests");
   run(runPerftTests, "perft tests");
   run(runEvaluateTests, "evaluation tests");
+  run(runSearchTests, "search tests");
 
   return report();
 }

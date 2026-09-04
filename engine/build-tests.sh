@@ -27,10 +27,12 @@ CXX="${CXX:-c++}"
   engine/src/movegen.cpp \
   engine/src/perft.cpp \
   engine/src/evaluate.cpp \
+  engine/src/search.cpp \
   engine/tests/test_position.cpp \
   engine/tests/test_movegen.cpp \
   engine/tests/test_perft.cpp \
   engine/tests/test_evaluate.cpp \
+  engine/tests/test_search.cpp \
   engine/tests/test_main.cpp \
   -o engine/build/onepawn-tests
 

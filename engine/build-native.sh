@@ -28,6 +28,7 @@ CXX="${CXX:-c++}"
   engine/src/perft.cpp \
   engine/src/evaluate.cpp \
   engine/src/search.cpp \
+  engine/src/game.cpp \
   engine/src/main.cpp \
   -o engine/build/onepawn-engine
 

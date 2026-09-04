@@ -130,3 +130,4 @@ void runAttackTests();
 void runPerftTests();
 void runEvaluateTests();
 void runSearchTests();
+void runGameTests();

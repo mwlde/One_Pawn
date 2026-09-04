@@ -1,3 +1,4 @@
+#include <cctype>
 #include <chrono>
 #include <cstdint>
 #include <iostream>
@@ -7,6 +8,7 @@
 
 #include "board.h"
 #include "evaluate.h"
+#include "game.h"
 #include "move.h"
 #include "movegen.h"
 #include "perft.h"
@@ -21,6 +23,8 @@ const char* const PERFT_COMMAND = "perft";
 const char* const DIVIDE_COMMAND = "perft-divide";
 const char* const EVAL_COMMAND = "eval";
 const char* const SEARCH_COMMAND = "search";
+const char* const PLAY_COMMAND = "play";
+const char* const BLACK_FLAG = "--black";
 
 // A FEN contains spaces, so an unquoted one arrives split across several argv
 // entries. Rejoining them means both quoted and unquoted invocations behave
@@ -182,14 +186,70 @@ void runSearch(Board& board, int depth) {
   }
 }
 
+// Everything after "play", with the flag pulled out. Both remaining arguments
+// are optional, so the caller has to work out which is which.
+std::vector<std::string> collectPlayArguments(int argc, char* argv[], GameOptions& options) {
+  std::vector<std::string> rest;
+  for (int i = 2; i < argc; ++i) {
+    const std::string argument = argv[i];
+    if (argument == BLACK_FLAG) {
+      options.userColor = Color::Black;
+      continue;
+    }
+    rest.push_back(argument);
+  }
+  return rest;
+}
+
+// "play", "play 6", "play <FEN>" and "play 6 <FEN>" all have to work, so the
+// depth cannot be told from its position. It is told apart by being all digits:
+// a FEN's placement field always contains slashes and letters, so the two can
+// never be confused.
+bool looksLikeDepth(const std::string& text) {
+  if (text.empty()) return false;
+  for (const char c : text) {
+    if (std::isdigit(static_cast<unsigned char>(c)) == 0) return false;
+  }
+  return true;
+}
+
+int runPlay(int argc, char* argv[]) {
+  GameOptions options;
+  const std::vector<std::string> rest = collectPlayArguments(argc, argv, options);
+
+  size_t index = 0;
+  if (index < rest.size() && looksLikeDepth(rest[index])) {
+    options.depth = parseDepth(rest[index]);
+    ++index;
+  }
+
+  // Checked here rather than inside playGame, so a mistyped depth is reported
+  // before the board is printed and a game begins.
+  if (options.depth < MIN_SEARCH_DEPTH || options.depth > MAX_SEARCH_DEPTH) {
+    throw std::invalid_argument("depth must be between " + std::to_string(MIN_SEARCH_DEPTH) +
+                                " and " + std::to_string(MAX_SEARCH_DEPTH) + ", got " +
+                                std::to_string(options.depth));
+  }
+
+  std::string fen;
+  for (; index < rest.size(); ++index) {
+    if (!fen.empty()) fen += ' ';
+    fen += rest[index];
+  }
+
+  return playGame(parseFen(fen.empty() ? STARTING_FEN : fen), options);
+}
+
 void printUsage() {
   std::cerr << "usage: onepawn-engine [--pseudo] [FEN]\n";
   std::cerr << "       onepawn-engine perft <depth> [FEN]\n";
   std::cerr << "       onepawn-engine perft-divide <depth> [FEN]\n";
   std::cerr << "       onepawn-engine eval [FEN]\n";
   std::cerr << "       onepawn-engine search <depth> [FEN]\n";
+  std::cerr << "       onepawn-engine play [--black] [depth] [FEN]\n";
   std::cerr << "       with no FEN, the starting position is used\n";
   std::cerr << "       --pseudo lists pseudo-legal moves instead of legal ones\n";
+  std::cerr << "       --black makes you play Black; the default is White\n";
 }
 
 }  // namespace
@@ -200,6 +260,10 @@ int main(int argc, char* argv[]) {
   const bool isSearch = (command == SEARCH_COMMAND);
 
   try {
+    if (command == PLAY_COMMAND) {
+      return runPlay(argc, argv);
+    }
+
     if (command == EVAL_COMMAND) {
       bool ignored = false;  // --pseudo means nothing here; evaluation lists no moves
       const std::string joined = joinArguments(argc, argv, 2, ignored);

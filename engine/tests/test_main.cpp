@@ -29,6 +29,7 @@ int main() {
   run(runPerftTests, "perft tests");
   run(runEvaluateTests, "evaluation tests");
   run(runSearchTests, "search tests");
+  run(runGameTests, "game tests");
 
   return report();
 }

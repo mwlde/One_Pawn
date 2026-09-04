@@ -1,12 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { requireSupabaseEnv } from "@/lib/supabase/env";
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY",
-  );
+// Browser client. createBrowserClient stores the session in cookies rather than
+// localStorage, which is what lets the server client and the proxy read the
+// same session. It memoises internally, so calling this per component is fine.
+export function createClient() {
+  const { url, key } = requireSupabaseEnv();
+  return createBrowserClient(url, key);
 }
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);

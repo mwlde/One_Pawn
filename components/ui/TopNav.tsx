@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
   useContext,
@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import { useEngineContext } from "@/components/EngineProvider";
+import { createClient } from "@/lib/supabase/client";
 
 type Tab = {
   label: string;
@@ -83,6 +84,80 @@ function EngineStatus() {
   );
 }
 
+// Seeded from the session the server layout already read, so the first paint
+// is correct rather than flashing "Log in" at someone who is logged in.
+// onAuthStateChange then keeps it honest for the rest of the tab's life: a log
+// out in this tab, a token refresh, or an expiry all arrive here as an event.
+function useAuthEmail(initialEmail: string | null): string | null {
+  const [email, setEmail] = useState(initialEmail);
+  const [lastInitialEmail, setLastInitialEmail] = useState(initialEmail);
+
+  // Adjusted during render rather than in an effect, which is React's own
+  // recommendation for following a prop. It matters for the cross-tab case:
+  // logging in elsewhere fires no event in this tab, so the only signal is the
+  // server layout re-rendering with a different email on the next navigation.
+  if (initialEmail !== lastInitialEmail) {
+    setLastInitialEmail(initialEmail);
+    setEmail(initialEmail);
+  }
+
+  useEffect(() => {
+    const supabase = createClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setEmail(session?.user.email ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return email;
+}
+
+function AuthControl({ initialEmail }: { initialEmail: string | null }) {
+  const email = useAuthEmail(initialEmail);
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
+
+  if (email === null) {
+    return (
+      <Link href="/login" className="font-mono text-[11px] text-muted hover:text-ink">
+        Log in
+      </Link>
+    );
+  }
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    // refresh() re-runs the server layout, which drops the session it read.
+    // Without it the page keeps rendering against a session that is now gone.
+    router.refresh();
+    setSigningOut(false);
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <span
+        title={email}
+        className="max-w-[9ch] truncate font-mono text-[11px] text-muted sm:max-w-[22ch]"
+      >
+        {email}
+      </span>
+      <button
+        type="button"
+        onClick={handleSignOut}
+        disabled={signingOut}
+        className="border border-hairline px-2 py-1 font-mono text-[10px] text-muted transition-colors hover:border-ink hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Log out
+      </button>
+    </div>
+  );
+}
+
 function TabLabel({ tab, active }: { tab: Tab; active: boolean }) {
   if (tab.href === null) {
     return (
@@ -103,7 +178,7 @@ function TabLabel({ tab, active }: { tab: Tab; active: boolean }) {
   );
 }
 
-export function TopNav() {
+export function TopNav({ initialEmail }: { initialEmail: string | null }) {
   const pathname = usePathname();
   const { mobileNavHidden } = useNavChrome();
 
@@ -125,7 +200,10 @@ export function TopNav() {
             ))}
           </nav>
         </div>
-        <EngineStatus />
+        <div className="flex items-center gap-3 md:gap-5">
+          <EngineStatus />
+          <AuthControl initialEmail={initialEmail} />
+        </div>
       </header>
 
       <nav

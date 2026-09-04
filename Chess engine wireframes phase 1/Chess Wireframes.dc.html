@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: #e0ddd4; color: #1a1a1a; }
+  a { color: #1a1a1a; }
+  a:hover { color: #555; }
+  ::selection { background: #1a1a1a; color: #eceae5; }
+</style>
+</helmet>
+
+<div style="min-height:100vh; padding: 48px 56px 96px; box-sizing:border-box;">
+
+  <!-- Header -->
+  <div style="max-width:1600px; margin:0 auto 48px; display:flex; justify-content:space-between; align-items:flex-end; border-bottom:1px solid #1a1a1a; padding-bottom:20px;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#666; margin-bottom:8px;">Wireframes · v0.3</div>
+      <div style="font-size:28px; font-weight:600; letter-spacing:-0.01em;">One Pawn — Screen Set</div>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; text-align:right; line-height:1.6;">
+      <div>10 screens · desktop + mobile</div>
+      <div>1440px / 375px · mobile: bottom tab bar (decided)</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div style="max-width:1600px; margin:0 auto 56px; display:flex; gap:32px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">
+    <div style="display:flex; align-items:center; gap:8px;"><span style="display:inline-block; width:14px; height:14px; border:1px solid #1a1a1a; background:repeating-linear-gradient(45deg,transparent 0 3px,#1a1a1a 3px 4px);"></span> media / board slot</div>
+    <div style="display:flex; align-items:center; gap:8px;"><span style="display:inline-block; width:14px; height:14px; border:1px dashed #1a1a1a;"></span> container</div>
+    <div style="display:flex; align-items:center; gap:8px;"><span style="display:inline-block; width:14px; height:14px; border:1px solid #1a1a1a; background:#1a1a1a;"></span> primary action</div>
+    <div style="display:flex; align-items:center; gap:8px;">// annotation</div>
+  </div>
+
+  <!-- =========================== SCREEN 01 · LANDING =========================== -->
+  <section data-screen-label="Screen 01 — Landing" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">01 — LANDING</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">no auth required to start · single CTA</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 900; display:flex; flex-direction:column;">
+      <!-- top nav -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 40px; border-bottom:1px dashed #999;">
+        <div style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:14px;">[logo] Chess.thing</div>
+        <div style="display:flex; gap:28px; font-size:13px; color:#555;">
+          <span>Learn</span><span>About</span><span style="color:#1a1a1a; font-weight:500;">Log in</span>
+        </div>
+      </div>
+      <!-- hero · interactive puzzle center -->
+      <div style="flex:1; display:grid; grid-template-columns: 1fr 1.15fr; gap:60px; padding:60px 80px 40px; align-items:center;">
+        <div style="display:flex; flex-direction:column; justify-content:center;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; margin-bottom:16px;">// H1 · ~72px</div>
+          <div style="height:72px; border:1px dashed #999; margin-bottom:12px; display:flex; align-items:center; padding:0 16px; color:#888;">Product name</div>
+          <div style="height:24px; border:1px dashed #999; margin-bottom:8px;"></div>
+          <div style="height:24px; width:75%; border:1px dashed #999; margin-bottom:32px;"></div>
+          <div style="background:#1a1a1a; color:#eceae5; padding:18px 32px; font-weight:600; font-size:15px; align-self:flex-start;">Play now →</div>
+          <div style="margin-top:12px; font-size:12px; color:#666;">no account · <span style="text-decoration:underline;">sign in</span> to save games</div>
+        </div>
+        <!-- interactive puzzle demo -->
+        <div style="position:relative;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.14em; margin-bottom:10px;">SOLVE IN ONE MOVE · WHITE TO MOVE</div>
+          <div style="border:1px solid #1a1a1a; aspect-ratio:1; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; position:relative;">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:12px; color:#555; background:rgba(245,243,238,0.55);">
+              [ live puzzle · drag a piece to try ]
+            </div>
+            <!-- highlighted target square -->
+            <div style="position:absolute; width:12.5%; height:12.5%; left:50%; top:25%; border:2px solid #1a1a1a; background:rgba(26,26,26,0.15);"></div>
+          </div>
+          <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">// solved → confetti + "sign up to see the next 20"</div>
+        </div>
+      </div>
+      <!-- footer strip -->
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); border-top:1px dashed #999;">
+        <div style="padding:24px 40px; border-right:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:6px;">// feature bullet</div>
+          <div style="height:14px; background:#d8d4cc; margin-bottom:6px;"></div>
+          <div style="height:14px; width:70%; background:#d8d4cc;"></div>
+        </div>
+        <div style="padding:24px 40px; border-right:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:6px;">// feature bullet</div>
+          <div style="height:14px; background:#d8d4cc; margin-bottom:6px;"></div>
+          <div style="height:14px; width:70%; background:#d8d4cc;"></div>
+        </div>
+        <div style="padding:24px 40px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:6px;">// feature bullet</div>
+          <div style="height:14px; background:#d8d4cc; margin-bottom:6px;"></div>
+          <div style="height:14px; width:70%; background:#d8d4cc;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 02 · GAME (desktop) =========================== -->
+  <section data-screen-label="Screen 02 — Game (desktop)" style="max-width:1600px; margin:0 auto 48px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:0.14em; font-weight:700; background:#1a1a1a; color:#eceae5; padding:6px 12px;">02 — GAME · DESKTOP · PRIMARY</div>
+      <div style="flex:1; height:2px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">the 80% screen · board dominates · everything else supports</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 900; display:grid; grid-template-columns: 72px 1fr 340px; grid-template-rows: 56px 1fr;">
+      <!-- top bar spans all · unified nav + in-game context -->
+      <div style="grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; padding:0 24px; border-bottom:1px dashed #999;">
+        <div style="display:flex; gap:20px; align-items:center; font-size:13px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="border-bottom:2px solid #1a1a1a; font-weight:600; padding:18px 0;">Play</span>
+          <span style="color:#666;">Learn</span>
+          <span style="color:#666;">Reinforce</span>
+          <span style="color:#666;">Profile</span>
+        </div>
+        <div style="display:flex; gap:14px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">
+          <span style="border:1px solid #1a1a1a; padding:3px 8px;">rapid · 10+0 · rated</span>
+          <span style="border:1px solid #1a1a1a; padding:3px 8px; background:#eceae5;">difficulty · 4 / 8 <span style="color:#888;">🔒</span></span>
+        </div>
+        <div style="display:flex; gap:14px; font-size:13px; color:#555;"><span>← Leave game</span></div>
+      </div>
+
+      <!-- left rail: labeled tools -->
+      <div style="border-right:1px dashed #999; display:flex; flex-direction:column; align-items:center; gap:10px; padding:14px 0; font-family:'JetBrains Mono',monospace;">
+        <div style="font-size:9px; color:#888; letter-spacing:0.1em;">TOOLS</div>
+        <div style="width:52px; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 0; border:1px solid #1a1a1a;">
+          <div style="font-size:13px;">↺</div>
+          <div style="font-size:8px;">Flip</div>
+        </div>
+        <div style="width:52px; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 0; border:1px solid #1a1a1a;">
+          <div style="font-size:13px;">⇄</div>
+          <div style="font-size:8px;">Trade</div>
+        </div>
+        <div style="width:52px; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 0; border:1px solid #1a1a1a;">
+          <div style="font-size:13px;">◆</div>
+          <div style="font-size:8px;">Analyze</div>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="width:52px; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 0; border:1px solid #1a1a1a;">
+          <div style="font-size:13px;">⚑</div>
+          <div style="font-size:8px;">Report</div>
+        </div>
+      </div>
+
+      <!-- board column -->
+      <div style="padding:20px 32px; display:flex; flex-direction:column; gap:12px; min-height:0;">
+        <!-- opponent strip · ACTIVE (their turn) -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border:1px solid #1a1a1a;">
+          <div style="display:flex; gap:12px; align-items:center;">
+            <div style="width:36px; height:36px; border:1px solid #1a1a1a; background:repeating-linear-gradient(45deg,transparent 0 3px,#1a1a1a 3px 4px);"></div>
+            <div>
+              <div style="font-size:13px; font-weight:600;">Opponent name</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">rating · captured pieces →</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">// active — clock inverts</div>
+            <div style="border:1px solid #1a1a1a; padding:8px 14px; font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:600; background:#1a1a1a; color:#eceae5;">09:42</div>
+          </div>
+        </div>
+        <!-- board + eval -->
+        <div style="flex:1; display:flex; gap:12px; min-height:0;">
+          <!-- eval bar -->
+          <div style="width:14px; border:1px solid #1a1a1a; background:linear-gradient(to bottom, #1a1a1a 0%, #1a1a1a 42%, #eceae5 42%, #eceae5 100%); position:relative;">
+            <div style="position:absolute; left:20px; top:38%; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; white-space:nowrap;">// eval bar<br/>+0.6</div>
+          </div>
+          <!-- board -->
+          <div style="flex:1; aspect-ratio:1; border:1px solid #1a1a1a; background:
+            repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%;
+            position:relative; max-height:100%;">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:12px; color:#555; background:rgba(245,243,238,0.6);">
+              [ board · 8×8 · pieces render here ]
+            </div>
+            <div style="position:absolute; bottom:6px; left:8px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">a b c d e f g h</div>
+          </div>
+        </div>
+        <!-- self strip · IDLE (waiting for opponent) -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border:1px dashed #999;">
+          <div style="display:flex; gap:12px; align-items:center;">
+            <div style="width:36px; height:36px; border:1px solid #1a1a1a; background:#1a1a1a;"></div>
+            <div>
+              <div style="font-size:13px; font-weight:600;">You</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">rating · captured pieces →</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">// idle</div>
+            <div style="border:1px solid #1a1a1a; padding:8px 14px; font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:600;">09:58</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- right panel: tabs → history / settings -->
+      <div style="border-left:1px dashed #999; display:flex; flex-direction:column;">
+        <div style="display:flex; border-bottom:1px dashed #999;">
+          <div style="flex:1; padding:14px; text-align:center; font-size:12px; font-weight:600; border-bottom:2px solid #1a1a1a; margin-bottom:-1px;">Moves</div>
+          <div style="flex:1; padding:14px; text-align:center; font-size:12px; color:#888;">Chat</div>
+          <div style="flex:1; padding:14px; text-align:center; font-size:12px; color:#888;">Settings</div>
+        </div>
+        <!-- move list (realistic density) -->
+        <div style="flex:1; overflow:auto; min-height:0; padding:12px 4px; font-family:'JetBrains Mono',monospace; font-size:12px;">
+          <div style="display:grid; grid-template-columns: 32px 1fr 1fr; row-gap:3px; column-gap:8px;">
+            <div style="color:#888; text-align:right;">1.</div><div>e4</div><div>e5</div>
+            <div style="color:#888; text-align:right;">2.</div><div>Nf3</div><div>Nc6</div>
+            <div style="color:#888; text-align:right;">3.</div><div>Bb5</div><div>a6</div>
+            <div style="color:#888; text-align:right;">4.</div><div>Ba4</div><div>Nf6</div>
+            <div style="color:#888; text-align:right;">5.</div><div>O-O</div><div>Be7</div>
+            <div style="color:#888; text-align:right;">6.</div><div>Re1</div><div>b5</div>
+            <div style="color:#888; text-align:right;">7.</div><div>Bb3</div><div>d6</div>
+            <div style="color:#888; text-align:right;">8.</div><div>c3</div><div>O-O</div>
+            <div style="color:#888; text-align:right;">9.</div><div>h3</div><div>Nb8</div>
+            <div style="color:#888; text-align:right;">10.</div><div>d4</div><div>Nbd7</div>
+            <div style="color:#888; text-align:right;">11.</div><div>Nbd2</div><div>Bb7</div>
+            <div style="color:#888; text-align:right;">12.</div><div>Bc2</div><div>Re8</div>
+            <div style="color:#888; text-align:right;">13.</div><div>Nf1</div><div>Bf8</div>
+            <div style="color:#888; text-align:right;">14.</div><div>Ng3</div><div>g6</div>
+            <div style="color:#888; text-align:right;">15.</div><div>Bg5</div><div>h6</div>
+            <div style="color:#888; text-align:right;">16.</div><div>Bd2</div><div>Bg7</div>
+            <div style="color:#888; text-align:right;">17.</div><div>Qc1</div><div>Kh7</div>
+            <div style="color:#888; text-align:right;">18.</div><div>a4</div><div style="background:#1a1a1a; color:#eceae5; padding:0 4px;">Nb6</div>
+            <div style="color:#888; text-align:right;">19.</div><div style="color:#bbb;">···</div><div style="color:#bbb;">···</div>
+          </div>
+        </div>
+        <!-- footer actions -->
+        <div style="border-top:1px dashed #999; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; gap:8px;">
+            <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:10px; font-size:12px;">Draw</div>
+            <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:10px; font-size:12px;">Resign</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0 4px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">
+            <span>⏮ ◀ ▶ ⏭</span><span>flip · analyze</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- annotations + settings tab preview -->
+    <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 320px; gap:32px; align-items:start;">
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:20px 24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+        <div><span style="color:#1a1a1a; font-weight:600;">A · Board</span><br/>fills available height, always square. Everything else negotiates around it.</div>
+        <div><span style="color:#1a1a1a; font-weight:600;">B · Eval bar</span><br/>thin, glued to board's left edge. Never a separate panel.</div>
+        <div><span style="color:#1a1a1a; font-weight:600;">C · Player strips</span><br/>fixed-height. Active side is the one whose turn it is (clock inverts on turn, not on identity).</div>
+        <div><span style="color:#1a1a1a; font-weight:600;">D · Right panel</span><br/>Moves default. Chat + Settings behind tabs. On mobile: drawer.</div>
+        <div><span style="color:#1a1a1a; font-weight:600;">E · Difficulty locked</span><br/>selected at game setup, shown as a locked chip in the top bar. Changing means starting a new game — no mid-game slider.</div>
+        <div><span style="color:#1a1a1a; font-weight:600;">F · Nav during play</span><br/>tabs remain visible for orientation; clicking Learn/Reinforce/Profile fires a "leave game?" confirm. Coach is not a tab — it lives inside analysis + reinforce sessions.</div>
+      </div>
+      <!-- Settings tab preview -->
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:8px;">// Right panel · Settings tab</div>
+        <div style="border:1px solid #1a1a1a; background:#f5f3ee;">
+          <div style="display:flex; border-bottom:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:11px;">
+            <div style="flex:1; padding:10px; text-align:center; color:#888;">Moves</div>
+            <div style="flex:1; padding:10px; text-align:center; color:#888;">Chat</div>
+            <div style="flex:1; padding:10px; text-align:center; font-weight:600; border-bottom:2px solid #1a1a1a; margin-bottom:-1px;">Settings</div>
+          </div>
+          <div style="padding:14px; display:flex; flex-direction:column; gap:12px; font-size:12px;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:4px;">BOARD THEME</div>
+              <div style="display:flex; gap:6px;">
+                <div style="width:24px; height:24px; border:2px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 50% 50%;"></div>
+                <div style="width:24px; height:24px; border:1px solid #999; background:repeating-conic-gradient(#8b8880 0 25%, #eceae5 0 50%) 0 0 / 50% 50%;"></div>
+                <div style="width:24px; height:24px; border:1px solid #999; background:repeating-conic-gradient(#1a1a1a 0 25%, #eceae5 0 50%) 0 0 / 50% 50%;"></div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Piece animation</span>
+              <div style="width:32px; height:18px; border:1px solid #1a1a1a; background:#1a1a1a; position:relative;"><div style="position:absolute; right:2px; top:1px; width:14px; height:14px; background:#eceae5;"></div></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Sound</span>
+              <div style="width:32px; height:18px; border:1px solid #1a1a1a; position:relative;"><div style="position:absolute; left:2px; top:1px; width:14px; height:14px; background:#1a1a1a;"></div></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Coordinates</span>
+              <div style="width:32px; height:18px; border:1px solid #1a1a1a; background:#1a1a1a; position:relative;"><div style="position:absolute; right:2px; top:1px; width:14px; height:14px; background:#eceae5;"></div></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Auto-promote to</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; border:1px solid #1a1a1a; padding:2px 8px;">Queen ▾</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Confirm move</span>
+              <div style="width:32px; height:18px; border:1px solid #1a1a1a; position:relative;"><div style="position:absolute; left:2px; top:1px; width:14px; height:14px; background:#1a1a1a;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== 02b · DECISION CALLOUT =========================== -->
+  <section data-screen-label="02 — mobile decision" style="max-width:1600px; margin:0 auto 96px; padding:20px 24px; border:1px dashed #1a1a1a; display:grid; grid-template-columns: 200px 1fr; gap:32px; align-items:center;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#666; margin-bottom:6px;">DECISION · 02 MOBILE</div>
+      <div style="font-size:18px; font-weight:600;">Drawer ✓</div>
+    </div>
+    <div style="font-size:13px; color:#333; line-height:1.55;">
+      Stack-below option was considered and rejected — it shrinks the board and hides the clock in the fold. Drawer keeps the board full-width, shows the last move in a 44px peek, and swipes up for full history / chat / settings.
+      See <a href="#02m" style="color:#1a1a1a; font-weight:500;">02m in the mobile band</a> for the frame.
+    </div>
+  </section>
+  <!-- =========================== SCREEN 03 · POST-GAME =========================== -->
+  <section data-screen-label="Screen 03 — Post-game" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">03 — POST-GAME</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">overlay on top of screen 02 · board stays behind, dimmed</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 900; position:relative; display:flex; align-items:center; justify-content:center;">
+      <!-- dimmed background hint -->
+      <div style="position:absolute; inset:0; opacity:0.25; display:grid; grid-template-columns: 72px 1fr 340px; grid-template-rows: 56px 1fr;">
+        <div style="grid-column:1/-1; border-bottom:1px dashed #999;"></div>
+        <div style="border-right:1px dashed #999;"></div>
+        <div style="display:flex; align-items:center; justify-content:center;">
+          <div style="width:70%; aspect-ratio:1; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%;"></div>
+        </div>
+        <div style="border-left:1px dashed #999;"></div>
+      </div>
+      <div style="position:absolute; inset:0; background:rgba(20,20,20,0.35);"></div>
+
+      <!-- modal -->
+      <div style="position:relative; width:560px; background:#eceae5; border:1px solid #1a1a1a; padding:40px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:12px;">result</div>
+        <div style="font-size:48px; font-weight:700; letter-spacing:-0.02em; margin-bottom:6px;">You won</div>
+        <div style="font-size:14px; color:#555; margin-bottom:32px;">by checkmate in 34 moves · +8 rating</div>
+
+        <!-- stats · labels beneath -->
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0; border:1px solid #1a1a1a; margin-bottom:32px;">
+          <div style="padding:20px; border-right:1px solid #1a1a1a; text-align:left;">
+            <div style="font-size:36px; font-weight:600; letter-spacing:-0.02em;">87%</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:6px; letter-spacing:0.08em;">accuracy</div>
+          </div>
+          <div style="padding:20px; border-right:1px solid #1a1a1a; text-align:left;">
+            <div style="font-size:36px; font-weight:600; letter-spacing:-0.02em;">2</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:6px; letter-spacing:0.08em;">blunders</div>
+          </div>
+          <div style="padding:20px; text-align:left;">
+            <div style="font-size:36px; font-weight:600; letter-spacing:-0.02em; font-family:'JetBrains Mono',monospace;">15<span style="color:#888;">/17</span></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:6px; letter-spacing:0.08em;">best moves found</div>
+          </div>
+        </div>
+
+        <!-- accuracy graph placeholder -->
+        <div style="border:1px dashed #999; padding:14px; margin-bottom:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:8px;">// per-move accuracy sparkline · phase markers below</div>
+          <div style="height:60px; background:repeating-linear-gradient(45deg,transparent 0 4px,#1a1a1a 4px 5px); opacity:0.4;"></div>
+          <div style="display:flex; justify-content:space-between; margin-top:6px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">
+            <span>opening</span><span>middlegame</span><span>endgame</span>
+          </div>
+        </div>
+        <!-- key moment -->
+        <div style="border:1px solid #1a1a1a; background:#f5f3ee; padding:14px 16px; margin-bottom:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em;">KEY MOMENT</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">move 22 · your move</div>
+          </div>
+          <div style="font-size:14px; font-weight:500; margin-bottom:4px;">Missed <span style="font-family:'JetBrains Mono',monospace; background:#1a1a1a; color:#eceae5; padding:1px 6px;">Rxe5</span> — swung the game.</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">eval +2.3 → -0.8 · one move</div>
+        </div>
+
+        <div style="display:flex; gap:12px;">
+          <div style="flex:1; background:#1a1a1a; color:#eceae5; text-align:center; padding:16px; font-weight:600; font-size:14px;">New game</div>
+          <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:16px; font-weight:500; font-size:14px;">Review game</div>
+          <div style="border:1px solid #1a1a1a; padding:16px 18px; font-size:14px;">Share</div>
+        </div>
+        <div style="margin-top:16px; text-align:center; font-size:12px; color:#666;">close · back to board</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 04 · AUTH =========================== -->
+  <section data-screen-label="Screen 04 — Auth" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">04 — AUTH</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">single page · toggle at top · minimal</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 900; display:grid; grid-template-columns: 1fr 520px;">
+      <!-- ambient game preview -->
+      <div style="border-right:1px solid #1a1a1a; display:flex; flex-direction:column; padding:48px; gap:32px; position:relative; overflow:hidden;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; letter-spacing:0.1em;">LIVE — SPECTATING</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px dashed #999;">
+          <div style="font-size:14px;">GM Aronian · <span style="color:#666;">2782</span></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:16px; border:1px solid #1a1a1a; padding:4px 10px;">02:14</div>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+          <div style="width:min(100%, 420px); aspect-ratio:1; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; position:relative;">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; background:rgba(245,243,238,0.5);">
+              [ live board · muted piece animations ]
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px dashed #999;">
+          <div style="font-size:14px;">GM Nakamura · <span style="color:#666;">2789</span></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:16px; background:#1a1a1a; color:#eceae5; padding:4px 10px;">01:47</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">// commits the panel — top-board livestream, no login required to watch</div>
+      </div>
+
+      <!-- form column -->
+      <div style="padding:48px; display:flex; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:64px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:14px;">[logo]</div>
+          <div style="font-size:13px; color:#666;">← back</div>
+        </div>
+
+        <div style="max-width:360px; width:100%;">
+          <!-- toggle -->
+          <div style="display:inline-flex; border:1px solid #1a1a1a; margin-bottom:32px;">
+            <div style="padding:10px 20px; background:#1a1a1a; color:#eceae5; font-size:13px; font-weight:600;">Log in</div>
+            <div style="padding:10px 20px; font-size:13px; color:#666;">Register</div>
+          </div>
+
+          <div style="font-size:32px; font-weight:600; letter-spacing:-0.01em; margin-bottom:8px;">Welcome back</div>
+          <div style="font-size:14px; color:#666; margin-bottom:32px;">Sign in to save games and track rating.</div>
+
+          <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:6px;">EMAIL</div>
+              <div style="border:1px solid #1a1a1a; padding:14px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#888;">you@domain.com</div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:6px;">
+                <span>PASSWORD</span><span style="text-decoration:underline; cursor:pointer;">forgot?</span>
+              </div>
+              <div style="border:1px solid #1a1a1a; padding:14px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#888;">••••••••</div>
+            </div>
+          </div>
+
+          <div style="background:#1a1a1a; color:#eceae5; text-align:center; padding:16px; font-weight:600; font-size:14px; margin-bottom:20px;">Log in →</div>
+
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <div style="flex:1; height:1px; background:#999;"></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888;">or</div>
+            <div style="flex:1; height:1px; background:#999;"></div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:32px;">
+            <div style="border:1px solid #1a1a1a; text-align:center; padding:12px; font-size:13px;">Continue with Google</div>
+            <div style="border:1px solid #1a1a1a; text-align:center; padding:12px; font-size:13px;">Continue with Apple</div>
+          </div>
+
+          <div style="font-size:12px; color:#666; text-align:center;">or <span style="text-decoration:underline;">play as guest</span> — no account needed</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+      <div><span style="color:#1a1a1a; font-weight:600;">Toggle</span><br/>segmented control at top of form. Switches heading + CTA label + adds a "confirm password" field for register.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Guest escape hatch</span><br/>always visible. Nobody should get stuck on auth to try the product.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Mobile</span><br/>drop the left decorative panel entirely. Form fills viewport with the same content order.</div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 05 · LEARN =========================== -->
+  <section data-screen-label="Screen 05 — Learn" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">05 — LEARN</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">lesson tracks · puzzle board reuses screen 02 board component</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 900; display:grid; grid-template-columns: 340px 1fr 300px; grid-template-rows: 56px 1fr;">
+      <!-- top bar · unified nav -->
+      <div style="grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; padding:0 24px; border-bottom:1px dashed #999;">
+        <div style="display:flex; gap:20px; align-items:center; font-size:13px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="color:#666;">Play</span>
+          <span style="border-bottom:2px solid #1a1a1a; font-weight:600; padding:18px 0;">Learn</span>
+          <span style="color:#666;">Reinforce</span>
+          <span style="color:#666;">Profile</span>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">Openings · Track 3 of 12</div>
+        <div style="font-size:13px; color:#555;">Settings</div>
+      </div>
+
+      <!-- track list -->
+      <div style="border-right:1px dashed #999; overflow:hidden; display:flex; flex-direction:column;">
+        <div style="padding:20px 20px 12px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:8px;">// track list</div>
+          <div style="font-size:18px; font-weight:600;">Ruy López basics</div>
+          <div style="font-size:12px; color:#666; margin-top:4px;">8 puzzles · ~15 min</div>
+          <!-- progress -->
+          <div style="height:4px; background:#d8d4cc; margin-top:12px; position:relative;">
+            <div style="position:absolute; inset:0 62% 0 0; background:#1a1a1a;"></div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:6px;">3 / 8 complete</div>
+        </div>
+        <div style="flex:1; overflow:auto; padding:8px 12px; min-height:0;">
+          <!-- lesson items -->
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px dashed #ccc;">
+            <div style="width:20px; height:20px; border:1px solid #1a1a1a; background:#1a1a1a; color:#eceae5; font-size:10px; display:flex; align-items:center; justify-content:center;">✓</div>
+            <div style="flex:1;">
+              <div style="font-size:13px; color:#888; text-decoration:line-through;">Opening moves</div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888;">98%</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px dashed #ccc;">
+            <div style="width:20px; height:20px; border:1px solid #1a1a1a; background:#1a1a1a; color:#eceae5; font-size:10px; display:flex; align-items:center; justify-content:center;">✓</div>
+            <div style="flex:1;"><div style="font-size:13px; color:#888; text-decoration:line-through;">Knight development</div></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888;">75%</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px dashed #ccc;">
+            <div style="width:20px; height:20px; border:1px solid #1a1a1a; background:#1a1a1a; color:#eceae5; font-size:10px; display:flex; align-items:center; justify-content:center;">✓</div>
+            <div style="flex:1;"><div style="font-size:13px; color:#888; text-decoration:line-through;">Bishop pin</div></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888;">100%</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; border:1px solid #1a1a1a; background:#eceae5; margin:4px -4px;">
+            <div style="width:20px; height:20px; border:1px solid #1a1a1a; background:#eceae5; font-family:'JetBrains Mono',monospace; font-size:10px; display:flex; align-items:center; justify-content:center;">4</div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:600;">Exchange variation</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">current puzzle</div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px;">▶</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px dashed #ccc;">
+            <div style="width:20px; height:20px; border:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; display:flex; align-items:center; justify-content:center;">5</div>
+            <div style="flex:1;"><div style="font-size:13px; color:#666;">Closed defense</div></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#bbb;">—</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px dashed #ccc; opacity:0.45;">
+            <div style="width:20px; height:20px; border:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; display:flex; align-items:center; justify-content:center;">6</div>
+            <div style="flex:1;"><div style="font-size:13px; color:#666;">Berlin defense</div></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#888; letter-spacing:0.1em;">LOCKED</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; opacity:0.45;">
+            <div style="width:20px; height:20px; border:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; display:flex; align-items:center; justify-content:center;">7</div>
+            <div style="flex:1;"><div style="font-size:13px; color:#666;">Marshall attack</div></div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#888; letter-spacing:0.1em;">LOCKED</div>
+          </div>
+        </div>
+        <div style="border-top:1px dashed #999; padding:14px 20px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">← all tracks</div>
+      </div>
+
+      <!-- puzzle board -->
+      <div style="padding:24px 32px; display:flex; flex-direction:column; gap:14px; min-height:0;">
+        <!-- prompt strip -->
+        <div style="padding:14px 18px; border:1px solid #1a1a1a; background:#eceae5;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:4px;">PUZZLE 4 · WHITE TO MOVE</div>
+          <div style="font-size:15px; font-weight:500;">Trade the bishop for the knight and simplify. Find the best exchange.</div>
+        </div>
+        <!-- board (same component, no eval bar, no clock) -->
+        <div style="flex:1; display:flex; justify-content:center; align-items:center; min-height:0;">
+          <div style="aspect-ratio:1; max-height:100%; height:100%; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; position:relative;">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:12px; color:#555; background:rgba(245,243,238,0.6);">
+              [ board · reused from screen 02 ]
+            </div>
+          </div>
+        </div>
+        <!-- controls -->
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:12px; font-size:13px;">Hint</div>
+          <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:12px; font-size:13px;">Show solution</div>
+          <div style="flex:1; background:#1a1a1a; color:#eceae5; text-align:center; padding:12px; font-size:13px; font-weight:600;">Next puzzle →</div>
+        </div>
+      </div>
+
+      <!-- right side · notes -->
+      <div style="border-left:1px dashed #999; padding:24px 20px; display:flex; flex-direction:column; gap:20px;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:8px;">MOVES</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.8;">
+            1. e4 e5<br/>2. Nf3 Nc6<br/>3. Bb5 a6<br/>4. Bxc6 <span style="color:#bbb;">?</span>
+          </div>
+        </div>
+        <div style="border-top:1px dashed #999; padding-top:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:8px;">CONCEPT</div>
+          <div style="font-size:12px; line-height:1.5; color:#333;">Exchange variation trades minor pieces early to enter a favorable endgame with the bishop pair.</div>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="border-top:1px dashed #999; padding-top:14px; display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">
+          <span>◀ prev</span><span>4 / 8</span><span>next ▶</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+      <div><span style="color:#1a1a1a; font-weight:600;">Reused board</span><br/>same component as screen 02 — no clock, no eval bar, hint replaces resign.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Track list</span><br/>linear order, checkmark + accuracy per completed puzzle. Locked items after last unlocked.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Mobile</span><br/>track list becomes a top drawer; concept panel folds into an expandable card under the board.</div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 06 · STATS & HISTORY =========================== -->
+  <section data-screen-label="Screen 06 — Stats & history" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">06 — STATS & HISTORY</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">was "Profile" · renamed for clarity · archetype header removed (Phase 7)</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; display:flex; flex-direction:column;">
+      <!-- top bar · unified nav -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:0 24px; height:56px; border-bottom:1px dashed #999;">
+        <div style="display:flex; gap:20px; align-items:center; font-size:13px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="color:#666;">Play</span>
+          <span style="color:#666;">Learn</span>
+          <span style="color:#666;">Reinforce</span>
+          <span style="border-bottom:2px solid #1a1a1a; font-weight:600; padding:18px 0;">Profile</span>
+        </div>
+        <div style="font-size:13px; color:#555;">Settings · Log out</div>
+      </div>
+
+      <!-- identity row · no archetype line -->
+      <div style="display:flex; align-items:center; gap:24px; padding:32px 40px; border-bottom:1px dashed #999;">
+        <div style="width:88px; height:88px; border:1px solid #1a1a1a; background:repeating-linear-gradient(45deg,transparent 0 4px,#1a1a1a 4px 5px);"></div>
+        <div style="flex:1;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:4px;">@handle</div>
+          <div style="font-size:28px; font-weight:600; letter-spacing:-0.01em;">Display name</div>
+          <div style="font-size:12px; color:#666; margin-top:4px;">joined Mar 2026 · rapid rating 1420</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <div style="border:1px solid #1a1a1a; padding:10px 16px; font-size:12px;">Edit profile</div>
+          <div style="border:1px solid #1a1a1a; padding:10px 16px; font-size:12px;">Share</div>
+        </div>
+      </div>
+
+      <!-- stats row · labels beneath numbers, unambiguous copy -->
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); border-bottom:1px dashed #999;">
+        <div style="padding:24px 32px; border-right:1px dashed #999;">
+          <div style="font-size:36px; font-weight:600;">147</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:6px; letter-spacing:0.08em;">games played</div>
+        </div>
+        <div style="padding:24px 32px; border-right:1px dashed #999;">
+          <div style="font-size:36px; font-weight:600;">54%</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:6px; letter-spacing:0.08em;">win rate (rapid, all-time)</div>
+        </div>
+        <div style="padding:24px 32px; border-right:1px dashed #999;">
+          <div style="font-size:36px; font-weight:600;">82%</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:6px; letter-spacing:0.08em;">avg accuracy (last 20 games)</div>
+        </div>
+        <div style="padding:24px 32px;">
+          <div style="font-size:36px; font-weight:600;">12 <span style="font-size:14px; color:#666; font-weight:400;">days</span></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:6px; letter-spacing:0.08em;">current daily-play streak</div>
+        </div>
+      </div>
+      <!-- streak calendar · own row -->
+      <div style="padding:20px 40px 24px; border-bottom:1px dashed #999;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">LAST 6 WEEKS · GAMES PER DAY</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; display:flex; gap:14px; align-items:center;">
+            <span style="display:inline-flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#d8d4cc;"></span>0</span>
+            <span style="display:inline-flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#8b8880;"></span>1-2</span>
+            <span style="display:inline-flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#1a1a1a;"></span>3+</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <div style="display:flex; flex-direction:column; gap:3px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888; padding-top:2px;">
+            <div style="height:18px; line-height:18px;">Mon</div>
+            <div style="height:18px; line-height:18px;">Wed</div>
+            <div style="height:18px; line-height:18px;">Fri</div>
+            <div style="height:18px; line-height:18px;">Sun</div>
+          </div>
+          <div style="flex:1; display:grid; grid-template-columns:repeat(6, 1fr); gap:3px;">
+            <!-- streak weeks -->
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="height:18px; background:#d8d4cc;"></div>
+              <div style="height:18px; background:#d8d4cc;"></div>
+              <div style="height:18px; background:#8b8880;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#d8d4cc;"></div>
+              <div style="height:18px; background:#8b8880;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#d8d4cc;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#8b8880;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#d8d4cc;"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="height:18px; background:#8b8880;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#d8d4cc;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#8b8880;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="height:18px; background:#d8d4cc;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#8b8880;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#8b8880;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#d8d4cc;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#8b8880;"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#8b8880;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a;"></div>
+              <div style="height:18px; background:#1a1a1a; outline:1.5px solid #1a1a1a; outline-offset:1px;"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:10px; padding-left:44px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">
+          <span>6w ago</span><span>4w</span><span>2w</span><span>today</span>
+        </div>
+      </div>
+
+      <!-- past games -->
+      <div style="display:flex; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 40px 12px;">
+          <div style="font-size:16px; font-weight:600;">Past games</div>
+          <div style="display:flex; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px;">
+            <span style="border:1px solid #1a1a1a; padding:6px 12px; background:#1a1a1a; color:#eceae5;">All</span>
+            <span style="border:1px solid #1a1a1a; padding:6px 12px;">Wins</span>
+            <span style="border:1px solid #1a1a1a; padding:6px 12px;">Losses</span>
+            <span style="border:1px solid #1a1a1a; padding:6px 12px;">Rapid</span>
+            <span style="border:1px solid #1a1a1a; padding:6px 12px;">Blitz</span>
+          </div>
+        </div>
+        <!-- table -->
+        <div style="padding:0 40px 24px;">
+          <div style="display:grid; grid-template-columns: 60px 1fr 100px 100px 120px 100px 60px; padding:10px 0; border-bottom:1px solid #1a1a1a; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">
+            <div>RESULT</div><div>OPPONENT</div><div>TYPE</div><div>MOVES</div><div>ACCURACY</div><div>DATE</div><div></div>
+          </div>
+          <!-- rows -->
+          <div style="display:grid; grid-template-columns: 60px 1fr 100px 100px 120px 100px 60px; padding:14px 0; border-bottom:1px dashed #ccc; font-size:13px; align-items:center;">
+            <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px; background:#1a1a1a; color:#eceae5;">WIN</span></div>
+            <div>Opponent name · 1408</div><div style="color:#666;">Rapid 10+0</div><div style="font-family:'JetBrains Mono',monospace;">34</div><div style="font-family:'JetBrains Mono',monospace;">87%</div><div style="color:#666;">2h ago</div><div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+          </div>
+          <div style="display:grid; grid-template-columns: 60px 1fr 100px 100px 120px 100px 60px; padding:14px 0; border-bottom:1px dashed #ccc; font-size:13px; align-items:center;">
+            <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px;">LOSS</span></div>
+            <div>Opponent name · 1455</div><div style="color:#666;">Rapid 10+0</div><div style="font-family:'JetBrains Mono',monospace;">48</div><div style="font-family:'JetBrains Mono',monospace;">74%</div><div style="color:#666;">yesterday</div><div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+          </div>
+          <div style="display:grid; grid-template-columns: 60px 1fr 100px 100px 120px 100px 60px; padding:14px 0; border-bottom:1px dashed #ccc; font-size:13px; align-items:center;">
+            <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px; background:#1a1a1a; color:#eceae5;">WIN</span></div>
+            <div>Opponent name · 1391</div><div style="color:#666;">Blitz 5+0</div><div style="font-family:'JetBrains Mono',monospace;">26</div><div style="font-family:'JetBrains Mono',monospace;">91%</div><div style="color:#666;">yesterday</div><div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+          </div>
+          <div style="display:grid; grid-template-columns: 60px 1fr 100px 100px 120px 100px 60px; padding:14px 0; border-bottom:1px dashed #ccc; font-size:13px; align-items:center;">
+            <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px; border-style:dashed;">DRAW</span></div>
+            <div>Opponent name · 1502</div><div style="color:#666;">Rapid 10+0</div><div style="font-family:'JetBrains Mono',monospace;">62</div><div style="font-family:'JetBrains Mono',monospace;">83%</div><div style="color:#666;">2d ago</div><div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+          </div>
+          <div style="display:grid; grid-template-columns: 60px 1fr 100px 100px 120px 100px 60px; padding:14px 0; border-bottom:1px dashed #ccc; font-size:13px; align-items:center;">
+            <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px;">LOSS</span></div>
+            <div>Opponent name · 1421</div><div style="color:#666;">Blitz 3+0</div><div style="font-family:'JetBrains Mono',monospace;">41</div><div style="font-family:'JetBrains Mono',monospace;">68%</div><div style="color:#666;">3d ago</div><div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+          </div>
+          <div style="text-align:center; padding:16px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">↓ load more</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+      <div><span style="color:#1a1a1a; font-weight:600;">Row → review</span><br/>clicking a game row opens screen 03 in review mode (result modal · board navigable through moves).</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Streak calendar</span><br/>42 days = 6 weeks. Intensity encodes games played that day; today outlined.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Mobile</span><br/>stat cards wrap 2×2, streak calendar below them, games table collapses into stacked cards.</div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 07 · INTERACTIVE LESSON =========================== -->
+  <section data-screen-label="Screen 07 — Interactive lesson" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">07 — INTERACTIVE LESSON</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">Phase 2 · board reuses screen 02 component · coach speaks in-text</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 900; display:grid; grid-template-columns: 1fr 420px; grid-template-rows: 56px 1fr;">
+      <!-- top bar · unified nav -->
+      <div style="grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; padding:0 24px; border-bottom:1px dashed #999;">
+        <div style="display:flex; gap:20px; align-items:center; font-size:13px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="color:#666;">Play</span>
+          <span style="border-bottom:2px solid #1a1a1a; font-weight:600; padding:18px 0;">Learn</span>
+          <span style="color:#666;">Reinforce</span>
+          <span style="color:#666;">Profile</span>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">Ruy López basics · lesson 4 · step 3 of 7</div>
+        <div style="font-size:13px; color:#555;">← exit lesson</div>
+      </div>
+
+      <!-- board column -->
+      <div style="padding:24px 32px; display:flex; flex-direction:column; gap:14px; min-height:0;">
+        <!-- step progress bar -->
+        <div style="display:flex; gap:4px;">
+          <div style="flex:1; height:4px; background:#1a1a1a;"></div>
+          <div style="flex:1; height:4px; background:#1a1a1a;"></div>
+          <div style="flex:1; height:4px; background:#1a1a1a;"></div>
+          <div style="flex:1; height:4px; background:#d8d4cc;"></div>
+          <div style="flex:1; height:4px; background:#d8d4cc;"></div>
+          <div style="flex:1; height:4px; background:#d8d4cc;"></div>
+          <div style="flex:1; height:4px; background:#d8d4cc;"></div>
+        </div>
+        <!-- board -->
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; min-height:0;">
+          <div style="aspect-ratio:1; max-height:100%; height:100%; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; position:relative;">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:12px; color:#555; background:rgba(245,243,238,0.6);">
+              [ board · reused component · target square highlighted ]
+            </div>
+            <!-- highlighted source + target -->
+            <div style="position:absolute; width:12.5%; height:12.5%; left:37.5%; top:75%; border:2px solid #1a1a1a; background:rgba(26,26,26,0.15);"></div>
+            <div style="position:absolute; width:12.5%; height:12.5%; left:37.5%; top:37.5%; border:2px dashed #1a1a1a;"></div>
+          </div>
+        </div>
+        <!-- footer: playback + notation -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">
+          <span>⏮ ◀ ▶ ⏭</span>
+          <span>1. e4 e5  2. Nf3 Nc6  3. Bb5 <span style="color:#bbb;">?</span></span>
+          <span>flip · reset</span>
+        </div>
+      </div>
+
+      <!-- right side · instruction + coach -->
+      <div style="border-left:1px dashed #999; display:flex; flex-direction:column;">
+        <!-- step header -->
+        <div style="padding:20px 22px 14px; border-bottom:1px dashed #999;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em;">STEP 3 OF 7</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">next → step 4</div>
+          </div>
+          <div style="font-size:20px; font-weight:600; letter-spacing:-0.01em; line-height:1.25;">Pin the knight to the king</div>
+        </div>
+        <!-- explanation -->
+        <div style="padding:18px 22px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:8px;">EXPLANATION</div>
+          <div style="font-size:13px; line-height:1.55; color:#333;">Bishop to b5 puts pressure on the knight on c6. Because the king sits behind it, the knight can't move without losing the king — that's a pin.</div>
+          <div style="margin-top:12px; font-size:12px; color:#666;">Try it: drag your bishop from f1 to <span style="font-family:'JetBrains Mono',monospace; background:#1a1a1a; color:#eceae5; padding:1px 6px;">b5</span>.</div>
+        </div>
+        <!-- coach feedback (voice-in-text) -->
+        <div style="flex:1; padding:18px 22px; overflow:auto; min-height:0; display:flex; flex-direction:column; gap:10px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em;">COACH</div>
+          <div style="padding:12px 14px; border:1px solid #1a1a1a; background:#eceae5;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:6px;">— on your move Bc4</div>
+            <div style="font-size:12px; line-height:1.5; color:#333;">That develops the bishop, but it doesn't create the pin we're after. Try aiming at c6 instead.</div>
+          </div>
+          <div style="padding:12px 14px; border:1px dashed #999;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#888; margin-bottom:6px;">// awaiting next move</div>
+            <div style="font-size:12px; color:#888; line-height:1.5;">Coach panel fills in as the user tries moves. Correct → short confirm + "next step". Wrong → nudge that names the concept, no direct answer until 3rd miss.</div>
+          </div>
+        </div>
+        <!-- next step -->
+        <div style="border-top:1px dashed #999; padding:14px 22px; display:flex; gap:8px;">
+          <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:12px; font-size:13px; color:#888;">Skip step</div>
+          <div style="flex:1.4; background:#1a1a1a; color:#eceae5; text-align:center; padding:12px; font-size:13px; font-weight:600;">Next step →</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(4,1fr); gap:24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+      <div><span style="color:#1a1a1a; font-weight:600;">Board</span><br/>same component as 02. Coordinates on, clock off, eval bar off, hint replaces resign.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Step progress</span><br/>segmented bar above the board — clear where the user is in the lesson without counting.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Coach copy</span><br/>plain text, no persona, no exclamation marks. Names the concept, doesn't give the move away until repeated misses.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Mobile</span><br/>board on top, instruction + coach as a scrollable panel below, sticky "next step" CTA.</div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 08e · REINFORCE EMPTY STATE =========================== -->
+  <section data-screen-label="Screen 08e — Reinforce (empty state)" style="max-width:1600px; margin:0 auto 48px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">08e — REINFORCE · EMPTY STATE</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">new user · no cards yet · points at Learn</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 720; display:grid; grid-template-rows: 56px 1fr;">
+      <!-- top bar · unified nav -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:0 24px; border-bottom:1px dashed #999;">
+        <div style="display:flex; gap:20px; align-items:center; font-size:13px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="color:#666;">Play</span>
+          <span style="color:#666;">Learn</span>
+          <span style="border-bottom:2px solid #1a1a1a; font-weight:600; padding:18px 0;">Reinforce</span>
+          <span style="color:#666;">Profile</span>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">0 due today</div>
+      </div>
+      <!-- empty state body -->
+      <div style="display:flex; align-items:center; justify-content:center; padding:48px;">
+        <div style="max-width:560px; text-align:left;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em; margin-bottom:12px;">NOTHING TO REVIEW YET</div>
+          <div style="font-size:32px; font-weight:600; letter-spacing:-0.01em; margin-bottom:12px;">Finish a lesson first.</div>
+          <div style="font-size:14px; color:#555; line-height:1.6; margin-bottom:28px;">Reinforce shows you opening lines you've already learned — timed so you see each one again just before you'd forget it. Once you complete a lesson in the openings track, its lines will appear here.</div>
+          <!-- next-up preview -->
+          <div style="border:1px dashed #999; padding:16px 18px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:4px;">START HERE</div>
+              <div style="font-size:15px; font-weight:600;">Ruy López basics</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:2px;">8 lessons · ~15 min each · unlocks 3 review lines</div>
+            </div>
+            <div style="background:#1a1a1a; color:#eceae5; padding:12px 20px; font-weight:600; font-size:13px;">Open in Learn →</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">or <span style="text-decoration:underline;">browse all tracks</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+      <div><span style="color:#1a1a1a; font-weight:600;">Not a dead end</span><br/>the empty state is the entry point. Primary CTA sends the user to Learn, not to a generic "come back later" screen.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Explains the mechanic</span><br/>one sentence on <em>why</em> the tab is empty (Reinforce depends on Learn) so the user isn't confused by an unpopulated tab.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Also shown</span><br/>when the user has cards but 0 are due today — same shell, headline changes to "You're up to date. Next review Tue."</div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 08 · REINFORCE (SRS) =========================== -->
+  <section data-screen-label="Screen 08 — Reinforce (SRS review)" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">08 — REINFORCE · SRS REVIEW</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">one line at a time · hints count as a mistake · summary at the end</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 900; display:grid; grid-template-columns: 1fr 380px; grid-template-rows: 56px 1fr;">
+      <!-- top bar · unified nav + due indicator -->
+      <div style="grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; padding:0 24px; border-bottom:1px dashed #999;">
+        <div style="display:flex; gap:20px; align-items:center; font-size:13px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="color:#666;">Play</span>
+          <span style="color:#666;">Learn</span>
+          <span style="border-bottom:2px solid #1a1a1a; font-weight:600; padding:18px 0;">Reinforce</span>
+          <span style="color:#666;">Profile</span>
+        </div>
+        <div style="display:flex; gap:14px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">
+          <span>3 of 8 due today</span>
+          <div style="width:80px; height:4px; background:#d8d4cc; position:relative;">
+            <div style="position:absolute; inset:0 62.5% 0 0; background:#1a1a1a;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- board column -->
+      <div style="padding:28px 32px; display:flex; flex-direction:column; gap:14px; min-height:0;">
+        <!-- context line -->
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em; margin-bottom:4px;">REVIEWING · WHITE TO MOVE</div>
+            <div style="font-size:18px; font-weight:600; letter-spacing:-0.01em;">Ruy López · Berlin defense main line</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">last seen 6 days ago · interval 6d</div>
+        </div>
+        <!-- board -->
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; min-height:0;">
+          <div style="aspect-ratio:1; max-height:100%; height:100%; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; position:relative;">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:12px; color:#555; background:rgba(245,243,238,0.6);">
+              [ board · no arrows, no piece highlights ]
+            </div>
+          </div>
+        </div>
+        <!-- action row · hint present but weighted as a penalty -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">
+          <span>Move 4 of line · 6 remaining</span>
+          <span>Show hint <span style="color:#888;">(counts as a mistake)</span></span>
+          <span>Skip line</span>
+        </div>
+      </div>
+
+      <!-- right side · line preview + progress -->
+      <div style="border-left:1px dashed #999; display:flex; flex-direction:column;">
+        <div style="padding:20px 22px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:8px; letter-spacing:0.1em;">THIS LINE</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.8;">
+            1. e4 e5<br/>
+            2. Nf3 Nc6<br/>
+            3. Bb5 Nf6<br/>
+            <span style="background:#1a1a1a; color:#eceae5; padding:0 4px;">4. O-O</span> <span style="color:#bbb;">?</span><br/>
+            <span style="color:#bbb;">5. · · · (hidden)</span>
+          </div>
+        </div>
+        <div style="padding:18px 22px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:8px; letter-spacing:0.1em;">THIS SESSION</div>
+          <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <div style="width:20px; height:20px; border:1px solid #1a1a1a; background:#1a1a1a;"></div>
+            <div style="width:20px; height:20px; border:1px solid #1a1a1a; background:#1a1a1a;"></div>
+            <div style="width:20px; height:20px; border:2px solid #1a1a1a; background:#f5f3ee; font-family:'JetBrains Mono',monospace; font-size:11px; text-align:center; line-height:16px;">3</div>
+            <div style="width:20px; height:20px; border:1px dashed #999;"></div>
+            <div style="width:20px; height:20px; border:1px dashed #999;"></div>
+            <div style="width:20px; height:20px; border:1px dashed #999;"></div>
+            <div style="width:20px; height:20px; border:1px dashed #999;"></div>
+            <div style="width:20px; height:20px; border:1px dashed #999;"></div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">2 clean · 0 with hints · 0 wrong</div>
+        </div>
+        <div style="flex:1; padding:18px 22px; font-size:12px; color:#555; line-height:1.6;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:8px; letter-spacing:0.1em;">HOW THIS WORKS</div>
+          Play the correct move from memory. A clean review pushes the next repetition further out. A mistake or a hint pulls it back in.
+        </div>
+        <div style="border-top:1px dashed #999; padding:14px 22px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; display:flex; justify-content:space-between;">
+          <span>⏮ ◀ ▶ ⏭</span><span>flip board</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 08b · session summary variant -->
+    <div style="margin-top:32px; display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">08b — SESSION SUMMARY</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">shown after last due line is completed</div>
+    </div>
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 500; display:flex; align-items:center; justify-content:center; padding:48px;">
+      <div style="max-width:560px; width:100%; border:1px solid #1a1a1a; background:#eceae5; padding:40px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em; margin-bottom:12px;">DONE FOR TODAY</div>
+        <div style="font-size:32px; font-weight:600; letter-spacing:-0.01em; margin-bottom:6px;">8 lines reviewed</div>
+        <div style="font-size:14px; color:#555; margin-bottom:24px;">Next review · Tue Aug 4 · 4 lines due</div>
+        <div style="border-top:1px dashed #999; padding-top:20px; margin-bottom:28px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:6px; letter-spacing:0.08em;">// one small qualitative sentence</div>
+          <div style="font-size:14px; color:#333; line-height:1.55;">The Berlin lines came back cleanly; the King's Indian pair still needs another pass.</div>
+        </div>
+        <div style="display:flex; gap:12px;">
+          <div style="flex:1; background:#1a1a1a; color:#eceae5; text-align:center; padding:14px; font-weight:600; font-size:13px;">Done</div>
+        </div>
+        <div style="margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; line-height:1.5;">// no streak count, no badge, no "keep it up" — the summary respects the user's time and stops.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+      <div><span style="color:#1a1a1a; font-weight:600;">Hint = mistake</span><br/>the option exists so users don't get stuck, but taking it pulls the next review closer. Copy states this in plain words next to the button.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Due indicator</span><br/>top-right, subtle. Progress bar shrinks as lines complete. Same visual language across all screens.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Summary transition</span><br/>same shell as the review screen, board dims, sheet fades in with counts + next-due date.</div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 09 · POST-GAME ANALYSIS =========================== -->
+  <section data-screen-label="Screen 09 — Post-game analysis" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">09 — POST-GAME ANALYSIS</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">distinct from 03 · opened from "Review game" or from a row in stats & history</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 1440 / 900; display:grid; grid-template-columns: 1fr 460px; grid-template-rows: 56px 1fr;">
+      <!-- top bar · unified nav -->
+      <div style="grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; padding:0 24px; border-bottom:1px dashed #999;">
+        <div style="display:flex; gap:20px; align-items:center; font-size:13px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="border-bottom:2px solid #1a1a1a; font-weight:600; padding:18px 0;">Play</span>
+          <span style="color:#666;">Learn</span>
+          <span style="color:#666;">Reinforce</span>
+          <span style="color:#666;">Profile</span>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">Review · vs Opponent 1408 · Rapid 10+0 · 2h ago</div>
+        <div style="font-size:13px; color:#555;">Share · Export</div>
+      </div>
+
+      <!-- left: board + scrubber -->
+      <div style="padding:24px 32px; display:flex; flex-direction:column; gap:14px; min-height:0;">
+        <div style="flex:1; display:flex; gap:12px; min-height:0;">
+          <!-- eval bar -->
+          <div style="width:14px; border:1px solid #1a1a1a; background:linear-gradient(to bottom, #1a1a1a 0%, #1a1a1a 30%, #eceae5 30%, #eceae5 100%);"></div>
+          <div style="flex:1; aspect-ratio:1; max-height:100%; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; position:relative;">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:12px; color:#555; background:rgba(245,243,238,0.6);">
+              [ board · scrubbing move 22 of 34 ]
+            </div>
+            <!-- last move arrow -->
+            <div style="position:absolute; width:12.5%; height:12.5%; left:25%; top:37.5%; border:2px solid #1a1a1a; background:rgba(26,26,26,0.12);"></div>
+            <div style="position:absolute; width:12.5%; height:12.5%; left:50%; top:50%; border:2px solid #1a1a1a; background:rgba(26,26,26,0.25);"></div>
+          </div>
+        </div>
+        <!-- move slider -->
+        <div style="border:1px solid #1a1a1a; padding:14px 16px; background:#eceae5;">
+          <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:8px;">
+            <span>MOVE 22 / 34</span><span>white to move</span><span>Rxe5 · missed</span>
+          </div>
+          <div style="position:relative; height:20px; display:flex; align-items:center;">
+            <div style="height:2px; background:#1a1a1a; flex:1;"></div>
+            <!-- tick markers for critical moments -->
+            <div style="position:absolute; left:20%; top:0; width:2px; height:20px; background:#1a1a1a;"></div>
+            <div style="position:absolute; left:64%; top:0; width:2px; height:20px; background:#1a1a1a;"></div>
+            <div style="position:absolute; left:82%; top:0; width:2px; height:20px; background:#1a1a1a;"></div>
+            <!-- thumb -->
+            <div style="position:absolute; left:64%; top:50%; transform:translate(-50%,-50%); width:16px; height:16px; background:#1a1a1a; border:1px solid #1a1a1a;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888; margin-top:6px;">
+            <span>opening</span><span>middlegame</span><span>endgame</span>
+          </div>
+        </div>
+        <!-- playback -->
+        <div style="display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">
+          <span>⏮ ◀ ▶ ⏭</span>
+          <span>1× · auto-play</span>
+          <span>flip</span>
+        </div>
+      </div>
+
+      <!-- right: eval graph + critical moments + move list -->
+      <div style="border-left:1px dashed #999; display:flex; flex-direction:column; min-height:0;">
+        <!-- eval graph -->
+        <div style="padding:18px 22px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:10px; letter-spacing:0.1em; display:flex; justify-content:space-between;">
+            <span>EVALUATION OVER GAME</span><span>+8.4 final</span>
+          </div>
+          <div style="position:relative; height:100px; border:1px dashed #999; background:
+            linear-gradient(to bottom, transparent 49.5%, #999 49.5%, #999 50.5%, transparent 50.5%);">
+            <!-- eval polyline via clip -->
+            <svg viewBox="0 0 340 100" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+              <polyline points="0,50 20,48 40,52 60,45 80,50 100,42 120,44 140,40 160,35 180,32 200,58 220,62 240,50 260,38 280,20 300,15 320,10 340,5" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+              <!-- critical moment markers -->
+              <circle cx="80" cy="50" r="3" fill="#1a1a1a"/>
+              <circle cx="220" cy="62" r="3" fill="#1a1a1a"/>
+              <circle cx="280" cy="20" r="3" fill="#1a1a1a"/>
+            </svg>
+            <div style="position:absolute; right:6px; top:2px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">+</div>
+            <div style="position:absolute; right:6px; bottom:2px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">−</div>
+          </div>
+        </div>
+        <!-- critical moments callout -->
+        <div style="padding:14px 22px; border-bottom:1px dashed #999;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em;">3 CRITICAL MOMENTS</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">Phase 4 · engine-detected</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div style="padding:8px 10px; border:1px solid #1a1a1a; font-size:12px; display:flex; justify-content:space-between; align-items:center;">
+              <span><span style="font-family:'JetBrains Mono',monospace; color:#666;">08.</span> Bxc6 — traded too early</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">jump →</span>
+            </div>
+            <!-- selected moment · expanded -->
+            <div style="border:1.5px solid #1a1a1a; background:#eceae5;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; font-size:12px;">
+                <span><span style="font-family:'JetBrains Mono',monospace; color:#666;">22.</span> Missed <span style="font-family:'JetBrains Mono',monospace;">Rxe5</span> — game-defining</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">viewing</span>
+              </div>
+              <!-- eval fact · always present (Phase 4) -->
+              <div style="padding:0 10px 8px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#555;">eval +2.3 → −0.8 · best: Rxe5 (+2.6)</div>
+              <!-- Phase 5 slot · LLM explanation appears here when shipped -->
+              <div style="margin:0 10px 10px; padding:10px 12px; border:1px dashed #999; background:#f5f3ee;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#888; letter-spacing:0.1em; margin-bottom:4px;">COACH · PHASE 5 · EMPTY UNTIL LLM SHIPS</div>
+                <div style="font-size:11px; color:#888; line-height:1.5;">// reserves 2–3 sentences of vertical space. Panel collapses to just the eval line above until Phase 5 populates it — don't design the surrounding layout assuming this block is always here.</div>
+              </div>
+            </div>
+            <div style="padding:8px 10px; border:1px solid #1a1a1a; font-size:12px; display:flex; justify-content:space-between; align-items:center;">
+              <span><span style="font-family:'JetBrains Mono',monospace; color:#666;">28.</span> Winning conversion — clean</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">jump →</span>
+            </div>
+          </div>
+        </div>
+        <!-- move list with classification -->
+        <div style="flex:1; overflow:auto; min-height:0; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em; margin-bottom:8px;">ALL MOVES</div>
+          <div style="display:grid; grid-template-columns:28px 1fr 1fr; row-gap:3px; column-gap:6px; align-items:center;">
+            <div style="color:#888; text-align:right;">1.</div><div>e4</div><div>e5</div>
+            <div style="color:#888; text-align:right;">2.</div><div>Nf3</div><div>Nc6</div>
+            <div style="color:#888; text-align:right;">3.</div><div>Bb5</div><div>a6</div>
+            <div style="color:#888; text-align:right;">4.</div><div>Ba4</div><div>Nf6</div>
+            <div style="color:#888; text-align:right;">5.</div><div>O-O</div><div>Be7</div>
+            <div style="color:#888; text-align:right;">6.</div><div>Re1</div><div>b5</div>
+            <div style="color:#888; text-align:right;">7.</div><div>Bb3</div><div>d6</div>
+            <div style="color:#888; text-align:right;">8.</div><div>Bxc6 <span style="border:1px solid #1a1a1a; padding:0 4px; font-size:9px;">inaccuracy</span></div><div>bxc6</div>
+            <div style="color:#888; text-align:right;">9.</div><div>h3</div><div>O-O</div>
+            <div style="color:#888; text-align:right;">10.</div><div>d4 <span style="border:1px solid #1a1a1a; padding:0 4px; font-size:9px; background:#1a1a1a; color:#eceae5;">brilliant</span></div><div>Nbd7</div>
+            <div style="color:#888; text-align:right;">11.</div><div>Nbd2</div><div>Bb7</div>
+            <div style="color:#888; text-align:right;">…</div><div style="color:#bbb;">···</div><div style="color:#bbb;">···</div>
+            <div style="color:#888; text-align:right;">22.</div><div style="background:#1a1a1a; color:#eceae5; padding:0 4px;">Nd5 <span style="border:1px solid #eceae5; padding:0 4px; font-size:9px;">blunder</span></div><div>Nxd5</div>
+            <div style="color:#888; text-align:right;">23.</div><div>exd5</div><div>Bxd5 <span style="border:1px solid #1a1a1a; padding:0 4px; font-size:9px;">mistake</span></div>
+            <div style="color:#888; text-align:right;">24.</div><div>c4</div><div>Bb7</div>
+            <div style="color:#888; text-align:right;">25.</div><div>Qc2 <span style="border:1px solid #1a1a1a; padding:0 4px; font-size:9px;">good</span></div><div>Qd7</div>
+            <div style="color:#888; text-align:right;">…</div><div style="color:#bbb;">···</div><div style="color:#bbb;">···</div>
+            <div style="color:#888; text-align:right;">34.</div><div>Qxh7#</div><div></div>
+          </div>
+        </div>
+        <!-- legend -->
+        <div style="border-top:1px dashed #999; padding:10px 14px; display:flex; flex-wrap:wrap; gap:8px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">
+          <span style="border:1px solid #1a1a1a; padding:1px 5px; background:#1a1a1a; color:#eceae5;">brilliant</span>
+          <span style="border:1px solid #1a1a1a; padding:1px 5px;">good</span>
+          <span style="border:1px solid #1a1a1a; padding:1px 5px;">inaccuracy</span>
+          <span style="border:1px solid #1a1a1a; padding:1px 5px;">mistake</span>
+          <span style="border:1px solid #1a1a1a; padding:1px 5px;">blunder</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(4,1fr); gap:24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+      <div><span style="color:#1a1a1a; font-weight:600;">Scrubber</span><br/>drag to any move; tick marks mark the three critical moments. Keyboard ← → also work.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Eval graph</span><br/>x = move number, y = eval. Dots on the line = critical moments. Reads left-to-right like the game.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Badges</span><br/>bordered pills only — no color coding. "Brilliant" is the sole inverted variant, kept rare.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Coach</span><br/>lives in the critical moments panel — clicking one loads a plain-text explanation into the coach card (not shown here).</div>
+    </div>
+  </section>
+
+  <!-- =========================== SCREEN 10 · MISTAKE PATTERNS =========================== -->
+  <section data-screen-label="Screen 10 — Mistake patterns" style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">10 — MISTAKE PATTERNS</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">longitudinal · lives under Profile · links back to games</div>
+    </div>
+
+    <div style="background:#f5f3ee; border:1px solid #1a1a1a; display:flex; flex-direction:column;">
+      <!-- top bar · unified nav -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:0 24px; height:56px; border-bottom:1px dashed #999;">
+        <div style="display:flex; gap:20px; align-items:center; font-size:13px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="color:#666;">Play</span>
+          <span style="color:#666;">Learn</span>
+          <span style="color:#666;">Reinforce</span>
+          <span style="border-bottom:2px solid #1a1a1a; font-weight:600; padding:18px 0;">Profile</span>
+        </div>
+        <div style="font-size:13px; color:#555;">Settings · Log out</div>
+      </div>
+
+      <!-- sub-nav within profile -->
+      <div style="display:flex; gap:24px; padding:14px 40px; border-bottom:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">
+        <span>Overview</span>
+        <span>Games</span>
+        <span style="color:#1a1a1a; font-weight:600; border-bottom:2px solid #1a1a1a; padding-bottom:12px; margin-bottom:-14px;">Mistake patterns</span>
+        <span>Openings</span>
+      </div>
+
+      <!-- header + last-updated -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; padding:28px 40px 20px; border-bottom:1px dashed #999;">
+        <div>
+          <div style="font-size:24px; font-weight:600; letter-spacing:-0.01em;">Where you lose points</div>
+          <div style="font-size:13px; color:#666; margin-top:4px;">Aggregated across your last 40 games.</div>
+        </div>
+        <div style="display:flex; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px;">
+          <span style="border:1px solid #1a1a1a; padding:6px 12px; background:#1a1a1a; color:#eceae5;">40 games</span>
+          <span style="border:1px solid #1a1a1a; padding:6px 12px;">Last 90 days</span>
+          <span style="border:1px solid #1a1a1a; padding:6px 12px;">All time</span>
+        </div>
+      </div>
+
+      <!-- accuracy trend banner -->
+      <div style="padding:24px 40px; border-bottom:1px dashed #999;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em;">ACCURACY TREND · LAST 40 GAMES</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">avg 82% · ▴ 3 pts vs prior 40</div>
+        </div>
+        <div style="position:relative; height:80px; border:1px dashed #999;">
+          <svg viewBox="0 0 800 80" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+            <polyline points="0,55 40,50 80,60 120,45 160,52 200,48 240,42 280,55 320,38 360,45 400,40 440,35 480,42 520,30 560,38 600,28 640,32 680,25 720,30 760,22 800,26" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+            <line x1="0" y1="36" x2="800" y2="36" stroke="#999" stroke-dasharray="3,3" stroke-width="1"/>
+          </svg>
+          <div style="position:absolute; right:8px; top:4px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">100%</div>
+          <div style="position:absolute; right:8px; top:32px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">avg</div>
+          <div style="position:absolute; right:8px; bottom:4px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">60%</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">
+          <span>40 games ago</span><span>most recent →</span>
+        </div>
+      </div>
+
+      <!-- three sections · tactical / opening / endgame -->
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px dashed #999;">
+        <!-- Tactical -->
+        <div style="padding:24px 32px; border-right:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em; margin-bottom:10px;">RECURRING TACTICAL FAILURES</div>
+          <div style="font-size:32px; font-weight:600; letter-spacing:-0.02em;">18</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:4px; letter-spacing:0.08em;">missed tactics across 40 games</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+            <div style="padding:10px 12px; border:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; font-weight:600;">Missed back-rank threats</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">7 games</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+            <div style="padding:10px 12px; border:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; font-weight:600;">Hanging pieces after trades</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">6 games</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+            <div style="padding:10px 12px; border:1px dashed #999; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; color:#333;">Overlooked knight forks</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">5 games</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opening -->
+        <div style="padding:24px 32px; border-right:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em; margin-bottom:10px;">OPENING-PHASE WEAKNESSES</div>
+          <div style="font-size:32px; font-weight:600; letter-spacing:-0.02em;">76% <span style="font-size:14px; color:#666; font-weight:400;">acc</span></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:4px; letter-spacing:0.08em;">first 15 moves · 6 pts below overall</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+            <div style="padding:10px 12px; border:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; font-weight:600;">Delayed castling as Black</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">12 games · -0.8 avg</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+            <div style="padding:10px 12px; border:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; font-weight:600;">Sicilian · wrong move order</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">5 games</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+            <div style="padding:10px 12px; border:1px dashed #999; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; color:#333;">Bishop out before knights</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">4 games</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endgame -->
+        <div style="padding:24px 32px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em; margin-bottom:10px;">ENDGAME CONVERSION</div>
+          <div style="font-size:32px; font-weight:600; letter-spacing:-0.02em;">61% <span style="font-size:14px; color:#666; font-weight:400;">converted</span></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:4px; letter-spacing:0.08em;">winning positions turned into wins</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+            <div style="padding:10px 12px; border:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; font-weight:600;">Rook endgames · misplaced king</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">5 lost, +2.0 or better</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+            <div style="padding:10px 12px; border:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; font-weight:600;">K+P endings · wrong-square king</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">3 games</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+            <div style="padding:10px 12px; border:1px dashed #999; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; color:#333;">Time trouble under 2:00</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">avg -14% acc after clock &lt; 2m</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- games linked -->
+      <div style="padding:24px 40px 32px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+          <div style="font-size:15px; font-weight:600;">Games showing these patterns</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">7 recent · click a row to open in analysis</div>
+        </div>
+        <div style="display:grid; grid-template-columns: 60px 1fr 200px 120px 60px; padding:10px 0; border-bottom:1px solid #1a1a1a; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">
+          <div>RESULT</div><div>OPPONENT</div><div>PATTERN</div><div>DATE</div><div></div>
+        </div>
+        <div style="display:grid; grid-template-columns: 60px 1fr 200px 120px 60px; padding:12px 0; border-bottom:1px dashed #ccc; font-size:13px; align-items:center;">
+          <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px;">LOSS</span></div>
+          <div>Opponent name · 1455</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">back-rank threat</div>
+          <div style="color:#666;">yesterday</div>
+          <div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+        </div>
+        <div style="display:grid; grid-template-columns: 60px 1fr 200px 120px 60px; padding:12px 0; border-bottom:1px dashed #ccc; font-size:13px; align-items:center;">
+          <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px;">LOSS</span></div>
+          <div>Opponent name · 1421</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">hanging piece</div>
+          <div style="color:#666;">3d ago</div>
+          <div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+        </div>
+        <div style="display:grid; grid-template-columns: 60px 1fr 200px 120px 60px; padding:12px 0; border-bottom:1px dashed #ccc; font-size:13px; align-items:center;">
+          <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px; border-style:dashed;">DRAW</span></div>
+          <div>Opponent name · 1502</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">rook endgame</div>
+          <div style="color:#666;">4d ago</div>
+          <div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+        </div>
+        <div style="display:grid; grid-template-columns: 60px 1fr 200px 120px 60px; padding:12px 0; font-size:13px; align-items:center;">
+          <div><span style="border:1px solid #1a1a1a; padding:2px 8px; font-family:'JetBrains Mono',monospace; font-size:10px;">LOSS</span></div>
+          <div>Opponent name · 1440</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555;">delayed castling</div>
+          <div style="color:#666;">1w ago</div>
+          <div style="font-family:'JetBrains Mono',monospace; color:#666;">→</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+      <div><span style="color:#1a1a1a; font-weight:600;">Three phases</span><br/>tactical, opening, endgame — mirrors the eval graph phases from screen 09. Same mental model everywhere.</div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Every card links out</span><br/>tapping a pattern filters the games table below; each game row deep-links into screen 09 <em>at the exact move the pattern was detected on</em>, not move 1. <span style="color:#888;">// implementation note, not a design decision</span></div>
+      <div><span style="color:#1a1a1a; font-weight:600;">Trend line is honest</span><br/>always shown against the running average, so a 3-point rise doesn't fake a hockey stick.</div>
+    </div>
+  </section>
+
+  <!-- =========================== STATES BAND =========================== -->
+  <section style="max-width:1600px; margin:0 auto 96px;">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:#1a1a1a; font-weight:600;">STATES — empty · loading · error</div>
+      <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">30% of real usage · often forgotten in wireframes</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+
+      <!-- S1 · Matchmaking -->
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:10px;">S1 · matchmaking (loading state)</div>
+        <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:40px; text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#666;">FINDING GAME</div>
+          <!-- spinner placeholder -->
+          <div style="width:64px; height:64px; border:2px solid #1a1a1a; border-top-color:transparent; border-radius:50%; position:relative;">
+            <div style="position:absolute; inset:-2px; border:2px dashed #999; border-radius:50%; opacity:0.4;"></div>
+          </div>
+          <div style="font-size:15px; font-weight:500;">Looking for an opponent</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.5;">rapid · 10+0 · rated<br/>~1400 rating · avg wait 8s</div>
+          <div style="border:1px solid #1a1a1a; padding:10px 20px; font-size:12px; margin-top:6px;">Cancel</div>
+        </div>
+        <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Between Play button and screen 02. Shows what's being matched, ETA, escape hatch.</div>
+      </div>
+
+      <!-- S2 · Empty games list -->
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:10px;">S2 · empty state (new user Profile)</div>
+        <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio:1; display:flex; flex-direction:column; padding:24px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-bottom:8px; letter-spacing:0.14em;">PAST GAMES</div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; border:1px dashed #999; padding:24px;">
+            <div style="width:80px; aspect-ratio:1; border:1px solid #999; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 50% 50%; opacity:0.6;"></div>
+            <div style="font-size:16px; font-weight:600;">No games yet</div>
+            <div style="font-size:12px; color:#555; max-width:220px; line-height:1.5;">Play your first game and it'll show up here with accuracy and blunder analysis.</div>
+            <div style="background:#1a1a1a; color:#eceae5; padding:12px 24px; font-weight:600; font-size:13px; margin-top:4px;">Play now →</div>
+          </div>
+        </div>
+        <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">First impression on Profile before any games exist. Points back to the primary action.</div>
+      </div>
+
+      <!-- S3 · Auth error -->
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#888; margin-bottom:10px;">S3 · auth error (wrong password)</div>
+        <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio:1; padding:32px; display:flex; flex-direction:column;">
+          <div style="display:inline-flex; border:1px solid #1a1a1a; margin-bottom:20px; align-self:flex-start;">
+            <div style="padding:8px 14px; background:#1a1a1a; color:#eceae5; font-size:11px; font-weight:600;">Log in</div>
+            <div style="padding:8px 14px; font-size:11px; color:#666;">Register</div>
+          </div>
+          <div style="font-size:20px; font-weight:600; margin-bottom:16px;">Welcome back</div>
+          <!-- error banner -->
+          <div style="border:1.5px solid #1a1a1a; padding:12px 14px; margin-bottom:14px; background:#eceae5;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.14em; color:#1a1a1a; margin-bottom:4px;">✕ SIGN-IN FAILED</div>
+            <div style="font-size:12px; color:#333;">Email or password doesn't match. <span style="text-decoration:underline;">Reset password?</span></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:3px;">EMAIL</div>
+              <div style="border:1px solid #1a1a1a; padding:10px; font-family:'JetBrains Mono',monospace; font-size:11px;">you@domain.com</div>
+            </div>
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:3px;">PASSWORD</div>
+              <div style="border:1.5px solid #1a1a1a; padding:10px; font-family:'JetBrains Mono',monospace; font-size:11px; background:rgba(26,26,26,0.05);">••••••••</div>
+            </div>
+          </div>
+          <div style="flex:1;"></div>
+          <div style="background:#1a1a1a; color:#eceae5; text-align:center; padding:12px; font-weight:600; font-size:12px; margin-top:14px;">Try again →</div>
+        </div>
+        <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Error banner uses a heavier border, not color — matches the wireframe palette. Reset link inline in the message.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================== MOBILE BAND HEADER =========================== -->
+  <div style="max-width:1600px; margin:0 auto 40px; padding-top:40px; border-top:1px solid #1a1a1a; display:flex; justify-content:space-between; align-items:flex-end;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#666; margin-bottom:8px;">Mobile · 375px</div>
+      <div style="font-size:24px; font-weight:600; letter-spacing:-0.01em;">Reflows for every screen</div>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; text-align:right; line-height:1.6; max-width:400px;">
+      <div>same content, single column, board full-width</div>
+      <div>bottom nav on 05 · drawer on 02 · sticky CTAs on 03</div>
+    </div>
+  </div>
+
+  <!-- =========================== MOBILE GRID =========================== -->
+  <div style="max-width:1600px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:40px 32px;">
+
+    <!-- 01m — Landing -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">01m — LANDING</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column;">
+        <div style="height:44px; padding:0 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #999; font-size:11px; flex-shrink:0;">
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">·</span>
+          <span style="color:#555;">☰</span>
+        </div>
+        <div style="flex:1; padding:32px 20px; display:flex; flex-direction:column; justify-content:center; gap:14px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">// H1 ~44px</div>
+          <div style="height:44px; border:1px dashed #999;"></div>
+          <div style="height:44px; width:70%; border:1px dashed #999;"></div>
+          <div style="height:18px; border:1px dashed #999; margin-top:8px;"></div>
+          <div style="height:18px; width:80%; border:1px dashed #999;"></div>
+          <div style="background:#1a1a1a; color:#eceae5; text-align:center; padding:16px; font-weight:600; font-size:14px; margin-top:16px;">Play now →</div>
+          <div style="text-align:center; font-size:11px; color:#666;">or sign in to save games</div>
+        </div>
+        <div style="border-top:1px dashed #999; height:200px; background:repeating-linear-gradient(45deg,transparent 0 6px,#1a1a1a 6px 7px); position:relative;">
+          <div style="position:absolute; inset:16px; background:#f5f3ee; border:1px dashed #1a1a1a; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#555;">board demo</div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">CTA above the fold. Demo pushed below.</div>
+    </div>
+
+    <!-- 02m — Game (drawer, chosen) -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">02m — GAME</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">drawer ✓</div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column;">
+        <div style="height:44px; padding:0 14px; border-bottom:1px dashed #999; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;"><span>← leave</span><span style="font-family:'JetBrains Mono',monospace; color:#666;">10+0</span><span>⚙</span></div>
+        <div style="padding:8px 12px; border-bottom:1px dashed #999; font-size:10px; display:flex; justify-content:space-between; align-items:center;"><span>Opponent · 1408</span><span style="font-family:'JetBrains Mono',monospace; border:1px solid #1a1a1a; padding:2px 6px;">09:42</span></div>
+        <div style="flex:1; display:flex; align-items:center; padding:8px 8px 0;">
+          <!-- eval bar dropped on mobile — numeric only, folded into player strips below -->
+          <div style="flex:1; aspect-ratio:1; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#555;">board full-width</div>
+        </div>
+        <div style="padding:8px 12px; font-size:10px; display:flex; justify-content:space-between; align-items:center;">
+          <span>You · 1420 <span style="font-family:'JetBrains Mono',monospace; color:#666;">· eval +0.4</span></span>
+          <span style="font-family:'JetBrains Mono',monospace; background:#1a1a1a; color:#eceae5; padding:2px 6px;">09:58</span>
+        </div>
+        <div style="border-top:2px solid #1a1a1a; background:#eceae5; padding:10px 14px 14px;">
+          <div style="width:36px; height:3px; background:#1a1a1a; margin:0 auto 8px; border-radius:2px;"></div>
+          <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:11px;">
+            <span style="font-weight:600;">Moves</span><span style="color:#888;">Chat</span><span style="color:#888;">⚙</span>
+          </div>
+          <div style="margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#555;">4. Ba4 Nf6<span style="color:#bbb;"> · swipe up ↑</span></div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Peek shows last move + tabs. Drag up for full panel. Eval bar dropped on mobile — replaced with numeric "+0.4" on the user's strip.</div>
+    </div>
+
+    <!-- 03m — Post-game -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">03m — POST-GAME</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; position:relative; display:flex; align-items:flex-end;">
+        <div style="position:absolute; inset:0; opacity:0.15; background:repeating-conic-gradient(#1a1a1a 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%;"></div>
+        <div style="position:absolute; inset:0; background:rgba(20,20,20,0.4);"></div>
+        <!-- sheet -->
+        <div style="position:relative; width:100%; background:#eceae5; border-top:2px solid #1a1a1a; padding:20px; box-sizing:border-box;">
+          <div style="width:36px; height:3px; background:#1a1a1a; margin:0 auto 16px; border-radius:2px;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; letter-spacing:0.1em;">RESULT</div>
+          <div style="font-size:32px; font-weight:700; letter-spacing:-0.02em; margin:4px 0 4px;">You won</div>
+          <div style="font-size:12px; color:#555; margin-bottom:20px;">mate in 34 · +8 rating</div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); border:1px solid #1a1a1a; margin-bottom:16px;">
+            <div style="padding:12px 10px; border-right:1px solid #1a1a1a;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">ACC</div>
+              <div style="font-size:20px; font-weight:600;">87%</div>
+            </div>
+            <div style="padding:12px 10px; border-right:1px solid #1a1a1a;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">BLUNDERS</div>
+              <div style="font-size:20px; font-weight:600;">2</div>
+            </div>
+            <div style="padding:12px 10px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">BEST</div>
+              <div style="font-size:15px; font-weight:600; font-family:'JetBrains Mono',monospace;">Nxf7</div>
+            </div>
+          </div>
+          <div style="border:1px dashed #999; height:40px; margin-bottom:16px; background:repeating-linear-gradient(45deg,transparent 0 4px,#1a1a1a 4px 5px); opacity:0.4;"></div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="background:#1a1a1a; color:#eceae5; text-align:center; padding:14px; font-weight:600; font-size:13px;">New game</div>
+            <div style="border:1px solid #1a1a1a; text-align:center; padding:14px; font-size:13px;">Review game</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Modal → bottom sheet. Board dims behind.</div>
+    </div>
+
+    <!-- 04m — Auth -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">04m — AUTH</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column; padding:20px; box-sizing:border-box;">
+        <div style="height:44px; margin:-20px -20px 20px; padding:0 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #999; font-size:11px; flex-shrink:0;">
+          <span style="color:#555;">← back</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">·</span>
+        </div>
+        <div style="display:inline-flex; border:1px solid #1a1a1a; margin-bottom:20px; align-self:flex-start;">
+          <div style="padding:8px 14px; background:#1a1a1a; color:#eceae5; font-size:11px; font-weight:600;">Log in</div>
+          <div style="padding:8px 14px; font-size:11px; color:#666;">Register</div>
+        </div>
+        <div style="font-size:22px; font-weight:600; letter-spacing:-0.01em; margin-bottom:4px;">Welcome back</div>
+        <div style="font-size:12px; color:#666; margin-bottom:20px;">Sign in to save games and rating.</div>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:4px;">EMAIL</div>
+            <div style="border:1px solid #1a1a1a; padding:12px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#888;">you@domain.com</div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:4px;"><span>PASSWORD</span><span style="text-decoration:underline;">forgot?</span></div>
+            <div style="border:1px solid #1a1a1a; padding:12px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#888;">••••••••</div>
+          </div>
+        </div>
+        <div style="background:#1a1a1a; color:#eceae5; text-align:center; padding:14px; font-weight:600; font-size:13px; margin-bottom:14px;">Log in →</div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+          <div style="flex:1; height:1px; background:#999;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#888;">or</div>
+          <div style="flex:1; height:1px; background:#999;"></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+          <div style="border:1px solid #1a1a1a; text-align:center; padding:10px; font-size:12px;">Continue with Google</div>
+          <div style="border:1px solid #1a1a1a; text-align:center; padding:10px; font-size:12px;">Continue with Apple</div>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="text-align:center; font-size:11px; color:#666;">or <span style="text-decoration:underline;">play as guest</span></div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Left decorative panel dropped. Form fills viewport.</div>
+    </div>
+
+    <!-- 05m — Learn -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">05m — LEARN</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column;">
+        <div style="height:44px; padding:0 14px; border-bottom:1px dashed #999; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;"><span>← tracks</span><span style="font-family:'JetBrains Mono',monospace; color:#666;">4 / 8</span><span>⋯</span></div>
+        <!-- track drawer peek -->
+        <div style="border-bottom:1px dashed #999; padding:10px 14px; background:#eceae5;">
+          <div style="font-size:13px; font-weight:600;">Ruy López basics</div>
+          <div style="height:3px; background:#d8d4cc; margin-top:6px; position:relative;">
+            <div style="position:absolute; inset:0 62% 0 0; background:#1a1a1a;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:6px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;"><span>3 / 8 complete</span><span>↓ list</span></div>
+        </div>
+        <!-- prompt -->
+        <div style="padding:10px 14px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">WHITE TO MOVE</div>
+          <div style="font-size:12px; margin-top:2px;">Trade the bishop for the knight and simplify.</div>
+        </div>
+        <!-- board -->
+        <div style="flex:1; padding:12px; display:flex; align-items:center; justify-content:center;">
+          <div style="width:100%; aspect-ratio:1; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#555;">board · reused</div>
+        </div>
+        <!-- concept collapsed card -->
+        <div style="border-top:1px dashed #999; padding:8px 14px; display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px;">
+          <span>Concept</span><span style="color:#666;">↑ expand</span>
+        </div>
+        <!-- actions -->
+        <div style="padding:10px 12px; border-top:1px dashed #999; display:flex; gap:6px;">
+          <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:10px; font-size:11px;">Hint</div>
+          <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:10px; font-size:11px;">Solve</div>
+          <div style="flex:1; background:#1a1a1a; color:#eceae5; text-align:center; padding:10px; font-size:11px; font-weight:600;">Next →</div>
+        </div>
+        <!-- bottom nav -->
+        <div style="border-top:1px solid #1a1a1a; display:grid; grid-template-columns:repeat(4,1fr); font-family:'JetBrains Mono',monospace; font-size:10px; text-align:center;">
+          <div style="padding:10px; color:#888;">Play</div>
+          <div style="padding:10px; background:#1a1a1a; color:#eceae5;">Learn</div>
+          <div style="padding:10px; color:#888;">Reinforce</div>
+          <div style="padding:10px; color:#888;">Profile</div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Track list → top drawer. Concept panel → expandable card. Bottom tab bar (recommended).</div>
+    </div>
+
+    <!-- 06m — Profile -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">06m — PROFILE</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column; overflow:hidden;">
+        <div style="height:44px; padding:0 14px; border-bottom:1px dashed #999; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;"><span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">Profile</span><span>⚙</span></div>
+        <!-- identity -->
+        <div style="padding:20px 16px 14px; display:flex; gap:14px; align-items:center; border-bottom:1px dashed #999;">
+          <div style="width:56px; height:56px; border:1px solid #1a1a1a; background:repeating-linear-gradient(45deg,transparent 0 4px,#1a1a1a 4px 5px); flex-shrink:0;"></div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">@handle</div>
+            <div style="font-size:16px; font-weight:600;">Display name</div>
+            <div style="font-size:10px; color:#666;">rapid 1420 · 12d streak</div>
+          </div>
+        </div>
+        <!-- stats 2×2 -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; border-bottom:1px dashed #999;">
+          <div style="padding:12px 14px; border-right:1px dashed #999; border-bottom:1px dashed #999;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">GAMES</div>
+            <div style="font-size:20px; font-weight:600;">147</div>
+          </div>
+          <div style="padding:12px 14px; border-bottom:1px dashed #999;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">WIN RATE</div>
+            <div style="font-size:20px; font-weight:600;">54%</div>
+          </div>
+          <div style="padding:12px 14px; border-right:1px dashed #999;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">ACCURACY</div>
+            <div style="font-size:20px; font-weight:600;">82%</div>
+          </div>
+          <div style="padding:12px 14px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">STREAK</div>
+            <div style="font-size:20px; font-weight:600;">12d</div>
+          </div>
+        </div>
+        <!-- streak strip -->
+        <div style="padding:12px 14px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:6px;">LAST 6 WEEKS</div>
+          <div style="display:grid; grid-template-columns:repeat(21,1fr); gap:2px;">
+            <div style="aspect-ratio:1; background:#d8d4cc;"></div><div style="aspect-ratio:1; background:#8b8880;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#d8d4cc;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#8b8880;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div>
+            <div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#d8d4cc;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#8b8880;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#d8d4cc;"></div>
+            <div style="aspect-ratio:1; background:#8b8880;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#8b8880;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#1a1a1a;"></div><div style="aspect-ratio:1; background:#1a1a1a; outline:1px solid #1a1a1a; outline-offset:1px;"></div>
+          </div>
+        </div>
+        <!-- games list as cards -->
+        <div style="padding:12px 14px; flex:1; overflow:hidden;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:8px;">RECENT GAMES</div>
+          <div style="border:1px solid #1a1a1a; padding:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:12px; font-weight:600;"><span style="font-family:'JetBrains Mono',monospace; font-size:9px; background:#1a1a1a; color:#eceae5; padding:1px 5px; margin-right:6px;">WIN</span>vs · 1408</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-top:2px;">Rapid · 34 moves · 87%</div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</div>
+          </div>
+          <div style="border:1px solid #1a1a1a; padding:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:12px; font-weight:600;"><span style="font-family:'JetBrains Mono',monospace; font-size:9px; border:1px solid #1a1a1a; padding:1px 5px; margin-right:6px;">LOSS</span>vs · 1455</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-top:2px;">Rapid · 48 moves · 74%</div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666;">→</div>
+          </div>
+        </div>
+        <!-- bottom nav -->
+        <div style="border-top:1px solid #1a1a1a; display:grid; grid-template-columns:repeat(4,1fr); font-family:'JetBrains Mono',monospace; font-size:10px; text-align:center;">
+          <div style="padding:10px; color:#888;">Play</div>
+          <div style="padding:10px; color:#888;">Learn</div>
+          <div style="padding:10px; color:#888;">Reinforce</div>
+          <div style="padding:10px; background:#1a1a1a; color:#eceae5;">Profile</div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Stats 2×2. Table → stacked cards. Bottom tab bar.</div>
+    </div>
+
+    <!-- 07m — Interactive lesson -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">07m — LESSON</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column;">
+        <div style="height:44px; padding:0 14px; border-bottom:1px dashed #999; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;"><span>← exit</span><span style="font-family:'JetBrains Mono',monospace; color:#666;">step 3 / 7</span><span>⋯</span></div>
+        <div style="padding:8px 14px; display:flex; gap:3px;">
+          <div style="flex:1; height:3px; background:#1a1a1a;"></div><div style="flex:1; height:3px; background:#1a1a1a;"></div><div style="flex:1; height:3px; background:#1a1a1a;"></div>
+          <div style="flex:1; height:3px; background:#d8d4cc;"></div><div style="flex:1; height:3px; background:#d8d4cc;"></div><div style="flex:1; height:3px; background:#d8d4cc;"></div><div style="flex:1; height:3px; background:#d8d4cc;"></div>
+        </div>
+        <div style="padding:10px 14px 6px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">STEP 3 · PIN THE KNIGHT</div>
+          <div style="font-size:13px; margin-top:2px; line-height:1.4;">Bishop to b5 pins the knight to the king. Try it.</div>
+        </div>
+        <div style="flex:1; padding:8px 14px; display:flex; align-items:center; justify-content:center; min-height:0;">
+          <div style="width:100%; aspect-ratio:1; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#555;">board · reused</div>
+        </div>
+        <!-- coach card -->
+        <div style="border-top:1px dashed #999; padding:10px 14px; background:#eceae5;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">COACH — on your Bc4</div>
+          <div style="font-size:11px; margin-top:3px; line-height:1.4;">Develops the bishop, but no pin. Aim at c6.</div>
+        </div>
+        <div style="padding:10px 12px; border-top:1px dashed #999; display:flex; gap:6px;">
+          <div style="flex:1; border:1px solid #1a1a1a; text-align:center; padding:10px; font-size:11px; color:#888;">Skip</div>
+          <div style="flex:1.4; background:#1a1a1a; color:#eceae5; text-align:center; padding:10px; font-size:11px; font-weight:600;">Next →</div>
+        </div>
+        <div style="border-top:1px solid #1a1a1a; display:grid; grid-template-columns:repeat(4,1fr); font-family:'JetBrains Mono',monospace; font-size:10px; text-align:center;">
+          <div style="padding:10px; color:#888;">Play</div>
+          <div style="padding:10px; background:#1a1a1a; color:#eceae5;">Learn</div>
+          <div style="padding:10px; color:#888;">Reinforce</div>
+          <div style="padding:10px; color:#888;">Profile</div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Instruction above board. Coach card above sticky Next.</div>
+    </div>
+
+    <!-- 08m — Reinforce -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">08m — REINFORCE</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column;">
+        <div style="height:44px; padding:0 14px; border-bottom:1px dashed #999; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;">
+          <span>← quit</span>
+          <span style="font-family:'JetBrains Mono',monospace; color:#666;">3 / 8 due</span>
+          <span style="width:40px; height:4px; background:#d8d4cc; position:relative;"><span style="position:absolute; inset:0 62.5% 0 0; background:#1a1a1a;"></span></span>
+        </div>
+        <div style="padding:12px 14px 6px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">WHITE TO MOVE</div>
+          <div style="font-size:13px; font-weight:600; margin-top:2px;">Berlin defense main line</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; margin-top:2px;">last seen 6d ago · move 4 of line</div>
+        </div>
+        <div style="flex:1; padding:12px 14px; display:flex; align-items:center; justify-content:center; min-height:0;">
+          <div style="width:100%; aspect-ratio:1; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#555;">no hints shown</div>
+        </div>
+        <div style="padding:10px 14px; border-top:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; display:flex; justify-content:space-between;">
+          <span>Show hint <span style="color:#888;">(counts as mistake)</span></span>
+          <span>Skip</span>
+        </div>
+        <div style="border-top:1px solid #1a1a1a; display:grid; grid-template-columns:repeat(4,1fr); font-family:'JetBrains Mono',monospace; font-size:10px; text-align:center;">
+          <div style="padding:10px; color:#888;">Play</div>
+          <div style="padding:10px; color:#888;">Learn</div>
+          <div style="padding:10px; background:#1a1a1a; color:#eceae5;">Reinforce</div>
+          <div style="padding:10px; color:#888;">Profile</div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Due count in header. Hint call-out states penalty in plain text.</div>
+    </div>
+
+    <!-- 09m — Analysis -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">09m — ANALYSIS</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column;">
+        <div style="height:44px; padding:0 14px; border-bottom:1px dashed #999; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;"><span>← back</span><span style="font-family:'JetBrains Mono',monospace; color:#666;">Review · move 22</span><span>⋯</span></div>
+        <!-- eval graph -->
+        <div style="padding:10px 14px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:4px;">EVAL OVER GAME</div>
+          <div style="height:50px; border:1px dashed #999; position:relative;">
+            <svg viewBox="0 0 340 50" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+              <polyline points="0,25 40,22 80,28 120,20 160,18 200,32 240,25 280,10 320,5 340,3" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+              <circle cx="80" cy="28" r="2.5" fill="#1a1a1a"/>
+              <circle cx="200" cy="32" r="2.5" fill="#1a1a1a"/>
+              <circle cx="280" cy="10" r="2.5" fill="#1a1a1a"/>
+            </svg>
+          </div>
+        </div>
+        <!-- board -->
+        <div style="flex:1; padding:10px 14px; display:flex; align-items:center; justify-content:center; min-height:0;">
+          <div style="width:100%; aspect-ratio:1; border:1px solid #1a1a1a; background:repeating-conic-gradient(#d8d4cc 0 25%, #f5f3ee 0 50%) 0 0 / 25% 25%; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#555;">board · scrubbing</div>
+        </div>
+        <!-- scrubber -->
+        <div style="padding:8px 14px; border-top:1px dashed #999;">
+          <div style="position:relative; height:14px; display:flex; align-items:center;">
+            <div style="flex:1; height:2px; background:#1a1a1a;"></div>
+            <div style="position:absolute; left:20%; top:0; width:2px; height:14px; background:#1a1a1a;"></div>
+            <div style="position:absolute; left:64%; top:0; width:2px; height:14px; background:#1a1a1a;"></div>
+            <div style="position:absolute; left:82%; top:0; width:2px; height:14px; background:#1a1a1a;"></div>
+            <div style="position:absolute; left:64%; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; background:#1a1a1a;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-top:4px;">
+            <span>⏮ ◀ ▶ ⏭</span><span>22 / 34</span>
+          </div>
+        </div>
+        <!-- moments -->
+        <div style="padding:8px 14px; border-top:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:4px;">3 CRITICAL MOMENTS</div>
+          <div style="border:1.5px solid #1a1a1a; background:#eceae5; padding:6px 10px; font-size:11px; margin-bottom:4px;">22. Missed Rxe5 — game-defining</div>
+          <div style="border:1px solid #1a1a1a; padding:6px 10px; font-size:11px; color:#555; margin-bottom:4px;">08. Bxc6 traded too early</div>
+          <div style="border:1px solid #1a1a1a; padding:6px 10px; font-size:11px; color:#555;">28. Winning conversion</div>
+        </div>
+        <div style="border-top:1px solid #1a1a1a; display:grid; grid-template-columns:repeat(4,1fr); font-family:'JetBrains Mono',monospace; font-size:10px; text-align:center;">
+          <div style="padding:10px; background:#1a1a1a; color:#eceae5;">Play</div>
+          <div style="padding:10px; color:#888;">Learn</div>
+          <div style="padding:10px; color:#888;">Reinforce</div>
+          <div style="padding:10px; color:#888;">Profile</div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Move list collapses behind "all moves" sheet. Moments always visible.</div>
+    </div>
+
+    <!-- 10m — Mistake patterns -->
+    <div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.12em;">10m — MISTAKE PATTERNS</div>
+        <div style="flex:1; height:1px; background:#1a1a1a;"></div>
+      </div>
+      <div style="background:#f5f3ee; border:1px solid #1a1a1a; aspect-ratio: 375/812; display:flex; flex-direction:column; overflow:hidden;">
+        <div style="height:44px; padding:0 14px; border-bottom:1px dashed #999; display:flex; justify-content:space-between; align-items:center; font-size:11px; flex-shrink:0;"><span style="font-family:'JetBrains Mono',monospace; font-weight:600;">[logo]</span><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666;">Patterns</span><span>⚙</span></div>
+        <!-- sub-nav -->
+        <div style="display:flex; gap:14px; padding:10px 14px; border-bottom:1px dashed #999; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; overflow-x:auto;">
+          <span>Overview</span><span>Games</span><span style="color:#1a1a1a; font-weight:600;">Patterns</span><span>Openings</span>
+        </div>
+        <!-- trend -->
+        <div style="padding:12px 14px; border-bottom:1px dashed #999;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:4px;">ACCURACY TREND · 40 GAMES</div>
+          <div style="height:44px; border:1px dashed #999;">
+            <svg viewBox="0 0 340 44" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+              <polyline points="0,28 40,25 80,30 120,22 160,26 200,20 240,15 280,18 320,10 340,12" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+              <line x1="0" y1="20" x2="340" y2="20" stroke="#999" stroke-dasharray="3,3"/>
+            </svg>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-top:4px;">avg 82% · ▴ 3 pts</div>
+        </div>
+        <!-- pattern cards -->
+        <div style="flex:1; overflow:auto; padding:10px 14px; min-height:0;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:6px;">RECURRING TACTICAL</div>
+          <div style="border:1px solid #1a1a1a; padding:10px; margin-bottom:6px;">
+            <div style="font-size:12px; font-weight:600;">Back-rank threats</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">7 games →</div>
+          </div>
+          <div style="border:1px solid #1a1a1a; padding:10px; margin-bottom:10px;">
+            <div style="font-size:12px; font-weight:600;">Hanging pieces after trades</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">6 games →</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin-bottom:6px;">OPENING</div>
+          <div style="border:1px solid #1a1a1a; padding:10px; margin-bottom:6px;">
+            <div style="font-size:12px; font-weight:600;">Delayed castling as Black</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">12 games · -0.8 avg →</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666; margin:10px 0 6px;">ENDGAME</div>
+          <div style="border:1px solid #1a1a1a; padding:10px;">
+            <div style="font-size:12px; font-weight:600;">Rook endgames · king</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#666;">5 lost from +2.0 →</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid #1a1a1a; display:grid; grid-template-columns:repeat(4,1fr); font-family:'JetBrains Mono',monospace; font-size:10px; text-align:center;">
+          <div style="padding:10px; color:#888;">Play</div>
+          <div style="padding:10px; color:#888;">Learn</div>
+          <div style="padding:10px; color:#888;">Reinforce</div>
+          <div style="padding:10px; background:#1a1a1a; color:#eceae5;">Profile</div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#666; line-height:1.5;">Trend chart sticks up top. Sections stack; cards tap through to games.</div>
+    </div>
+
+  </div>
+
+  <!-- =========================== SYSTEM NOTES =========================== -->
+  <div style="max-width:1600px; margin:56px auto 0; padding:24px 32px; border:1px dashed #1a1a1a; display:grid; grid-template-columns:repeat(4,1fr); gap:32px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.6;">
+    <div><span style="color:#1a1a1a; font-weight:600;">Breakpoint</span><br/>single break at ~720px. Between that and 1200px the desktop layout adapts (right panel narrows, tool rail hides icons behind ☰).</div>
+    <div><span style="color:#1a1a1a; font-weight:600;">Navigation</span><br/>desktop: top bar. Mobile: bottom tab bar on Learn / Profile, in-context header on Play / Auth.</div>
+    <div><span style="color:#1a1a1a; font-weight:600;">Modals → sheets</span><br/>every desktop modal (post-game, settings) becomes a bottom sheet on mobile.</div>
+    <div><span style="color:#1a1a1a; font-weight:600;">Board</span><br/>one component. Desktop: fills column height. Mobile: full viewport width. Same file, same interactions.</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

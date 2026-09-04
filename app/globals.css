@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
+/* Palette and type from the Phase 1 wireframes. One light scheme only: the
+   wireframes commit to a single monochrome look, so there is no dark variant
+   to fall back to and prefers-color-scheme is deliberately not honoured. */
+@theme {
+  --color-canvas: #e0ddd4;
+  --color-surface: #f5f3ee;
+  --color-panel: #eceae5;
+  --color-ink: #1a1a1a;
+  --color-muted: #666666;
+  --color-hairline: #999999;
+  --color-tint: #d8d4cc;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-panel);
 }

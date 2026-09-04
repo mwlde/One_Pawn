@@ -43,3 +43,7 @@ next-env.d.ts
 
 # WASM build output
 /engine/build/
+
+# local-only project docs (not committed; kept on Maria's machine)
+/CLAUDE.md
+/docs/

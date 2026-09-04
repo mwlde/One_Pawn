@@ -5,9 +5,7 @@ mkdir -p engine/build public
 
 # Compiles the real engine plus the JS-facing shim to WASM. main.cpp, game.cpp
 # and perft.cpp are deliberately left out: they are CLI/testing concerns that
-# have no business shipping to a browser. hello.cpp (Phase 0's proof that the
-# toolchain works) is left out too, on purpose, kept only as a native build
-# for now and superseded in B2.
+# have no business shipping to a browser.
 emcc engine/src/wasm_api.cpp \
   engine/src/board.cpp \
   engine/src/move.cpp \

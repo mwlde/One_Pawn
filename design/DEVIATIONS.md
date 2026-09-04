@@ -5,7 +5,7 @@ phase 1/Chess Wireframes.dc.html`. Written for whoever revises those wireframes
 next, so the drawings and the code can be brought back into line.
 
 Recorded: 2026-09-04, Phase 1 Stage D session 1 (items 1-4) and Stage E1
-(items 5-9).
+(items 5-11).
 
 ---
 
@@ -154,6 +154,47 @@ revealing who has an account.
 
 **For the revision.** Needs an artboard. It is the most likely destination of
 the register screen, and currently the only screen with no drawing behind it.
+
+---
+
+## 10. Auth: "Welcome back" only for returning visitors
+
+**Deviation.** Screen 04 heads the login form "Welcome back" in every state. The
+build shows it only to someone who has signed in on this browser before, and
+heads the screen "Log in" otherwise.
+
+**Why.** The landing page now routes first-time visitors straight to `/login`
+from its nav, and greeting a stranger with "Welcome back" reads as a mistake.
+
+**Built.** A device-local cookie, `onepawn_returning`, set once a session
+actually exists. The login page reads it on the server so the heading is correct
+in the first paint rather than swapping after hydration. The cookie records that
+a session existed on this browser, never whose, so it reveals nothing about any
+account.
+
+**For the revision.** Screen 04 needs both headings drawn, or a note that the
+heading is conditional.
+
+---
+
+## 11. Landing: nav added, Learn and About inert
+
+**Deviation.** The landing page had no nav at all. Screen 01 draws one:
+`Learn · About · Log in`.
+
+**Why.** Nothing on the landing page routed to the auth screens, so the only way
+into `/login` was the app shell's own nav, which a logged-out visitor reaches
+only by starting a game first.
+
+**Built.** The full nav from Screen 01. Log in is a live link. Learn is Phase 2
+and About is Stage F prep, so both render muted and inert, the same treatment
+the app shell gives its unbuilt tabs. The line under the CTA also matches the
+wireframe now, "no account · sign in to save games", with sign in linking to
+`/login`. It previously read "no account needed" with no link.
+
+**For the revision.** Nothing to change. This brings the build closer to the
+drawing rather than further from it, and is recorded only because deviation 3
+described the landing page as the minimal version.
 
 ---
 

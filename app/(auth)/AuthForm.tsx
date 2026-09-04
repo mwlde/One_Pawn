@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { createClient } from "@/lib/supabase/client";
+import { markReturningVisitor } from "@/lib/auth/returning-visitor";
 import {
   isRegistrationDuplicate,
   loginErrorMessage,
@@ -18,7 +19,7 @@ type Mode = "login" | "register";
 
 const COPY: Record<Mode, { heading: string; subheading: string; cta: string; failure: string }> = {
   login: {
-    heading: "Welcome back",
+    heading: "Log in",
     subheading: "Sign in to save games and track progress.",
     cta: "Log in",
     failure: "SIGN-IN FAILED",
@@ -30,6 +31,13 @@ const COPY: Record<Mode, { heading: string; subheading: string; cta: string; fai
     failure: "REGISTRATION FAILED",
   },
 };
+
+// The wireframe's "Welcome back" only makes sense to someone who has been here
+// before. A first-time visitor who followed "Log in" from the landing page gets
+// the plain heading instead.
+function headingFor(mode: Mode, returning: boolean): string {
+  return mode === "login" && returning ? "Welcome back" : COPY[mode].heading;
+}
 
 function Toggle({ mode }: { mode: Mode }) {
   // Wireframe 04 draws this as a stateful segmented control on a single auth
@@ -87,9 +95,10 @@ function Field({
   );
 }
 
-export function AuthForm({ mode }: { mode: Mode }) {
+export function AuthForm({ mode, returning = false }: { mode: Mode; returning?: boolean }) {
   const router = useRouter();
   const copy = COPY[mode];
+  const heading = headingFor(mode, returning);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -136,6 +145,10 @@ export function AuthForm({ mode }: { mode: Mode }) {
       }
     }
 
+    // Only once a session exists, so the flag means "someone has signed in on
+    // this browser", not "someone once opened the register form".
+    markReturningVisitor();
+
     // refresh() re-runs the server components so the nav picks up the new
     // session, rather than showing "Log in" until the next hard reload.
     router.push("/play");
@@ -165,7 +178,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     <div className="w-full max-w-[360px]">
       <Toggle mode={mode} />
 
-      <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">{copy.heading}</h1>
+      <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">{heading}</h1>
       <p className="mb-8 text-sm text-muted">{copy.subheading}</p>
 
       {/* Wireframe S3: the error banner carries a heavier border rather than a

@@ -4,6 +4,7 @@ import { Chess } from "chess.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useEngineContext } from "@/components/EngineProvider";
+import { useSessionUserId } from "@/components/SessionProvider";
 import { GameBoard } from "@/components/board/GameBoard";
 import { PlayerStrip } from "@/components/board/PlayerStrip";
 import { EvalBar } from "@/components/panels/EvalBar";
@@ -13,7 +14,13 @@ import { Button } from "@/components/ui/Button";
 import { useHideMobileNav } from "@/components/ui/TopNav";
 import { parseEngineMove } from "@/lib/game/engine-move";
 import { formatBalance, materialBalance } from "@/lib/game/evaluation";
-import { describeEnd, describeTimeout, type GameEnd } from "@/lib/game/result";
+import {
+  describeEnd,
+  describeResignation,
+  describeTimeout,
+  type GameEnd,
+} from "@/lib/game/result";
+import { buildSavePayload, saveGame, type SaveGamePayload, type SaveState } from "@/lib/game/save";
 import {
   DEFAULT_SETTINGS,
   DIFFICULTY_LABELS,
@@ -28,6 +35,7 @@ import {
 
 import { GameSetup } from "./GameSetup";
 import { PostGame } from "./PostGame";
+import { ResignButton } from "./ResignButton";
 import { useGameClock } from "./useGameClock";
 
 type Phase = "setup" | "playing" | "over";
@@ -66,6 +74,7 @@ function describeLastMove(moves: string[]): string {
 
 export default function PlayPage() {
   const { isReady, getBestMove } = useEngineContext();
+  const userId = useSessionUserId();
 
   const chessRef = useRef(new Chess());
   const [phase, setPhase] = useState<Phase>("setup");
@@ -73,6 +82,11 @@ export default function PlayPage() {
   const [snapshot, setSnapshot] = useState<Snapshot>(() => snapshotOf(new Chess()));
   const [end, setEnd] = useState<GameEnd | null>(null);
   const [engineError, setEngineError] = useState<string | null>(null);
+
+  // The finished game, frozen. Held apart from the live board so a retry sends
+  // the game that ended rather than whatever a rematch has since played.
+  const [savePayload, setSavePayload] = useState<SaveGamePayload | null>(null);
+  const [saveState, setSaveState] = useState<SaveState>({ status: "idle" });
 
   // Bumped whenever the game the engine was asked about stops being the game on
   // the board. A search already in flight cannot be cancelled (see
@@ -88,11 +102,24 @@ export default function PlayPage() {
   // engine and hand the player a win it did not earn.
   const running = phase === "playing" && engineError === null;
 
-  const finishGame = useCallback((result: GameEnd) => {
-    generationRef.current += 1;
-    setEnd(result);
-    setPhase("over");
-  }, []);
+  const finishGame = useCallback(
+    (result: GameEnd) => {
+      generationRef.current += 1;
+      setEnd(result);
+
+      // Resigning is now reachable on move zero, and the save route rejects a
+      // zero move count by design. An empty game is simply not offered to it
+      // rather than being sent to fail: nothing was played, so nothing is saved.
+      const played = chessRef.current.history().length > 0;
+      setSavePayload(played ? buildSavePayload(chessRef.current, settings, result) : null);
+      // Set here rather than in the effect that follows: React forbids a
+      // synchronous setState from an effect body, and this is the last event
+      // handler in the chain, so the indicator is already right on first paint.
+      setSaveState(userId === null || !played ? { status: "idle" } : { status: "saving" });
+      setPhase("over");
+    },
+    [settings, userId],
+  );
 
   const handleFlag = useCallback(
     (flagged: Side) => {
@@ -100,6 +127,10 @@ export default function PlayPage() {
     },
     [finishGame, settings.side],
   );
+
+  const handleResign = useCallback(() => {
+    finishGame(describeResignation(settings.side));
+  }, [finishGame, settings.side]);
 
   const clock = useGameClock({ running, sideToMove: snapshot.turn, onFlag: handleFlag });
   const { reset: resetClock, commitMove } = clock;
@@ -115,11 +146,31 @@ export default function PlayPage() {
       setSnapshot(snapshotOf(chessRef.current));
       setEnd(null);
       setEngineError(null);
+      setSavePayload(null);
+      setSaveState({ status: "idle" });
       resetClock(TIME_CONTROLS[next.timeControl].baseSeconds);
       setPhase("playing");
     },
     [resetClock],
   );
+
+  const retrySave = useCallback((payload: SaveGamePayload) => {
+    setSaveState({ status: "saving" });
+    void saveGame(payload).then(setSaveState);
+  }, []);
+
+  // Fires once per finished game: savePayload is a fresh object per ending and
+  // userId does not change during one, so nothing else in this component can
+  // re-trigger it. A save that failed stays failed until Retry asks again.
+  //
+  // The result is applied from the promise's callback rather than awaited in the
+  // body, which is the same shape the engine effect above uses and the only one
+  // React allows an effect to set state from.
+  useEffect(() => {
+    if (savePayload === null) return;
+    if (userId === null) return;
+    void saveGame(savePayload).then(setSaveState);
+  }, [savePayload, userId]);
 
   // Shared tail of both sides' moves: stop the mover's clock, publish the new
   // position, and check whether that move ended the game.
@@ -210,10 +261,13 @@ export default function PlayPage() {
   const moveCount = Math.ceil(snapshot.moves.length / 2);
   const playerToMove = snapshot.turn === settings.side;
   const historyPanel = <MoveHistory moves={snapshot.moves} />;
-  const newGameButton = (
-    <Button className="w-full" onClick={() => setPhase("setup")}>
-      New game
-    </Button>
+  const gameActions = (
+    <div className="flex items-center gap-2">
+      {phase === "playing" ? <ResignButton onResign={handleResign} /> : null}
+      <Button className="flex-1" onClick={() => setPhase("setup")}>
+        New game
+      </Button>
+    </div>
   );
 
   return (
@@ -290,7 +344,7 @@ export default function PlayPage() {
         <MobileDrawer summary={describeLastMove(snapshot.moves)}>
           {historyPanel}
           <div className="shrink-0 border-t border-dashed border-hairline p-3">
-            {newGameButton}
+            {gameActions}
           </div>
         </MobileDrawer>
       </div>
@@ -307,7 +361,7 @@ export default function PlayPage() {
           </p>
         )}
         <div className="shrink-0 border-t border-dashed border-hairline p-3.5">
-          {newGameButton}
+          {gameActions}
         </div>
       </aside>
 
@@ -315,6 +369,9 @@ export default function PlayPage() {
         <PostGame
           end={end}
           moveCount={moveCount}
+          saveState={saveState}
+          isLoggedIn={userId !== null}
+          onRetrySave={savePayload === null ? null : () => retrySave(savePayload)}
           onRematch={() => startGame({ ...settings, side: opposite(settings.side) })}
           onNewGame={() => setPhase("setup")}
         />

@@ -1,11 +1,19 @@
 "use client";
 
+import Link from "next/link";
+
 import { Button } from "@/components/ui/Button";
 import type { GameEnd } from "@/lib/game/result";
+import type { SaveState } from "@/lib/game/save";
 
 type PostGameProps = {
   end: GameEnd;
   moveCount: number;
+  saveState: SaveState;
+  isLoggedIn: boolean;
+  // Null before there is anything to retry, which cannot happen while this
+  // screen is mounted. Typed rather than assumed.
+  onRetrySave: (() => void) | null;
   onRematch: () => void;
   onNewGame: () => void;
 };
@@ -19,9 +27,76 @@ const STATS: readonly { label: string; value: string }[] = [
   { label: "best moves", value: "--" },
 ];
 
+// The wireframe's post-game screen has no save line in it, so this borrows the
+// weight of the footnote already under the stats rather than inventing a panel.
+// One line, muted, no border: it should read as a receipt, not as a control.
+const NOTE = "mt-2 font-mono text-[10px] leading-relaxed text-muted";
+const INLINE_ACTION = "underline underline-offset-2 hover:text-ink";
+
+function SaveIndicator({
+  saveState,
+  isLoggedIn,
+  onRetrySave,
+}: Pick<PostGameProps, "saveState" | "isLoggedIn" | "onRetrySave">) {
+  // Read before the logged-out case: a session that expired mid-game leaves the
+  // user logged out holding a failed save, and the error is the better message.
+  if (saveState.status === "error") {
+    if (saveState.error === "not_authenticated") {
+      return (
+        <p className={NOTE}>
+          Session expired.{" "}
+          <Link href="/login" className={INLINE_ACTION}>
+            Log in again
+          </Link>{" "}
+          to save this game.
+        </p>
+      );
+    }
+
+    return (
+      <p className={NOTE}>
+        {saveState.error === "email_not_verified"
+          ? "Email verification required. Open the link in your inbox, then "
+          : "Save failed. "}
+        {onRetrySave === null ? null : (
+          <button type="button" onClick={onRetrySave} className={INLINE_ACTION}>
+            Retry
+          </button>
+        )}
+      </p>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <p className={NOTE}>
+        Not saved.{" "}
+        <Link href="/login" className={INLINE_ACTION}>
+          Log in
+        </Link>{" "}
+        to save games.
+      </p>
+    );
+  }
+
+  if (saveState.status === "saving") return <p className={NOTE}>Saving...</p>;
+  if (saveState.status === "saved") return <p className={NOTE}>Saved to your profile.</p>;
+
+  // Idle and logged in: the effect is about to fire. Anything here would flash.
+  return null;
+}
+
 // A modal centred over the dimmed board on desktop, a bottom sheet on mobile.
 // The board stays mounted behind it, per wireframes 03 and 03m.
-export function PostGame({ end, moveCount, onRematch, onNewGame }: PostGameProps) {
+export function PostGame({
+  end,
+  moveCount,
+  saveState,
+  isLoggedIn,
+  onRetrySave,
+  onRematch,
+  onNewGame,
+}: PostGameProps) {
   return (
     <div
       role="dialog"
@@ -53,9 +128,15 @@ export function PostGame({ end, moveCount, onRematch, onNewGame }: PostGameProps
             </div>
           ))}
         </div>
-        <p className="mt-2 font-mono text-[10px] text-muted">
-          Analysis arrives in Phase 4.
-        </p>
+        <p className={NOTE}>Analysis arrives in Phase 4.</p>
+
+        <div aria-live="polite">
+          <SaveIndicator
+            saveState={saveState}
+            isLoggedIn={isLoggedIn}
+            onRetrySave={onRetrySave}
+          />
+        </div>
 
         <div className="mt-6 flex flex-col gap-2 md:mt-8 md:flex-row md:gap-3">
           <Button variant="primary" className="flex-1 py-4" onClick={onRematch}>

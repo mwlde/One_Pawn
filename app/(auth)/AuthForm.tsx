@@ -95,14 +95,24 @@ function Field({
   );
 }
 
-export function AuthForm({ mode, returning = false }: { mode: Mode; returning?: boolean }) {
+export function AuthForm({
+  mode,
+  returning = false,
+  initialError = null,
+}: {
+  mode: Mode;
+  returning?: boolean;
+  initialError?: string | null;
+}) {
   const router = useRouter();
   const copy = COPY[mode];
   const heading = headingFor(mode, returning);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  // Seeded rather than assigned, so submitting the form clears whatever the
+  // redirect put here instead of leaving a stale banner above a fresh attempt.
+  const [error, setError] = useState<string | null>(initialError);
   const [checkInbox, setCheckInbox] = useState(false);
   const [pending, setPending] = useState(false);
 
@@ -127,7 +137,17 @@ export function AuthForm({ mode, returning = false }: { mode: Mode; returning?: 
         return;
       }
     } else {
-      const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+      // Without emailRedirectTo the confirmation link goes to the project's Site
+      // URL, which is the landing page: it has no way to spend the code it
+      // arrives with, so the account confirms but nobody gets logged in. The
+      // origin is read at click time so the same code works on localhost and in
+      // production. Both origins have to be listed under Authentication > URL
+      // Configuration > Redirect URLs or Supabase drops the parameter.
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      });
       if (signUpError) {
         setError(registerErrorMessage(signUpError.message));
         setPending(false);
@@ -161,8 +181,8 @@ export function AuthForm({ mode, returning = false }: { mode: Mode; returning?: 
         <Toggle mode={mode} />
         <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">Check your email</h1>
         <p className="mb-8 text-sm text-muted">
-          If that address can be registered, a confirmation link is on its way. Open it to finish
-          setting up your account, then log in.
+          If that address can be registered, a confirmation link is on its way. Opening it
+          finishes setting up your account and signs you in.
         </p>
         <Link
           href="/login"

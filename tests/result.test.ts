@@ -1,7 +1,7 @@
 import { Chess } from "chess.js";
 import { describe, expect, it } from "vitest";
 
-import { describeEnd, describeTimeout } from "@/lib/game/result";
+import { describeEnd, describeResignation, describeTimeout } from "@/lib/game/result";
 
 // Fool's mate. Black delivers checkmate on move two.
 function foolsMate(): Chess {
@@ -77,6 +77,24 @@ describe("describeEnd", () => {
       expect(describeEnd(chess, "white")?.outcome).toBe("draw");
       expect(describeEnd(chess, "black")?.outcome).toBe("draw");
     });
+  });
+});
+
+describe("describeResignation", () => {
+  it("is always a loss for the player who resigned", () => {
+    for (const side of ["white", "black"] as const) {
+      expect(describeResignation(side)).toMatchObject({
+        outcome: "loss",
+        headline: "You lost",
+        reason: "by resignation",
+        cause: "resignation",
+      });
+    }
+  });
+
+  it("hands the game to the other side", () => {
+    expect(describeResignation("white").winner).toBe("black");
+    expect(describeResignation("black").winner).toBe("white");
   });
 });
 

@@ -14,8 +14,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Emscripten-generated glue. Build artifact, not ours to fix.
     "public/engine.js",
-    // Exported design canvas. A vendored asset we read, not code we own.
+    // Exported design canvases. Vendored assets we read, not code we own.
     "Chess engine wireframes phase 1/**",
+    "wireframes2.0/**",
   ]),
 ]);
 

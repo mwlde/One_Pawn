@@ -99,10 +99,15 @@ export function AuthForm({
   mode,
   returning = false,
   initialError = null,
+  next = null,
 }: {
   mode: Mode;
   returning?: boolean;
   initialError?: string | null;
+  // Where to go once signed in, for someone who was bounced here from an
+  // auth-gated route. Already validated as a path on this site by the page that
+  // read it out of the URL. Null means the default destination.
+  next?: string | null;
 }) {
   const router = useRouter();
   const copy = COPY[mode];
@@ -171,7 +176,7 @@ export function AuthForm({
 
     // refresh() re-runs the server components so the nav picks up the new
     // session, rather than showing "Log in" until the next hard reload.
-    router.push("/play");
+    router.push(next ?? "/play");
     router.refresh();
   }
 

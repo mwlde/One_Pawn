@@ -19,17 +19,24 @@ type Tab = {
   href: string | null;
 };
 
-// Only Play routes anywhere this session. The other three are rendered but
-// inert rather than pointed at "coming soon" pages: a disabled tab matches the
-// wireframe's muted styling, avoids three dead-end routes, and sidesteps the
-// leave-game confirm that wireframe note F requires before navigation can pull
-// a player out of a live game. They become links when their phases land.
+// Learn and Reinforce are rendered but inert rather than pointed at "coming
+// soon" pages: a disabled tab matches the wireframe's muted styling, avoids two
+// dead-end routes, and sidesteps the leave-game confirm that wireframe note F
+// requires before navigation can pull a player out of a live game. They become
+// links when their phases land.
 const TABS: readonly Tab[] = [
   { label: "Play", href: "/play" },
   { label: "Learn", href: null },
   { label: "Reinforce", href: null },
-  { label: "Profile", href: null },
+  { label: "Profile", href: "/profile" },
 ];
+
+// A tab owns its subtree, so /profile/games/<id> keeps Profile marked as the
+// current page. The trailing slash matters: without it /profiles would match.
+function isActive(pathname: string, href: string | null): boolean {
+  if (href === null) return false;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 type NavChromeValue = {
   mobileNavHidden: boolean;
@@ -196,7 +203,7 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
           {/* Desktop carries the tabs inline; mobile gets them along the bottom. */}
           <nav aria-label="Main" className="hidden gap-7 md:flex">
             {TABS.map((tab) => (
-              <TabLabel key={tab.label} tab={tab} active={pathname === tab.href} />
+              <TabLabel key={tab.label} tab={tab} active={isActive(pathname, tab.href)} />
             ))}
           </nav>
         </div>
@@ -211,7 +218,7 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
         className={`${mobileNavHidden ? "hidden" : "grid"} order-last shrink-0 grid-cols-4 border-t border-ink text-center font-mono text-[10px] md:hidden`}
       >
         {TABS.map((tab) => {
-          const active = pathname === tab.href;
+          const active = isActive(pathname, tab.href);
           if (tab.href === null) {
             return (
               <span

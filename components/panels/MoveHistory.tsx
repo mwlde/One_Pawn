@@ -5,6 +5,12 @@ import { useEffect, useRef } from "react";
 type MoveHistoryProps = {
   // SAN, in play order, straight from chess.js history().
   moves: string[];
+  // Which ply is highlighted, as an index into `moves`. Defaults to the last
+  // move played, which is what a live game wants. The replay screen passes the
+  // ply it is currently showing instead.
+  activeIndex?: number;
+  // Supplied only where the moves are navigable. Without it they are text.
+  onSelect?: (index: number) => void;
 };
 
 type MovePair = {
@@ -26,20 +32,44 @@ function toPairs(moves: string[]): MovePair[] {
   return pairs;
 }
 
-export function MoveHistory({ moves }: MoveHistoryProps) {
+export function MoveHistory({ moves, activeIndex, onSelect }: MoveHistoryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLLIElement>(null);
 
-  // Keep the latest move in view. Without this a long game silently grows past
-  // the bottom of the panel and shows only its opening.
+  const active = activeIndex ?? moves.length - 1;
+
+  // Two behaviours, because the two callers want different things. A live game
+  // wants the bottom of the list, unconditionally, as moves append. A replay
+  // wants whichever row it is showing, which can be anywhere, and must not drag
+  // the page around when that row is already visible.
   useEffect(() => {
-    const element = scrollRef.current;
-    if (element === null) return;
-    element.scrollTop = element.scrollHeight;
-  }, [moves.length]);
+    if (activeIndex === undefined) {
+      const element = scrollRef.current;
+      if (element === null) return;
+      element.scrollTop = element.scrollHeight;
+      return;
+    }
+    activeRef.current?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, moves.length]);
 
   const pairs = toPairs(moves);
-  const lastIndex = moves.length - 1;
-  const highlight = (index: number) => (index === lastIndex ? "bg-ink px-1 text-panel" : "");
+
+  function cell(move: { san: string; index: number } | null) {
+    if (move === null) return null;
+    const highlight = move.index === active ? "bg-ink px-1 text-panel" : "";
+
+    if (onSelect === undefined) return <span className={highlight}>{move.san}</span>;
+
+    return (
+      <button
+        type="button"
+        onClick={() => onSelect(move.index)}
+        className={`text-left hover:underline ${highlight}`}
+      >
+        {move.san}
+      </button>
+    );
+  }
 
   return (
     <div
@@ -51,12 +81,16 @@ export function MoveHistory({ moves }: MoveHistoryProps) {
       ) : (
         <ol className="flex flex-col gap-[3px]">
           {pairs.map((pair) => (
-            <li key={pair.number} className="grid grid-cols-[32px_1fr_1fr] gap-x-2">
+            <li
+              key={pair.number}
+              ref={
+                pair.white.index === active || pair.black?.index === active ? activeRef : null
+              }
+              className="grid grid-cols-[32px_1fr_1fr] gap-x-2"
+            >
               <span className="text-right text-muted">{pair.number}.</span>
-              <span className={highlight(pair.white.index)}>{pair.white.san}</span>
-              <span className={pair.black === null ? "" : highlight(pair.black.index)}>
-                {pair.black?.san ?? ""}
-              </span>
+              {cell(pair.white)}
+              {cell(pair.black)}
             </li>
           ))}
         </ol>

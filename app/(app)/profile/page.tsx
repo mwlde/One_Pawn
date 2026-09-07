@@ -15,6 +15,7 @@ import {
 } from "@/lib/game/history";
 import { createClient } from "@/lib/supabase/server";
 
+import { DeleteAccount } from "./DeleteAccount";
 import { GamesList, type GameRow } from "./GamesList";
 
 export const metadata: Metadata = {
@@ -130,6 +131,13 @@ export default async function ProfilePage() {
       <div className="flex min-h-0 flex-1 flex-col px-4 py-6 md:px-10">
         <h2 className="mb-4 text-base font-semibold">Past games</h2>
         <GamesList rows={games.map(toRow)} />
+
+        {/* The address is read from the session here rather than typed into the
+            component, so the string the confirmation is checked against is the
+            one on the account. user.email is optional on Supabase's user type:
+            an account without one cannot confirm a deletion this way, so the
+            section is left out rather than shown with nothing to type. */}
+        {user.email ? <DeleteAccount email={user.email} /> : null}
       </div>
     </div>
   );

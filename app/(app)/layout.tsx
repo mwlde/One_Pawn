@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { AppFooter } from "@/components/ui/AppFooter";
 import { EngineProvider } from "@/components/EngineProvider";
 import { SessionProvider } from "@/components/SessionProvider";
 import { NavChromeProvider, TopNav } from "@/components/ui/TopNav";
@@ -29,6 +30,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           <div className="flex min-h-0 flex-1 flex-col">
             <TopNav initialEmail={user?.email ?? null} />
             <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+            {/* Hides itself on /play, where the board needs the height. The
+                mobile tab bar is order-last, so it still sits below this. */}
+            <AppFooter />
           </div>
         </NavChromeProvider>
       </SessionProvider>

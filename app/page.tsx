@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
+
+import { DeletedNotice } from "@/components/ui/DeletedNotice";
+import { SiteFooter } from "@/components/ui/SiteFooter";
 
 // The functional root page, not the marketing landing. The wireframe's hero has
 // a live puzzle demo and feature bullets beside it; both need Phase 2 content
@@ -41,6 +45,9 @@ export default function Home() {
       </header>
       <main className="flex flex-1 items-center px-6 py-16 md:px-20">
         <div className="max-w-xl">
+          <Suspense fallback={null}>
+            <DeletedNotice />
+          </Suspense>
           <h1 className="text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl">
             One Pawn
           </h1>
@@ -62,6 +69,7 @@ export default function Home() {
           </p>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

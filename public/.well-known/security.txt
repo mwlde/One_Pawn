@@ -1,0 +1,9 @@
+# Security contact information for One Pawn.
+# Format per RFC 9116. See https://securitytxt.org for the specification.
+#
+# One Pawn is a solo project in private preview. Reports are read by one
+# person, so please allow a few days for a first reply.
+
+Contact: mailto:security@mwlde.com
+Expires: 2027-09-06T00:00:00.000Z
+Preferred-Languages: en

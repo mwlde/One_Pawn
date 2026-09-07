@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest";
 import {
   isRegistrationDuplicate,
   loginErrorMessage,
+  MINIMUM_AGE,
   PASSWORD_MIN_LENGTH,
   registerErrorMessage,
+  validateAgeConfirmation,
   validateEmail,
   validatePassword,
 } from "@/lib/auth/validation";
@@ -91,5 +93,27 @@ describe("duplicate registration detection", () => {
   it("does not mistake a missing array for a duplicate", () => {
     expect(isRegistrationDuplicate(undefined)).toBe(false);
     expect(isRegistrationDuplicate(null)).toBe(false);
+  });
+});
+
+
+// The age gate is a self-declaration and the register form is the only place it
+// is enforced, so the assertion worth making is that an unticked box is refused
+// and that the refusal names the age the legal documents promise.
+describe("age confirmation", () => {
+  it("blocks registration when the box is not ticked", () => {
+    expect(validateAgeConfirmation(false)).not.toBeNull();
+  });
+
+  it("names the minimum age in the message, so the copy cannot drift from the policy", () => {
+    expect(validateAgeConfirmation(false)).toContain(String(MINIMUM_AGE));
+  });
+
+  it("allows registration once the box is ticked", () => {
+    expect(validateAgeConfirmation(true)).toBeNull();
+  });
+
+  it("requires 16, which is what the terms and privacy policy state", () => {
+    expect(MINIMUM_AGE).toBe(16);
   });
 });

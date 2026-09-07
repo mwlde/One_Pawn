@@ -5,6 +5,22 @@
 
 export const PASSWORD_MIN_LENGTH = 12;
 
+// One number, applied everywhere. The terms and the privacy policy both promise
+// 16 with no regional variation, so there is nothing to look up per visitor.
+export const MINIMUM_AGE = 16;
+
+// The registration form makes the user tick a box confirming their age. This is
+// a self-declaration, not verification: nothing here can tell whether it is
+// true. It exists so the requirement is stated before an account is made rather
+// than only in a document nobody opened, and so an underage account is a broken
+// promise rather than something One Pawn never asked about.
+export function validateAgeConfirmation(confirmed: boolean): string | null {
+  if (!confirmed) {
+    return `Confirm you are at least ${MINIMUM_AGE} years old to create an account.`;
+  }
+  return null;
+}
+
 // Length only, deliberately. Composition rules (a digit, a symbol, mixed case)
 // push people towards predictable substitutions and shorter passwords, which is
 // why NIST dropped them. Length is the requirement worth enforcing.

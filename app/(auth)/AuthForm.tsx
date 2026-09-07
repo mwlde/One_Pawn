@@ -9,8 +9,10 @@ import { markReturningVisitor } from "@/lib/auth/returning-visitor";
 import {
   isRegistrationDuplicate,
   loginErrorMessage,
+  MINIMUM_AGE,
   PASSWORD_MIN_LENGTH,
   registerErrorMessage,
+  validateAgeConfirmation,
   validateEmail,
   validatePassword,
 } from "@/lib/auth/validation";
@@ -119,13 +121,19 @@ export function AuthForm({
   // redirect put here instead of leaving a stale banner above a fresh attempt.
   const [error, setError] = useState<string | null>(initialError);
   const [checkInbox, setCheckInbox] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
-    const fieldError = validateEmail(email) ?? validatePassword(password);
+    // The age check is register-only, and runs last so a user who has filled
+    // nothing in is told about the empty fields first rather than about the box.
+    const fieldError =
+      validateEmail(email) ??
+      validatePassword(password) ??
+      (mode === "register" ? validateAgeConfirmation(ageConfirmed) : null);
     if (fieldError !== null) {
       setError(fieldError);
       return;
@@ -243,6 +251,34 @@ export function AuthForm({
             )}
           </div>
         </div>
+
+        {/* Above the button rather than below it, so it is read before the
+            button is pressed rather than found afterwards in an error. The
+            input is not disabled-until-checked: a button that does nothing
+            leaves the user guessing, whereas submitting and being told why is
+            unambiguous. */}
+        {mode === "register" && (
+          <div className="mb-6 border border-dashed border-hairline p-3.5">
+            <label htmlFor="age-confirmed" className="flex cursor-pointer items-start gap-3">
+              <input
+                id="age-confirmed"
+                name="age-confirmed"
+                type="checkbox"
+                checked={ageConfirmed}
+                onChange={(event) => setAgeConfirmed(event.target.checked)}
+                aria-describedby="age-requirement"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-ink"
+              />
+              <span className="text-[13px] leading-snug text-ink">
+                I confirm I am at least {MINIMUM_AGE} years old.{" "}
+                <span className="text-muted">(required)</span>
+              </span>
+            </label>
+            <p id="age-requirement" className="mt-2 pl-7 font-mono text-[10px] text-muted">
+              One Pawn requires users to be {MINIMUM_AGE} or older.
+            </p>
+          </div>
+        )}
 
         <button
           type="submit"

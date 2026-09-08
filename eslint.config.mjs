@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Cloudflare adapter build output and wrangler's dev scratch space.
+    // Generated bundles, not ours to fix.
+    ".open-next/**",
+    ".wrangler/**",
     // Emscripten-generated glue. Build artifact, not ours to fix.
     "public/engine.js",
     // Exported design canvases. Vendored assets we read, not code we own.

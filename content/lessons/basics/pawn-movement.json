@@ -1,0 +1,99 @@
+{
+  "id": "pawn-movement",
+  "track": "basics",
+  "title": "Pawn movement",
+  "order": 1,
+  "description": "How a pawn moves, how it captures, and what stops it. Pawns are the only piece that captures differently from how it moves, so the two rules are worth learning side by side.",
+  "steps": [
+    {
+      "id": "single-push",
+      "kind": "move",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "instruction": "You are White, at the bottom of the board. Your eight pawns stand on the second row. A pawn moves straight forward, one square at a time. Move any pawn forward one square.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Forward for White means up the board, towards Black's pieces."
+        },
+        {
+          "level": "tell",
+          "text": "Move any pawn from the second row to the third. For example, e2 to e3. Squares are named by the letter and number along the edges of the board."
+        }
+      ],
+      "explanation": "A pawn moves one square straight forward, onto an empty square. It never moves backwards or sideways. So every pawn move is permanent: once a pawn has advanced, it cannot come back.",
+      "acceptedMoves": ["a2a3", "b2b3", "c2c3", "d2d3", "e2e3", "f2f3", "g2g3", "h2h3"]
+    },
+    {
+      "id": "double-push",
+      "kind": "move",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "instruction": "A pawn that has not moved yet has one extra option. It may move two squares forward instead of one. Move any pawn forward two squares.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Only a pawn still on its starting square can do this. Right now, all eight are."
+        },
+        {
+          "level": "tell",
+          "text": "Move any pawn from the second row to the fourth. For example, e2 to e4."
+        }
+      ],
+      "explanation": "The two-square move is only available on a pawn's first move. After that, it is one square at a time. Both squares must be empty, because a pawn cannot jump over anything. This is why many games start with a two-square pawn move: it takes space in the centre in a single turn.",
+      "acceptedMoves": ["a2a4", "b2b4", "c2c4", "d2d4", "e2e4", "f2f4", "g2g4", "h2h4"]
+    },
+    {
+      "id": "diagonal-capture",
+      "kind": "move",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "instruction": "A pawn captures differently from how it moves. It captures one square diagonally forward: up and to the left, or up and to the right. The captured piece is removed and the pawn takes its square. Capture the black pawn.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Look at the white pawn in the centre. Which black piece stands one square diagonally in front of it?"
+        },
+        {
+          "level": "tell",
+          "text": "Capture with the pawn on e4, moving it to d5."
+        }
+      ],
+      "explanation": "The pawn on e4 attacks two squares: d5 and f5. A black piece stood on d5, so the pawn could capture it. A pawn cannot capture the piece straight in front of it, only the ones on its diagonals. It is the only piece in chess whose capture differs from its move.",
+      "acceptedMoves": ["e4d5"]
+    },
+    {
+      "id": "blocked-push",
+      "kind": "attempt",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "instruction": "The white pawn on e4 has a black pawn directly in front of it. Try to move it forward one square.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Use the white pawn in the centre of the board, the one facing the black pawn."
+        },
+        {
+          "level": "tell",
+          "text": "Try to move the pawn from e4 to e5."
+        }
+      ],
+      "explanation": "It cannot move. A pawn moves forward only onto an empty square, and it cannot capture straight ahead. The black pawn on e5 is stuck for the same reason. Two pawns facing each other like this stay blocked until one of them captures diagonally, or another piece removes one of them.",
+      "attemptedMove": "e4e5"
+    },
+    {
+      "id": "blocked-but-capture",
+      "kind": "move",
+      "fen": "rnbqkbnr/ppp2ppp/8/3pp3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+      "instruction": "The pawn on e4 is blocked again. It still has one legal move. Find it.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Forward is closed. Check the two squares a pawn captures on."
+        },
+        {
+          "level": "tell",
+          "text": "Capture the black pawn on d5 with the pawn on e4."
+        }
+      ],
+      "explanation": "Blocked in front does not mean stuck. The pawn on e5 stops the pawn moving forward, but d5 is one of the squares it attacks, and a black pawn stood there. When you look at a pawn, check three squares: the one in front, and the two diagonals.",
+      "acceptedMoves": ["e4d5"]
+    }
+  ]
+}

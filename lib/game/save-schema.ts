@@ -11,7 +11,7 @@ import { DIFFICULTY_DEPTHS, type TimeControlId } from "./settings";
 // not to help the client, which controls this data: it is to keep the accepted
 // set exactly as wide as the app's own options and no wider.
 const ALLOWED_DEPTHS: readonly number[] = Object.values(DIFFICULTY_DEPTHS);
-const ALLOWED_TIME_CONTROLS = ["1+0", "3+2", "10+0"] as const satisfies readonly TimeControlId[];
+const ALLOWED_TIME_CONTROLS = ["1+0", "3+2", "5+3", "10+0", "15+10"] as const satisfies readonly TimeControlId[];
 
 export const saveGameSchema = z.object({
   pgn: z.string().min(1).max(10_000),

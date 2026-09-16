@@ -6,7 +6,7 @@ export type Side = "white" | "black";
 
 export type Difficulty = "easy" | "medium" | "hard";
 
-export type TimeControlId = "1+0" | "3+2" | "10+0";
+export type TimeControlId = "1+0" | "3+2" | "5+3" | "10+0" | "15+10";
 
 export type TimeControl = {
   id: TimeControlId;
@@ -48,10 +48,12 @@ export const DIFFICULTIES: readonly Difficulty[] = ["easy", "medium", "hard"];
 export const TIME_CONTROLS: Record<TimeControlId, TimeControl> = {
   "1+0": { id: "1+0", label: "1+0", baseSeconds: 60, incrementSeconds: 0 },
   "3+2": { id: "3+2", label: "3+2", baseSeconds: 180, incrementSeconds: 2 },
+  "5+3": { id: "5+3", label: "5+3", baseSeconds: 300, incrementSeconds: 3 },
   "10+0": { id: "10+0", label: "10+0", baseSeconds: 600, incrementSeconds: 0 },
+  "15+10": { id: "15+10", label: "15+10", baseSeconds: 900, incrementSeconds: 10 },
 };
 
-export const TIME_CONTROL_IDS: readonly TimeControlId[] = ["1+0", "3+2", "10+0"];
+export const TIME_CONTROL_IDS: readonly TimeControlId[] = ["1+0", "3+2", "5+3", "10+0", "15+10"];
 
 export const DEFAULT_SETTINGS: GameSettings = {
   side: "white",

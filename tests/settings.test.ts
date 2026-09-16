@@ -20,7 +20,7 @@ describe("difficulty", () => {
   });
 
   // Depth 7 and 8 take over 45 seconds per move in a middlegame, which is
-  // longer than any of the three time controls allows. See the note on
+  // longer than any of the time controls allows. See the note on
   // DIFFICULTY_DEPTHS before raising this.
   it("keeps every depth inside what the engine can answer in time", () => {
     for (const difficulty of DIFFICULTIES) {
@@ -45,6 +45,18 @@ describe("time controls", () => {
     expect(TIME_CONTROLS["1+0"]).toMatchObject({ baseSeconds: 60, incrementSeconds: 0 });
     expect(TIME_CONTROLS["3+2"]).toMatchObject({ baseSeconds: 180, incrementSeconds: 2 });
     expect(TIME_CONTROLS["10+0"]).toMatchObject({ baseSeconds: 600, incrementSeconds: 0 });
+  });
+
+  it("gives 5+3 five minutes and a three-second increment", () => {
+    expect(TIME_CONTROLS["5+3"]).toMatchObject({ baseSeconds: 300, incrementSeconds: 3 });
+  });
+
+  it("gives 15+10 fifteen minutes and a ten-second increment", () => {
+    expect(TIME_CONTROLS["15+10"]).toMatchObject({ baseSeconds: 900, incrementSeconds: 10 });
+  });
+
+  it("offers the controls in ascending order of base time", () => {
+    expect(TIME_CONTROL_IDS).toEqual(["1+0", "3+2", "5+3", "10+0", "15+10"]);
   });
 
   it("lists every id it defines", () => {

@@ -16,10 +16,9 @@
 // compare exactly, which matters when a search rejects a line because one score
 // is one point worse than another.
 //
-// This is the A3.1 version and it counts material only. It exists so that A3.2
-// has something to call at leaf nodes. Piece-square tables, mobility, king
-// safety and pawn structure are Stage A4, and the signature does not change
-// when they arrive.
+// Two terms: material, and piece-square tables that score where each piece
+// stands. Mobility, king safety and pawn structure are not part of it, and the
+// signature does not change if they arrive.
 
 // Scores the position from the perspective of the side to move.
 //

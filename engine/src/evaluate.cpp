@@ -4,9 +4,11 @@
 
 namespace {
 
-// Centipawn values, indexed by PieceType. The array order matches the enum's
-// declaration order (Pawn, Knight, Bishop, Rook, Queen, King), so the cast
-// below is a direct index rather than a six-branch switch.
+// Centipawn values, one named constant each, gathered into an array indexed by
+// PieceType. The array order matches the enum's declaration order (Pawn,
+// Knight, Bishop, Rook, Queen, King), so the cast below is a direct index
+// rather than a six-branch switch. Reorder the array and that breaks silently,
+// which is why the entries are named rather than written as bare numbers.
 //
 // These are the classic values, near enough universal across engines. The
 // knight and bishop are not both 300: the bishop gets a token ten points so
@@ -19,7 +21,15 @@ namespace {
 // legal position. Giving it a large number is a common trick in engines that
 // detect mate by material, and this one does not: the search detects mate from
 // an empty move list. A non-zero king would only be an invitation to overflow.
-constexpr std::array<int, 6> PIECE_VALUES = {100, 320, 330, 500, 900, 0};
+constexpr int PAWN_VALUE = 100;
+constexpr int KNIGHT_VALUE = 320;
+constexpr int BISHOP_VALUE = 330;
+constexpr int ROOK_VALUE = 500;
+constexpr int QUEEN_VALUE = 900;
+constexpr int KING_VALUE = 0;
+
+constexpr std::array<int, 6> PIECE_VALUES = {PAWN_VALUE, KNIGHT_VALUE, BISHOP_VALUE,
+                                             ROOK_VALUE, QUEEN_VALUE,  KING_VALUE};
 
 // Piece-square tables: a centipawn bonus for each piece type on each square.
 //

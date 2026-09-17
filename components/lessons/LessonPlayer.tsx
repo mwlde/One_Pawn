@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { GameBoard } from "@/components/board/GameBoard";
+import { useSessionUserId } from "@/components/SessionProvider";
 import { Button } from "@/components/ui/Button";
 import { judgeMove } from "@/lib/lessons/judge-move";
+import {
+  buildProgressPayload,
+  saveProgress,
+  type ProgressSaveState,
+  type SaveProgressPayload,
+} from "@/lib/lessons/progress";
 import type { Hint, Lesson } from "@/lib/lessons/types";
 
 type LessonPlayerProps = {
@@ -63,6 +70,21 @@ const BOARD_SIZE = "min(100%, calc(100dvh - 14rem))";
 
 export function LessonPlayer({ lesson }: LessonPlayerProps) {
   const [run, setRun] = useState<Run>(() => startRun(lesson));
+
+  // From the SessionProvider the (app) layout already mounts, seeded with the
+  // user the layout read on the server. The page could read the session itself
+  // and pass it down, but that is a second getUser call for a value the shell
+  // already holds, and the play screen reads it the same way.
+  const userId = useSessionUserId();
+
+  // Kept outside Run on purpose. Restart must clear the run, but the save
+  // belongs to the run that finished, not to the one starting.
+  const [savePayload, setSavePayload] = useState<SaveProgressPayload | null>(null);
+  const [saveState, setSaveState] = useState<ProgressSaveState>({ status: "idle" });
+  // The payload whose answer is still wanted. A save that resolves after
+  // Restart, or after a retry replaced it, compares unequal and is dropped
+  // rather than overwriting a newer state.
+  const pendingPayloadRef = useRef<SaveProgressPayload | null>(null);
 
   const step = lesson.steps[run.stepIndex];
   // Attempt steps may have no hints; an empty list hides the button.
@@ -133,9 +155,31 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
     }));
   }
 
+  // Called straight from the Finish and Retry clicks. The play screen needs an
+  // effect for this because a game can end on a clock tick; a lesson only ends
+  // on a click, so the request can start in the handler itself.
+  function startSave(payload: SaveProgressPayload) {
+    pendingPayloadRef.current = payload;
+    setSavePayload(payload);
+    setSaveState({ status: "saving" });
+    void saveProgress(payload).then((result) => {
+      if (pendingPayloadRef.current === payload) setSaveState(result);
+    });
+  }
+
+  function restart() {
+    pendingPayloadRef.current = null;
+    setSavePayload(null);
+    setSaveState({ status: "idle" });
+    setRun(startRun(lesson));
+  }
+
   function next() {
     if (isLastStep) {
       setRun((current) => ({ ...current, finished: true }));
+      // The completion screen renders at once; the save line fills in when
+      // the request resolves.
+      if (userId !== null) startSave(buildProgressPayload(lesson, run));
       return;
     }
 
@@ -158,7 +202,10 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
         title={lesson.title}
         mistakes={run.mistakes}
         usedHints={run.usedHints}
-        onRestart={() => setRun(startRun(lesson))}
+        saveState={saveState}
+        isLoggedIn={userId !== null}
+        onRetrySave={savePayload === null ? null : () => startSave(savePayload)}
+        onRestart={restart}
       />
     );
   }
@@ -239,11 +286,81 @@ type LessonCompleteProps = {
   title: string;
   mistakes: number;
   usedHints: boolean;
+  saveState: ProgressSaveState;
+  isLoggedIn: boolean;
+  // Null when nothing was sent, which is the logged-out case.
+  onRetrySave: (() => void) | null;
   onRestart: () => void;
 };
 
+// Same weight and styling as the save line on the post-game screen: a receipt,
+// not a control.
+const NOTE = "mt-2 font-mono text-[10px] leading-relaxed text-muted";
+const INLINE_ACTION = "underline underline-offset-2 hover:text-ink";
+
+function SaveIndicator({
+  saveState,
+  isLoggedIn,
+  onRetrySave,
+}: Pick<LessonCompleteProps, "saveState" | "isLoggedIn" | "onRetrySave">) {
+  // Error first, as on the post-game screen: a session that expired during the
+  // lesson leaves the user logged out holding a failed save, and the error is
+  // the more useful message.
+  if (saveState.status === "error") {
+    if (saveState.error === "not_authenticated") {
+      return (
+        <p className={NOTE}>
+          Session expired.{" "}
+          <Link href="/login" className={INLINE_ACTION}>
+            Log in again
+          </Link>{" "}
+          to track your progress.
+        </p>
+      );
+    }
+
+    return (
+      <p className={NOTE}>
+        {saveState.error === "email_not_verified"
+          ? "Email verification required. Open the link in your inbox, then "
+          : "Save failed. "}
+        {onRetrySave === null ? null : (
+          <button type="button" onClick={onRetrySave} className={INLINE_ACTION}>
+            Retry
+          </button>
+        )}
+      </p>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <p className={NOTE}>
+        Progress not saved.{" "}
+        <Link href="/login" className={INLINE_ACTION}>
+          Log in
+        </Link>{" "}
+        to track your progress.
+      </p>
+    );
+  }
+
+  if (saveState.status === "saving") return <p className={NOTE}>Saving...</p>;
+  if (saveState.status === "saved") return <p className={NOTE}>Progress saved to your profile.</p>;
+
+  return null;
+}
+
 // Facts about the run and two ways out. No praise: the numbers say how it went.
-function LessonComplete({ title, mistakes, usedHints, onRestart }: LessonCompleteProps) {
+function LessonComplete({
+  title,
+  mistakes,
+  usedHints,
+  saveState,
+  isLoggedIn,
+  onRetrySave,
+  onRestart,
+}: LessonCompleteProps) {
   return (
     <div className="flex flex-1 items-center justify-center p-4">
       <div className="w-full max-w-sm border border-ink bg-panel p-6">
@@ -260,6 +377,10 @@ function LessonComplete({ title, mistakes, usedHints, onRestart }: LessonComplet
             <dd>{usedHints ? "yes" : "no"}</dd>
           </div>
         </dl>
+
+        <div aria-live="polite">
+          <SaveIndicator saveState={saveState} isLoggedIn={isLoggedIn} onRetrySave={onRetrySave} />
+        </div>
 
         <div className="mt-6 flex flex-col gap-2">
           {/* /learn does not exist until Learn navigation lands; a 404 is

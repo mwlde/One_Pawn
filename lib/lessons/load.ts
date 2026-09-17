@@ -61,11 +61,16 @@ const LESSON_FILES: Record<string, unknown> = {
   "pawn-movement": pawnMovement,
 };
 
+// Whether the app ships a lesson with this id, without loading or validating it.
+export function isLessonId(id: string): boolean {
+  return Object.hasOwn(LESSON_FILES, id);
+}
+
 // Null means no lesson has that id. A lesson that exists but is malformed
 // throws instead: that is an authoring error, and it should fail loudly rather
 // than look like a missing page.
 export function loadLesson(id: string): Lesson | null {
-  if (!Object.hasOwn(LESSON_FILES, id)) return null;
+  if (!isLessonId(id)) return null;
 
   const parsed = lessonSchema.safeParse(LESSON_FILES[id]);
   if (!parsed.success) {

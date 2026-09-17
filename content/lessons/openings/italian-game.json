@@ -1,0 +1,65 @@
+{
+  "id": "italian-game",
+  "track": "openings",
+  "title": "The Italian Game",
+  "order": 1,
+  "description": "The first three moves of one of the oldest openings in chess. Each move has a job: take the centre, develop with a threat, and aim at Black's weakest square.",
+  "steps": [
+    {
+      "id": "centre-pawn",
+      "kind": "move",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "instruction": "You are White. An opening is a plan for the first few moves: bring your pieces out and fight for the centre. Start by moving the pawn in front of your king two squares forward.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Your king stands on e1. The pawn you want is directly in front of it."
+        },
+        {
+          "level": "tell",
+          "text": "Move the pawn from e2 to e4."
+        }
+      ],
+      "explanation": "This move is written 1.e4: move one, pawn to e4. The pawn takes a central square and attacks d5 and f5. It also opens lines for your queen and for the bishop on f1, so both can come out later. Black answers 1...e5 and claims an equal share of the centre.",
+      "acceptedMoves": ["e2e4"],
+      "opponentReply": "e7e5"
+    },
+    {
+      "id": "knight-attacks-e5",
+      "kind": "move",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+      "instruction": "Black has mirrored your move. Develop a knight to a square where it attacks the black pawn on e5.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "A knight moves in an L-shape. Of the squares your knights can reach, which one is an L-shape away from e5?"
+        },
+        {
+          "level": "tell",
+          "text": "Move the knight from g1 to f3."
+        }
+      ],
+      "explanation": "2.Nf3 does two jobs in one move. It brings a piece into play, and it threatens to win the pawn on e5. Black has to answer the threat, so White sets the pace. Black defends with 2...Nc6, which protects e5 and develops a knight of its own.",
+      "acceptedMoves": ["g1f3"],
+      "opponentReply": "b8c6"
+    },
+    {
+      "id": "bishop-to-c4",
+      "kind": "move",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "instruction": "Now develop the bishop on f1. Put it on the square where it aims at f7, the weakest point in Black's position.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "f7 is weak because only Black's king defends it. Follow the diagonal from f7 back towards your side of the board."
+        },
+        {
+          "level": "tell",
+          "text": "Move the bishop from f1 to c4."
+        }
+      ],
+      "explanation": "3.Bc4 is the move that makes this the Italian Game. The bishop points straight at f7, and your king is one move away from castling. In three moves White has taken central space, developed two pieces and put pressure on Black's weakest square. Those are the aims of almost every opening. Black's two main replies are 3...Bc5, placing its bishop the same way, and 3...Nf6, attacking your pawn on e4.",
+      "acceptedMoves": ["f1c4"]
+    }
+  ]
+}

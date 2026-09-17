@@ -5,6 +5,9 @@
 import { z } from "zod";
 
 import pawnMovement from "@/content/lessons/basics/pawn-movement.json";
+import opposition from "@/content/lessons/endgames/opposition.json";
+import italianGame from "@/content/lessons/openings/italian-game.json";
+import knightFork from "@/content/lessons/tactics/knight-fork.json";
 
 import { TRACKS, type Lesson, type Track } from "./types";
 
@@ -60,6 +63,9 @@ const lessonSchema: z.ZodType<Lesson> = z.object({
 // loadTrackLessons below.
 const LESSON_FILES: Record<string, unknown> = {
   "pawn-movement": pawnMovement,
+  "italian-game": italianGame,
+  "knight-fork": knightFork,
+  opposition,
 };
 
 // Whether the app ships a lesson with this id, without loading or validating it.

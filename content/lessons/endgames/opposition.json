@@ -1,0 +1,66 @@
+{
+  "id": "opposition",
+  "track": "endgames",
+  "title": "The opposition",
+  "order": 1,
+  "description": "In king and pawn endgames the kings fight for space, and the opposition decides which one gives way. It is often the difference between a promoted pawn and a draw.",
+  "steps": [
+    {
+      "id": "take-the-opposition",
+      "kind": "move",
+      "fen": "8/8/4k3/8/3K4/4P3/8/8 w - - 0 1",
+      "instruction": "Two kings can never stand next to each other, so each king keeps the other off the squares around it. When the kings face each other on a line with one empty square between them, they are in opposition. The side that has to move next must give way. White to move. Place your king so that Black's king has to give way.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Leave the pawn where it is for now. Look for a square where your king faces Black's king with one empty square between them."
+        },
+        {
+          "level": "tell",
+          "text": "Move your king from d4 to e4."
+        }
+      ],
+      "explanation": "Ke4 takes the opposition. Black cannot come forward, because d5, e5 and f5 are all next to your king. So Black has to step aside or back. Black went to d6, which lets your king walk forward on the other side, towards f5 and f6. Pushing the pawn first would have been a mistake: after e4, Black's king takes the opposition instead, and the game is a draw.",
+      "acceptedMoves": ["d4e4"],
+      "opponentReply": "e6d6"
+    },
+    {
+      "id": "opposition-again",
+      "kind": "move",
+      "fen": "8/4k3/8/5K2/4P3/8/8/8 w - - 0 1",
+      "instruction": "Later in the same endgame. The pawn has reached e4 and your king is on f5. Black's king is back on e7, guarding the squares in front of the pawn. Take the opposition again.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Black's king is on the e-file. Put yours on the same file, with one empty square between them."
+        },
+        {
+          "level": "tell",
+          "text": "Move your king from f5 to e5."
+        }
+      ],
+      "explanation": "Ke5 takes the opposition again, and Black has to give ground once more. Black stepped to d7, so your king goes the other way, to f6. That is the whole method. Each time Black gives way, your king advances on the other side. The pawn stays behind and waits, and moves only once the king has cleared its path.",
+      "acceptedMoves": ["f5e5"],
+      "opponentReply": "e7d7"
+    },
+    {
+      "id": "final-opposition",
+      "kind": "move",
+      "fen": "4k3/8/5K2/4P3/8/8/8/8 w - - 0 1",
+      "instruction": "Near the end of the same endgame. Black's king has reached e8, directly in front of your pawn. Take the opposition one last time.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Pushing the pawn to e6 now lets Black hold the draw. Your king has a better move."
+        },
+        {
+          "level": "tell",
+          "text": "Move your king from f6 to e6."
+        }
+      ],
+      "explanation": "Ke6 takes the opposition, and Black must step aside to d8 or f8. Black chose d8, so your king goes to f7 and takes control of e7 and e8. The pawn then walks to e8 and becomes a queen, and Black cannot stop it. The pattern held from start to finish: take the opposition, make Black give ground, step forward on the other side. With the king in front and the pawn behind, a single pawn is enough to win.",
+      "acceptedMoves": ["f6e6"],
+      "opponentReply": "e8d8"
+    }
+  ]
+}

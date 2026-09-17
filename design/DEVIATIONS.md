@@ -292,3 +292,40 @@ Recorded so they are not rediscovered as new.
   no colour, so the labels keep react-chessboard's default, which does not
   suit the wireframe's tint. The board is shared, so the play, replay and
   lesson screens are all affected.
+
+---
+
+## Learn mode future enhancements
+
+Recorded: 2026-09-17, Phase 2 session 2E.
+
+Board features the lessons would use but the build does not have. Not
+scheduled. Recorded so they are not forgotten.
+
+All four are shared infrastructure with the Phase 4 analysis view, which needs
+the same marks on the same board to show best moves, threats and mistakes. They
+should be designed once, in `components/board/GameBoard.tsx`, and used by both.
+react-chessboard already supports square styles, arrows and a custom square
+renderer, so none of them needs a new dependency.
+
+- **Square highlighting.** Mark squares on the board: the square a hint points
+  at, the last move played, the squares a piece attacks. In 2E, the opponent's
+  scripted reply is only visible as a slide animation, and nothing marks it
+  afterwards. The opposition lesson would also be clearer with the kings' shared
+  line and the one square between them marked.
+- **Piece highlighting.** Mark specific pieces, not squares. The knight fork
+  lesson names the forked king and queen in words, and on a dense board at
+  375px they are hard to spot. Marking both targets is the core of teaching a
+  fork visually.
+- **Arrow overlays.** Draw arrows from content, not by the user. A fork is two
+  arrows from one piece. Analysis needs the same thing for "best move" and
+  "threat". The board currently sets `allowDrawingArrows: false`, and content
+  arrows are a separate feature from letting the user draw their own.
+- **On-board annotations.** Short labels or symbols on squares, such as "key
+  square" markers in endgames or `!` and `?` beside a move. Analysis will need
+  move quality marks in the same place.
+
+**For the revision.** Draw how each looks in the wireframe's visual language,
+in both lesson and analysis contexts, before either is built. Lessons would
+also need a schema field to say which marks a step shows, which is a schema
+change to design in its own session.

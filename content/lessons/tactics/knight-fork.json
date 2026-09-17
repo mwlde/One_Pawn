@@ -1,0 +1,66 @@
+{
+  "id": "knight-fork",
+  "track": "tactics",
+  "title": "The knight fork",
+  "order": 1,
+  "description": "A fork is one piece attacking two enemy pieces at once. Your opponent can save only one of them. Knights are especially good at forks, because their attack jumps over everything and cannot be blocked.",
+  "steps": [
+    {
+      "id": "royal-fork",
+      "kind": "move",
+      "fen": "r1q2rk1/pb1n1ppp/1p1p4/3N4/4P3/3B4/PPPQ1PPP/R4RK1 w - - 0 16",
+      "instruction": "A fork is one piece attacking two enemy pieces at once. Your opponent has one move per turn, so they can rescue only one of them. White to move. Find the knight move that attacks Black's king and queen at the same time.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "The king is on g8 and the queen is on c8. You need one square that is a knight's jump from both."
+        },
+        {
+          "level": "tell",
+          "text": "Move the knight from d5 to e7. From there it checks the king and attacks the queen."
+        }
+      ],
+      "explanation": "Ne7 attacks g8 and c8 at once. Because one target is the king, the move is also check, and check must be answered before anything else. No black piece covers e7, so the knight cannot be captured. A knight's check cannot be blocked either. Black's only legal move is Kh8, and the queen stays where it is, still attacked.",
+      "acceptedMoves": ["d5e7"],
+      "opponentReply": "g8h8"
+    },
+    {
+      "id": "collect-the-queen",
+      "kind": "move",
+      "fen": "r1q2r1k/pb1nNppp/1p1p4/8/4P3/3B4/PPPQ1PPP/R4RK1 w - - 2 17",
+      "instruction": "Black's king has stepped out of check. Now take what the fork won.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Your knight on e7 is still attacking something valuable."
+        },
+        {
+          "level": "tell",
+          "text": "Capture the queen: move the knight from e7 to c8."
+        }
+      ],
+      "explanation": "Black recaptures with the rook, so you traded a knight for a queen. A knight is worth about three pawns and a queen about nine, so the trade gains you roughly six pawns of material. That is why a fork works: two attacked pieces need two moves to rescue, and your opponent only gets one. A fork with check is the strongest kind, because the check takes away even the choice of which piece to save.",
+      "acceptedMoves": ["e7c8"],
+      "opponentReply": "a8c8"
+    },
+    {
+      "id": "fork-on-f7",
+      "kind": "move",
+      "fen": "r1bqk2r/ppp1bppp/2np1n2/4p1N1/2B1P3/3P4/PPP2PPP/RNBQ1RK1 w kq - 0 7",
+      "instruction": "A new position. Forks do not always come with check. White to move. Find the knight move that attacks two black pieces, each worth more than your knight.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Black's queen is on d8 and a rook is on h8. Look for a square a knight's jump from both, then check whether Black could simply capture the knight there."
+        },
+        {
+          "level": "tell",
+          "text": "Capture the pawn on f7 with the knight from g5. Your bishop on c4 protects it there."
+        }
+      ],
+      "explanation": "Nxf7 wins a pawn and attacks the queen and the rook together. Black's king stands next to the knight but cannot take it, because the bishop on c4 guards f7. A fork only works if the forking piece is safe, or if losing it still costs the opponent more. Without check, Black gets to choose which piece to save, and saves the queen with Qd7. Next move, your knight takes the rook on h8.",
+      "acceptedMoves": ["g5f7"],
+      "opponentReply": "d8d7"
+    }
+  ]
+}

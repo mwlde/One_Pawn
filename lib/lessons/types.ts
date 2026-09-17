@@ -2,6 +2,8 @@
 // code that plays them. Lessons are static content: nothing here is written by
 // users, and nothing here changes at runtime.
 
+import type { Side } from "@/lib/game/settings";
+
 export type Track = "basics" | "openings" | "tactics" | "endgames";
 
 // Also the folder names under content/lessons/, so a lesson's track must match
@@ -29,6 +31,10 @@ type StepBase = {
   // Steps can then be replayed or reordered alone, and a step never depends on
   // which of several accepted moves the user played before it.
   fen: string;
+  // Which side sits at the bottom of the board. Omitted, the step inherits the
+  // lesson's orientation, which is the side to move in its first step. Set it
+  // only in a lesson that deliberately switches sides.
+  orientation?: Side;
   instruction: string;
   // Shown once the step is done. Says why, not just that.
   explanation: string;
@@ -52,10 +58,11 @@ export type MoveStep = StepBase & {
 // that it fails. Kept as its own kind so that an illegal move in acceptedMoves
 // stays a content error a check can catch, instead of silently becoming this.
 //
-// attemptedMove is illegal in the step's position, so chess.js rejects it
-// before any lesson logic sees it. The player must therefore treat two inputs
-// as the same trigger for the explanation: input that matches attemptedMove,
-// and any input chess.js rejects. Only a legal move counts as a mistake here.
+// attemptedMove is illegal in the step's position, so the player compares the
+// dragged from and to squares with it before asking chess.js anything. Only an
+// exact match shows the explanation. Any other input, illegal or legal, gets
+// the generic feedback and counts as a mistake. A wider trigger would show an
+// explanation about one piece to a user who moved a different one.
 export type AttemptStep = StepBase & {
   kind: "attempt";
   attemptedMove: UciMove;
@@ -86,7 +93,7 @@ export type LessonCompletion = {
   // ISO 8601, as it arrives from Supabase.
   completedAt: string;
   usedHints: boolean;
-  // Wrong moves played across all steps. On an attempt step, only a legal move
-  // counts, because any illegal one completes the step.
+  // Wrong moves played across all steps. On an attempt step, anything other
+  // than attemptedMove counts.
   mistakeCount: number;
 };

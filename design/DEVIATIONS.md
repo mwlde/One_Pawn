@@ -219,3 +219,18 @@ described the landing page as the minimal version.
 - **The mobile drawer opens to one fixed height** rather than being freely
   draggable, and opens instantly. Stage D takes no animations beyond
   react-chessboard's own.
+
+---
+
+## Known issues
+
+Visual defects in the build, not intended departures from the wireframes.
+Recorded so they are not rediscovered as new.
+
+- **Some rank numbers are unreadable on dark squares.** Recorded 2026-09-17,
+  Phase 2 session 2B. On the board, the rank labels drawn on the tint squares
+  (7, 5, 3 with White at the bottom) barely show against the square colour.
+  `NOTATION_STYLE` in `components/board/GameBoard.tsx` sets font and size but
+  no colour, so the labels keep react-chessboard's default, which does not
+  suit the wireframe's tint. The board is shared, so the play, replay and
+  lesson screens are all affected.

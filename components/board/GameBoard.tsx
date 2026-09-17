@@ -12,6 +12,9 @@ type GameBoardProps = {
   // what the engine's turn and a finished game both want.
   movableColor: "w" | "b" | null;
   onDrop: (from: string, to: string) => boolean;
+  // Whether a position change slides the pieces. Off for a jump to an unrelated
+  // position, where sliding would act out moves nobody played.
+  animate?: boolean;
 };
 
 // Square corners and the wireframe's two board tones. react-chessboard sizes
@@ -21,7 +24,7 @@ const LIGHT_SQUARE_STYLE = { backgroundColor: "var(--color-surface)" };
 const DARK_SQUARE_STYLE = { backgroundColor: "var(--color-tint)" };
 const NOTATION_STYLE = { fontFamily: "var(--font-mono)", fontSize: "9px" };
 
-export function GameBoard({ fen, orientation, movableColor, onDrop }: GameBoardProps) {
+export function GameBoard({ fen, orientation, movableColor, onDrop, animate = true }: GameBoardProps) {
   const options = useMemo(
     () => ({
       id: "game-board",
@@ -29,6 +32,7 @@ export function GameBoard({ fen, orientation, movableColor, onDrop }: GameBoardP
       boardOrientation: orientation,
       allowDragging: movableColor !== null,
       allowDrawingArrows: false,
+      showAnimations: animate,
       showNotation: true,
       boardStyle: BOARD_STYLE,
       lightSquareStyle: LIGHT_SQUARE_STYLE,
@@ -47,7 +51,7 @@ export function GameBoard({ fen, orientation, movableColor, onDrop }: GameBoardP
         targetSquare: string | null;
       }) => (targetSquare === null ? false : onDrop(sourceSquare, targetSquare)),
     }),
-    [fen, orientation, movableColor, onDrop],
+    [fen, orientation, movableColor, onDrop, animate],
   );
 
   return <Chessboard options={options} />;

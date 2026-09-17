@@ -198,10 +198,68 @@ described the landing page as the minimal version.
 
 ---
 
+## 12. Learn hub: four tracks as 05b rows
+
+Recorded: 2026-09-17, Phase 2 session 2D.
+
+**Deviation.** No wireframe draws a hub of the four tracks. Screen 05 is the
+in-lesson view, and 05b is a library of many opening tracks with search,
+filters and sort.
+
+**Why.** Phase 2 has four fixed tracks (basics, openings, tactics, endgames) and
+one lesson in total. A library with filters would have nothing to filter.
+
+**Built.** `/learn` lists the four tracks using 05b's row exactly: board
+thumbnail, title, a line of description in place of the meta line, progress
+bar with "X / Y complete", and Start, Resume or Review. The filter column,
+search, sort, grid toggle and the NEW and IN PROGRESS tags are left out. A track
+with no lessons is drawn at half opacity with a COMING SOON tag, the treatment
+05b gives LOCKED, and is still a link. Logged out, or when progress fails to
+load, the progress column shows the lesson count instead of "0 / Y", which
+would state a fact about the user that is not known.
+
+**For the revision.** Draw the hub. Decide whether it grows into 05b's library
+once a track holds enough lessons to need filtering, or stays a short list of
+tracks that each open onto their own lessons.
+
+---
+
+## 13. Track page: screen 05's track list as a page of its own
+
+Recorded: 2026-09-17, Phase 2 session 2D.
+
+**Deviation.** Screen 05 draws the track list as a sidebar beside the lesson
+board. The build gives it its own route, `/learn/[track]`, and the lesson player
+takes the whole screen.
+
+**Why.** The player shipped in 2B as a full screen and 2D is scoped to
+navigation, not to reworking the player's layout.
+
+**Built.** The sidebar's contents, top to bottom: title, description, lesson
+count (in place of "8 puzzles · ~15 min"), progress bar and "X / Y complete",
+then numbered rows with a filled ✓ once done and a muted, struck-through title,
+as drawn. Three differences:
+
+- The right column shows status ("not started", "completed", "completed · no
+  hints") where 05 shows accuracy. Accuracy is not stored; hint use is.
+- No LOCKED rows. Nothing in Phase 2 unlocks.
+- "← all tracks" sits at the top, where 05m and 05bm put their back link,
+  rather than at the foot of the column as on desktop 05.
+
+A track with no lessons shows "This track is being built. Check back soon."
+Nothing is invented to fill it.
+
+**For the revision.** Either draw the track page, or confirm that the sidebar
+arrives in a later layout pass. The lesson player has no in-page way back to its
+track (05m's "← tracks" header); only the Learn tab and the completion screen's
+"Back to lessons" link lead there.
+
+---
+
 ## Smaller deviations
 
-- **Nav tabs are disabled, not links.** Learn, Reinforce and Profile render
-  muted and inert. The wireframes show them as live tabs, with note F requiring
+- **Nav tabs are disabled, not links.** Reinforce renders muted and inert.
+  (Profile became a link in Stage E and Learn in Phase 2 session 2D.) The wireframes show them as live tabs, with note F requiring
   a "leave game?" confirm before navigation. That confirm is not built, so the
   tabs cannot yet be safely clickable mid-game.
 - **Post-game buttons are "Rematch" and "New game".** The wireframe offers "New

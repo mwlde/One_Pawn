@@ -222,11 +222,17 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
       <div className="flex min-h-0 flex-1 flex-col md:grid md:grid-cols-[1fr_340px]">
         <div className="flex justify-center p-3 md:p-5">
           <div className="aspect-square" style={{ width: BOARD_SIZE }}>
+            {/* The render that swaps in the next step's position always has
+                stepDone false, and the one that plays a correct move and any
+                opponent reply has it true. Tying animation to it slides the
+                reply but not the jump between steps, which otherwise dragged
+                pieces back across the board. */}
             <GameBoard
               fen={run.fen}
               orientation={orientation}
               movableColor={run.stepDone ? null : sideToMove}
               onDrop={handleDrop}
+              animate={run.stepDone}
             />
           </div>
         </div>
@@ -271,10 +277,15 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
             )}
           </div>
 
+          {/* Sticky on mobile, where the aside sits under the board and a
+              long explanation pushes the button below the fold. The strip
+              behind it keeps scrolled text from showing around the edges. */}
           {run.stepDone && (
-            <Button type="button" variant="primary" onClick={next} className="mt-auto self-stretch">
-              {isLastStep ? "Finish" : "Next"}
-            </Button>
+            <div className="sticky bottom-0 -mx-4 mt-auto bg-surface px-4 py-3 md:static md:mx-0 md:bg-transparent md:p-0">
+              <Button type="button" variant="primary" onClick={next} className="w-full">
+                {isLastStep ? "Finish" : "Next"}
+              </Button>
+            </div>
           )}
         </aside>
       </div>
@@ -383,8 +394,6 @@ function LessonComplete({
         </div>
 
         <div className="mt-6 flex flex-col gap-2">
-          {/* /learn does not exist until Learn navigation lands; a 404 is
-              expected for now. */}
           <Link
             href="/learn"
             className="border border-ink bg-ink px-5 py-3.5 text-center text-sm font-semibold leading-none text-panel transition-colors hover:bg-black"

@@ -19,14 +19,14 @@ type Tab = {
   href: string | null;
 };
 
-// Learn and Reinforce are rendered but inert rather than pointed at "coming
-// soon" pages: a disabled tab matches the wireframe's muted styling, avoids two
-// dead-end routes, and sidesteps the leave-game confirm that wireframe note F
-// requires before navigation can pull a player out of a live game. They become
-// links when their phases land.
+// Reinforce is rendered but inert rather than pointed at a "coming soon" page:
+// a disabled tab matches the wireframe's muted styling and avoids a dead-end
+// route. It becomes a link when Phase 3 lands. The leave-game confirm that
+// wireframe note F asks for is still not built, so on desktop Learn and Profile
+// can pull a player out of a live game; on mobile /play hides this bar.
 const TABS: readonly Tab[] = [
   { label: "Play", href: "/play" },
-  { label: "Learn", href: null },
+  { label: "Learn", href: "/learn" },
   { label: "Reinforce", href: null },
   { label: "Profile", href: "/profile" },
 ];

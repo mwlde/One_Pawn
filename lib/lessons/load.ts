@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import pawnMovement from "@/content/lessons/basics/pawn-movement.json";
 
-import { TRACKS, type Lesson } from "./types";
+import { TRACKS, type Lesson, type Track } from "./types";
 
 // A JSON import is typed by TypeScript with every string widened, so "nudge"
 // arrives as string and the file cannot be checked against Lesson at compile
@@ -55,8 +55,9 @@ const lessonSchema: z.ZodType<Lesson> = z.object({
   steps: z.tuple([step], step),
 });
 
-// Matched by id rather than discovered from the folder. Lesson discovery
-// arrives with Learn navigation; until then, a new lesson is added here by hand.
+// Matched by id rather than discovered from the folder: a new lesson is added
+// here by hand. Learn navigation lists lessons from this map too, through
+// loadTrackLessons below.
 const LESSON_FILES: Record<string, unknown> = {
   "pawn-movement": pawnMovement,
 };
@@ -83,4 +84,14 @@ export function loadLesson(id: string): Lesson | null {
   }
 
   return parsed.data;
+}
+
+// Every lesson in a track, in the order the track teaches them. Each one is
+// loaded and validated, so a malformed lesson breaks the track page loudly
+// rather than quietly dropping out of the list.
+export function loadTrackLessons(track: Track): Lesson[] {
+  return Object.keys(LESSON_FILES)
+    .map((id) => loadLesson(id))
+    .filter((lesson): lesson is Lesson => lesson !== null && lesson.track === track)
+    .sort((a, b) => a.order - b.order);
 }

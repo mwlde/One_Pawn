@@ -19,8 +19,8 @@ const eslintConfig = defineConfig([
     // Emscripten-generated glue. Build artifact, not ours to fix.
     "public/engine.js",
     // Exported design canvases. Vendored assets we read, not code we own.
-    "wireframes 1.0/**",
-    "wireframes2.0/**",
+    "design/wireframes 1.0/**",
+    "design/wireframes2.0/**",
   ]),
 ]);
 

@@ -19,7 +19,7 @@ const eslintConfig = defineConfig([
     // Emscripten-generated glue. Build artifact, not ours to fix.
     "public/engine.js",
     // Exported design canvases. Vendored assets we read, not code we own.
-    "Chess engine wireframes phase 1/**",
+    "wireframes 1.0/**",
     "wireframes2.0/**",
   ]),
 ]);

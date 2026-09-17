@@ -16,25 +16,22 @@ import { createClient } from "@/lib/supabase/client";
 
 type Tab = {
   label: string;
-  href: string | null;
+  href: string;
 };
 
-// Reinforce is rendered but inert rather than pointed at a "coming soon" page:
-// a disabled tab matches the wireframe's muted styling and avoids a dead-end
-// route. It becomes a link when Phase 3 lands. The leave-game confirm that
-// wireframe note F asks for is still not built, so on desktop Learn and Profile
-// can pull a player out of a live game; on mobile /play hides this bar.
+// The leave-game confirm that wireframe note F asks for is still not built, so
+// on desktop any tab can pull a player out of a live game; on mobile /play
+// hides this bar.
 const TABS: readonly Tab[] = [
   { label: "Play", href: "/play" },
   { label: "Learn", href: "/learn" },
-  { label: "Reinforce", href: null },
+  { label: "Reinforce", href: "/reinforce" },
   { label: "Profile", href: "/profile" },
 ];
 
 // A tab owns its subtree, so /profile/games/<id> keeps Profile marked as the
 // current page. The trailing slash matters: without it /profiles would match.
-function isActive(pathname: string, href: string | null): boolean {
-  if (href === null) return false;
+function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -166,14 +163,6 @@ function AuthControl({ initialEmail }: { initialEmail: string | null }) {
 }
 
 function TabLabel({ tab, active }: { tab: Tab; active: boolean }) {
-  if (tab.href === null) {
-    return (
-      <span aria-disabled="true" title="Coming soon" className="cursor-not-allowed text-hairline">
-        {tab.label}
-      </span>
-    );
-  }
-
   return (
     <Link
       href={tab.href}
@@ -219,17 +208,6 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
       >
         {TABS.map((tab) => {
           const active = isActive(pathname, tab.href);
-          if (tab.href === null) {
-            return (
-              <span
-                key={tab.label}
-                aria-disabled="true"
-                className="cursor-not-allowed py-3 text-hairline"
-              >
-                {tab.label}
-              </span>
-            );
-          }
           return (
             <Link
               key={tab.label}

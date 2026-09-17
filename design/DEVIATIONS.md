@@ -256,12 +256,51 @@ track (05m's "← tracks" header); only the Learn tab and the completion screen'
 
 ---
 
+## 14. Reinforce: self-graded lesson replays, and a hub page
+
+Recorded: 2026-09-17, Phase 3 session 3B.
+
+**Deviation.** Screens 08, 08b, 08e and 08m draw Reinforce as drilling opening
+lines move by move, graded automatically ("hints count as a mistake"), with
+no hub: the tab opens straight into a review. The build replays whole lessons
+from every track, the user grades each one, and the tab opens onto a hub.
+
+**Why.** Phase 3's locked decisions: reviews are full replays through the
+lesson player, and SM-2 takes a self-grade on three buttons.
+
+**Built.**
+
+- **Hub, `/reinforce`.** Not drawn as a page. Composed from the dashboard's
+  Reinforce queue card (01b): bordered rows, a "N upcoming" count, and
+  "Start review (N) →" as the primary action. Each row shows title, track, when
+  it was last reviewed and the interval.
+- **Empty states** use 08e's shell (mono label, headline, one sentence, one way
+  forward) for three cases: no graduated lessons ("No reviews yet."), nothing
+  due ("You're caught up. Next review in 6 hours."), and logged out. 08e's
+  START HERE card is left out: nothing picks a recommended lesson yet.
+- **Review, `/reinforce/review`.** The lesson player as in Learn, under a slim
+  in-page row with 08m's "← quit", 08's "last seen · interval" context, and 08's
+  "N of M" progress bar. The bar sits in the page, not the top bar, for the same
+  reason as the game chips below. Left out: 08's THIS LINE, THIS SESSION and
+  HOW THIS WORKS panels, Skip line, flip board and the "(counts as a mistake)"
+  hint label.
+- **Grade card.** Not drawn. The lesson complete card with the save line
+  replaced by Forgot / Struggled / Easy, none of them primary.
+- **Summary.** 08b, with the qualitative sentence replaced by a count per grade.
+  That sentence needs the coach.
+- **No due badge on the tab.** No wireframe draws one.
+
+**For the revision.** Redraw 08 around a lesson replay and a grade card, draw
+the hub (or decide the dashboard card replaces it), and decide whether the
+opening-line drill in 08 is still a future mode or has been cut.
+
+---
+
 ## Smaller deviations
 
-- **Nav tabs are disabled, not links.** Reinforce renders muted and inert.
-  (Profile became a link in Stage E and Learn in Phase 2 session 2D.) The wireframes show them as live tabs, with note F requiring
-  a "leave game?" confirm before navigation. That confirm is not built, so the
-  tabs cannot yet be safely clickable mid-game.
+- **No leave-game confirm on the nav tabs.** Every tab is a link as of Phase 3
+  session 3B. Note F requires a "leave game?" confirm before navigation, which
+  is not built, so on desktop a tab click leaves a live game.
 - **Post-game buttons are "Rematch" and "New game".** The wireframe offers "New
   game", "Review game" and "Share". Rematch restarts with the same settings and
   swapped colours.

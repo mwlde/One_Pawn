@@ -9,15 +9,26 @@ import { Button } from "@/components/ui/Button";
 import { judgeMove } from "@/lib/lessons/judge-move";
 import {
   buildProgressPayload,
+  finishAction,
   saveProgress,
+  type GraduationStatus,
   type ProgressSaveState,
   type SaveProgressPayload,
 } from "@/lib/lessons/progress";
 import type { Hint, Lesson } from "@/lib/lessons/types";
 
-type LessonPlayerProps = {
-  lesson: Lesson;
+// What a review screen learns about a finished run.
+export type RunResult = {
+  mistakes: number;
+  usedHints: boolean;
+  wrongMoves: readonly string[];
 };
+
+// A union rather than an optional callback, so review mode cannot be asked for
+// without saying what happens at the end.
+type LessonPlayerProps =
+  | { lesson: Lesson; mode?: "learn" }
+  | { lesson: Lesson; mode: "review"; onComplete: (result: RunResult) => void };
 
 type Feedback =
   | { tone: "explanation"; text: string }
@@ -42,6 +53,8 @@ type Run = {
   mistakes: number;
   // Sticky: one hint on any step makes the run not perfect.
   usedHints: boolean;
+  // One entry per mistake, "<step id>:<from><to>", saved for later analysis.
+  wrongMoves: string[];
   finished: boolean;
 };
 
@@ -54,6 +67,7 @@ function startRun(lesson: Lesson): Run {
     feedback: null,
     mistakes: 0,
     usedHints: false,
+    wrongMoves: [],
     finished: false,
   };
 }
@@ -68,7 +82,9 @@ const WRONG_ATTEMPT = "Not that move. This step asks you to try the move in the 
 // horizontal scrollbar.
 const BOARD_SIZE = "min(100%, calc(100dvh - 14rem))";
 
-export function LessonPlayer({ lesson }: LessonPlayerProps) {
+export function LessonPlayer(props: LessonPlayerProps) {
+  const { lesson } = props;
+  const mode = props.mode ?? "learn";
   const [run, setRun] = useState<Run>(() => startRun(lesson));
 
   // From the SessionProvider the (app) layout already mounts, seeded with the
@@ -134,6 +150,7 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
             return {
               ...current,
               mistakes: current.mistakes + 1,
+              wrongMoves: [...current.wrongMoves, `${step.id}:${from}${to}`],
               feedback: { tone: "error", text, repeats },
             };
           });
@@ -177,9 +194,20 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
   function next() {
     if (isLastStep) {
       setRun((current) => ({ ...current, finished: true }));
-      // The completion screen renders at once; the save line fills in when
-      // the request resolves.
-      if (userId !== null) startSave(buildProgressPayload(lesson, run));
+      switch (finishAction(mode, userId !== null)) {
+        case "save":
+          // The completion screen renders at once; the save line fills in when
+          // the request resolves.
+          startSave(buildProgressPayload(lesson, run));
+          break;
+        case "report":
+          if (props.mode === "review") {
+            props.onComplete({ mistakes: run.mistakes, usedHints: run.usedHints, wrongMoves: run.wrongMoves });
+          }
+          break;
+        case "none":
+          break;
+      }
       return;
     }
 
@@ -197,6 +225,8 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
   }
 
   if (run.finished) {
+    // The review screen replaces the player with its own grading card.
+    if (mode === "review") return null;
     return (
       <LessonComplete
         title={lesson.title}
@@ -309,6 +339,21 @@ type LessonCompleteProps = {
 const NOTE = "mt-2 font-mono text-[10px] leading-relaxed text-muted";
 const INLINE_ACTION = "underline underline-offset-2 hover:text-ink";
 
+// Graduation is the only way into reviews, and nothing else on the Learn screens
+// explains it, so the save line is where the rule is taught.
+function savedMessage(graduation: GraduationStatus | null): string {
+  switch (graduation) {
+    case "graduated_now":
+      return "Progress saved. You finished without hints, so this lesson now joins your reviews and will come back before you forget it.";
+    case "not_graduated":
+      return "Progress saved. Finish it again without hints to add it to your reviews.";
+    case "already_graduated":
+      return "Progress saved. This lesson is already in your reviews.";
+    case null:
+      return "Progress saved to your profile.";
+  }
+}
+
 function SaveIndicator({
   saveState,
   isLoggedIn,
@@ -357,7 +402,7 @@ function SaveIndicator({
   }
 
   if (saveState.status === "saving") return <p className={NOTE}>Saving...</p>;
-  if (saveState.status === "saved") return <p className={NOTE}>Progress saved to your profile.</p>;
+  if (saveState.status === "saved") return <p className={NOTE}>{savedMessage(saveState.graduation)}</p>;
 
   return null;
 }

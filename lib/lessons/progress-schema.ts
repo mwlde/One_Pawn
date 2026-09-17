@@ -17,4 +17,8 @@ export const saveProgressSchema = z.object({
   // to reach it, so the unwinnable retry above the ceiling (Retry resends the
   // same frozen payload) is not a case the player needs to handle.
   mistake_count: z.number().int().nonnegative().max(1000),
+  // One entry per mistake, so the same ceiling. Entries are not checked against
+  // the lesson's steps: they are a log for analysis, and nothing reads them to
+  // decide anything. The length cap bounds what a crafted request can store.
+  wrong_moves: z.array(z.string().min(1).max(200)).max(1000).optional(),
 });

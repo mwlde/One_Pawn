@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isGraduationStatus } from "@/lib/lessons/progress";
 import { saveProgressSchema } from "@/lib/lessons/progress-schema";
 import { createClient } from "@/lib/supabase/server";
 
@@ -7,7 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 // unapplied migration looks like from here.
 const TABLE_MISSING = "PGRST205";
 // The same for a function. Reachable when the table was applied without the
-// function that was added to its migration later.
+// function that was added to its migration later, or when the Phase 3
+// migrations that changed its arguments have not been applied.
 const FUNCTION_MISSING = "PGRST202";
 
 // Mirrors app/api/games/save/route.ts step for step. The comments there explain
@@ -56,16 +58,22 @@ export async function POST(request: Request) {
   // replay the function keeps the best result, so a perfect run is never
   // undone; the reasoning is in the migration. No user id or timestamp is
   // passed: the function takes auth.uid() and now() itself.
-  const { error } = await supabase.rpc("record_lesson_completion", {
+  //
+  // The same call graduates the lesson to SRS when this run used no hints, in
+  // one transaction with the progress write. See 20260917130100_srs_state.sql.
+  const { data, error } = await supabase.rpc("record_lesson_completion", {
     p_lesson_id: parsed.data.lesson_id,
     p_used_hints: parsed.data.used_hints,
     p_mistake_count: parsed.data.mistake_count,
+    // Null, not an empty array, when the client did not send it: an empty
+    // array claims a run with no wrong moves.
+    p_wrong_moves: parsed.data.wrong_moves ?? null,
   });
 
   if (error !== null) {
     if (error.code === FUNCTION_MISSING) {
       console.error(
-        "[lessons/progress] record_lesson_completion() not found. The table exists but the function does not. Apply the function from supabase/migrations/20260917120000_user_progress.sql.",
+        "[lessons/progress] record_lesson_completion(text, boolean, int, text[]) not found. Apply supabase/migrations/20260917130000_user_progress_wrong_moves.sql and 20260917130100_srs_state.sql.",
         error,
       );
     } else {
@@ -74,5 +82,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "save_failed" }, { status: 500 });
   }
 
-  return NextResponse.json({ saved: true }, { status: 200 });
+  // The progress row is written whatever this says. An unrecognised value means
+  // the function predates the srs_state migration, which returns nothing, so the
+  // save is still reported and the client shows a plain "saved".
+  const graduationStatus = isGraduationStatus(data) ? data : null;
+  if (graduationStatus === null) {
+    console.error(
+      "[lessons/progress] record_lesson_completion() returned no graduation status. Apply supabase/migrations/20260917130100_srs_state.sql.",
+      data,
+    );
+  }
+
+  return NextResponse.json({ saved: true, graduation_status: graduationStatus }, { status: 200 });
 }

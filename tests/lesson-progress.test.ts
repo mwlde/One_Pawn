@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { loadLesson } from "@/lib/lessons/load";
-import { buildProgressPayload, readProgressErrorKind, readSaved } from "@/lib/lessons/progress";
+import {
+  buildProgressPayload,
+  finishAction,
+  readGraduationStatus,
+  readProgressErrorKind,
+  readSaved,
+} from "@/lib/lessons/progress";
 import { saveProgressSchema } from "@/lib/lessons/progress-schema";
 
 const lesson = loadLesson("pawn-movement");
@@ -9,30 +15,47 @@ if (lesson === null) throw new Error("pawn-movement lesson is missing");
 
 describe("buildProgressPayload", () => {
   it("reads the run as the columns store it", () => {
-    expect(buildProgressPayload(lesson, { mistakes: 4, usedHints: true })).toEqual({
+    const wrongMoves = ["single-push:e2e5", "single-push:e2d3"];
+    expect(buildProgressPayload(lesson, { mistakes: 2, usedHints: true, wrongMoves })).toEqual({
       lesson_id: "pawn-movement",
       used_hints: true,
-      mistake_count: 4,
+      mistake_count: 2,
+      wrong_moves: ["single-push:e2e5", "single-push:e2d3"],
     });
   });
 
   it("never carries an owner or a timestamp", () => {
     // Both are the server's to set. A payload that had them would be trusting
     // the client with who and when.
-    const payload = buildProgressPayload(lesson, { mistakes: 0, usedHints: false });
+    const payload = buildProgressPayload(lesson, { mistakes: 0, usedHints: false, wrongMoves: [] });
     expect(payload).not.toHaveProperty("user_id");
     expect(payload).not.toHaveProperty("completed_at");
   });
 
   it("does not follow the run after the lesson it was built from", () => {
     // The retry-after-Restart case: the payload holds values, not the run.
-    const run = { mistakes: 2, usedHints: false };
+    const run = { mistakes: 1, usedHints: false, wrongMoves: ["single-push:e2e5"] };
     const payload = buildProgressPayload(lesson, run);
 
     run.mistakes = 0;
     run.usedHints = true;
+    run.wrongMoves.push("double-push:d2d5");
 
-    expect(payload).toMatchObject({ mistake_count: 2, used_hints: false });
+    expect(payload).toMatchObject({ mistake_count: 1, used_hints: false, wrong_moves: ["single-push:e2e5"] });
+  });
+});
+
+describe("finishAction", () => {
+  it("reports a review run to the review screen instead of saving it", () => {
+    // Logged in or not: a review is graded against srs_state, never written to
+    // user_progress as another completion.
+    expect(finishAction("review", true)).toBe("report");
+    expect(finishAction("review", false)).toBe("report");
+  });
+
+  it("saves a Learn run when there is someone to save it for", () => {
+    expect(finishAction("learn", true)).toBe("save");
+    expect(finishAction("learn", false)).toBe("none");
   });
 });
 
@@ -42,6 +65,21 @@ describe("readSaved", () => {
     expect(readSaved({ saved: "true" })).toBe(false);
     expect(readSaved({})).toBe(false);
     expect(readSaved(null)).toBe(false);
+  });
+});
+
+describe("readGraduationStatus", () => {
+  it("passes through the statuses the route sends", () => {
+    expect(readGraduationStatus({ saved: true, graduation_status: "graduated_now" })).toBe("graduated_now");
+    expect(readGraduationStatus({ saved: true, graduation_status: "not_graduated" })).toBe("not_graduated");
+    expect(readGraduationStatus({ saved: true, graduation_status: "already_graduated" })).toBe("already_graduated");
+  });
+
+  it("is null for anything else, including a route that could not say", () => {
+    expect(readGraduationStatus({ saved: true, graduation_status: null })).toBeNull();
+    expect(readGraduationStatus({ saved: true, graduation_status: "graduated" })).toBeNull();
+    expect(readGraduationStatus({ saved: true })).toBeNull();
+    expect(readGraduationStatus(null)).toBeNull();
   });
 });
 
@@ -63,7 +101,11 @@ describe("saveProgressSchema", () => {
   const valid = { lesson_id: "pawn-movement", used_hints: false, mistake_count: 0 };
 
   it("accepts what buildProgressPayload produces", () => {
-    const payload = buildProgressPayload(lesson, { mistakes: 7, usedHints: true });
+    const payload = buildProgressPayload(lesson, {
+      mistakes: 2,
+      usedHints: true,
+      wrongMoves: ["single-push:e2e5", "single-push:e2d3"],
+    });
     expect(saveProgressSchema.safeParse(payload).success).toBe(true);
   });
 
@@ -78,6 +120,17 @@ describe("saveProgressSchema", () => {
       expect(saveProgressSchema.safeParse({ ...valid, mistake_count }).success).toBe(false);
     }
     expect(saveProgressSchema.safeParse({ ...valid, mistake_count: 1000 }).success).toBe(true);
+  });
+
+  it("accepts a payload without wrong_moves, from a client that predates it", () => {
+    expect(saveProgressSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("rejects wrong_moves that is not a bounded list of strings", () => {
+    for (const wrong_moves of [null, "single-push:e2e5", [""], [7], ["a".repeat(201)], Array(1001).fill("x:e2e4")]) {
+      expect(saveProgressSchema.safeParse({ ...valid, wrong_moves }).success).toBe(false);
+    }
+    expect(saveProgressSchema.safeParse({ ...valid, wrong_moves: [] }).success).toBe(true);
   });
 
   it("rejects used_hints that is not a boolean", () => {

@@ -9,13 +9,13 @@ import { SiteFooter } from "@/components/ui/SiteFooter";
 // that does not exist yet, so this keeps the half that works: name, tagline,
 // one CTA.
 
-// Screen 01 puts Learn and About beside Log in. Neither is built: Learn is
-// Phase 2 and About is Stage F prep. They render muted and inert here, the same
-// treatment the app shell's TopNav gives its unbuilt tabs, rather than pointing
-// at dead routes.
-const NAV_LINKS: readonly { label: string; href: string | null }[] = [
-  { label: "Learn", href: null },
-  { label: "About", href: null },
+// Screen 01 puts Learn and About beside Log in. Every one of them is built as
+// of Phase 3, so none render inert any more. Reinforce is added alongside
+// them: it shipped in Phase 3 and is open to logged-out visitors, like Learn.
+const NAV_LINKS: readonly { label: string; href: string }[] = [
+  { label: "Learn", href: "/learn" },
+  { label: "Reinforce", href: "/reinforce" },
+  { label: "About", href: "/about" },
   { label: "Log in", href: "/login" },
 ];
 
@@ -25,22 +25,11 @@ export default function Home() {
       <header className="flex h-11 shrink-0 items-center justify-between border-b border-dashed border-hairline px-4 md:h-14 md:px-10">
         <span className="font-mono text-sm font-semibold">One Pawn</span>
         <nav aria-label="Main" className="flex items-center gap-5 text-[13px] md:gap-7">
-          {NAV_LINKS.map((link) =>
-            link.href === null ? (
-              <span
-                key={link.label}
-                aria-disabled="true"
-                title="Coming soon"
-                className="cursor-not-allowed text-hairline"
-              >
-                {link.label}
-              </span>
-            ) : (
-              <Link key={link.label} href={link.href} className="font-medium text-ink hover:underline">
-                {link.label}
-              </Link>
-            ),
-          )}
+          {NAV_LINKS.map((link) => (
+            <Link key={link.label} href={link.href} className="font-medium text-ink hover:underline">
+              {link.label}
+            </Link>
+          ))}
         </nav>
       </header>
       <main className="flex flex-1 items-center px-6 py-16 md:px-20">

@@ -59,7 +59,9 @@ describe("formatDueIn", () => {
     expect(formatDueIn(at(20 * 60 * 1000), NOW)).toBe("within the hour");
     expect(formatDueIn(at(HOUR), NOW)).toBe("within the hour");
     expect(formatDueIn(at(90 * 60 * 1000), NOW)).toBe("in 2 hours");
-    expect(formatDueIn(at(DAY), NOW)).toBe("in 1 day");
+    expect(formatDueIn(at(23 * HOUR - 1), NOW)).toBe("in 23 hours");
+    expect(formatDueIn(at(DAY - 5), NOW)).toBe("tomorrow");
+    expect(formatDueIn(at(DAY), NOW)).toBe("tomorrow");
     expect(formatDueIn(at(DAY + HOUR), NOW)).toBe("in 2 days");
     expect(formatDueIn(at(6 * DAY), NOW)).toBe("in 6 days");
   });

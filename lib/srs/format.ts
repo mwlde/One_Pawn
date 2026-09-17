@@ -16,16 +16,16 @@ const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 
 // Rounded up, so a review due in 90 minutes reads "in 2 hours" rather than
-// promising it sooner than it is.
+// promising it sooner than it is. The hour count is what gets compared: a
+// one-day interval read back a moment after it was written is a few
+// milliseconds short of a day, and should say "tomorrow", not "in 24 hours".
 export function formatDueIn(dueAt: string, now: Date): string {
   const remaining = new Date(dueAt).getTime() - now.getTime();
   if (remaining <= HOUR) return "within the hour";
-  if (remaining < DAY) {
-    const hours = Math.ceil(remaining / HOUR);
-    return `in ${hours} hours`;
-  }
+  const hours = Math.ceil(remaining / HOUR);
+  if (hours < 24) return `in ${hours} hours`;
   const days = Math.ceil(remaining / DAY);
-  return days === 1 ? "in 1 day" : `in ${days} days`;
+  return days === 1 ? "tomorrow" : `in ${days} days`;
 }
 
 export function formatDueCount(count: number): string {

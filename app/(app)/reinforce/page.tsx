@@ -8,6 +8,8 @@ import { formatDueCount, formatDueIn, formatInterval, formatLastReviewed } from 
 import { readReviewQueue, type QueueItem } from "@/lib/srs/queue";
 import { createClient } from "@/lib/supabase/server";
 
+import { RefreshOnFocus } from "./RefreshOnFocus";
+
 export const metadata: Metadata = {
   title: "Reinforce · One Pawn",
 };
@@ -54,9 +56,18 @@ function QueueRow({ item, now }: { item: QueueItem; now: Date }) {
   );
 }
 
+export default function ReinforcePage() {
+  return (
+    <>
+      <RefreshOnFocus />
+      <ReinforceHub />
+    </>
+  );
+}
+
 // Open to logged-out visitors, like Learn. The queue area says why it is empty
 // rather than sending them away.
-export default async function ReinforcePage() {
+async function ReinforceHub() {
   const supabase = await createClient();
   // Taken once, so every date on the page is measured from the same instant.
   // Rendered on the server for the same reason as the profile page's dates.
@@ -67,8 +78,8 @@ export default async function ReinforcePage() {
     return (
       <EmptyState label="REINFORCE" headline="Log in to see your review queue.">
         <p className="mb-7 text-sm leading-relaxed text-muted">
-          Lessons you finish without hints come back here for review, timed so you see each one
-          again just before you would forget it.
+          Lessons you finish without hints come back here for review, spaced further apart each
+          time you remember them.
         </p>
         <Link href={loginPath("/reinforce")} className={PRIMARY_LINK}>
           Log in →
@@ -89,9 +100,9 @@ export default async function ReinforcePage() {
 
   if (total === 0) {
     return (
-      <EmptyState label="NOTHING TO REVIEW YET" headline="No reviews yet.">
+      <EmptyState label="NOTHING TO REVIEW YET" headline="Your review queue is empty.">
         <p className="mb-7 text-sm leading-relaxed text-muted">
-          Complete a lesson in Learn without using hints, and it&apos;ll show up here.
+          Finish a lesson in Learn without hints to add it to the queue.
         </p>
         <Link href="/learn" className={PRIMARY_LINK}>
           Open Learn →
@@ -102,7 +113,7 @@ export default async function ReinforcePage() {
 
   if (queue.due.length === 0) {
     return (
-      <EmptyState label="ALL CAUGHT UP" headline="You're caught up.">
+      <EmptyState label="ALL CAUGHT UP" headline="Nothing is due.">
         <p className="mb-7 text-sm leading-relaxed text-muted">
           {queue.nextDueAt === null
             ? "Nothing is scheduled yet."

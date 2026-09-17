@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { LessonPlayer, type RunResult } from "@/components/lessons/LessonPlayer";
 import { Button } from "@/components/ui/Button";
@@ -28,10 +28,16 @@ type Graded = {
 };
 
 // playing: the lesson is on the board. grading: it is finished and waiting for
-// a grade. The session is over once every item has a result.
+// a grade. graded: the grade is saved and the card says when the lesson comes
+// back, before the session moves on. The session is over once every item has a
+// result.
 type Phase =
   | { kind: "playing" }
-  | { kind: "grading"; run: RunResult; saving: Grade | null; error: ReviewErrorKind | null };
+  | { kind: "grading"; run: RunResult; saving: Grade | null; error: ReviewErrorKind | null }
+  | { kind: "graded"; run: RunResult; grade: Grade; nextReviewAt: string | null };
+
+// Long enough to read one short line, short enough not to feel like a wait.
+const GRADED_PAUSE_MS = 1800;
 
 const NOTE = "mt-2 font-mono text-[10px] leading-relaxed text-muted";
 const PRIMARY_LINK =
@@ -40,6 +46,21 @@ const PRIMARY_LINK =
 export function ReviewSession({ items, upcomingNextDueAt }: ReviewSessionProps) {
   const [results, setResults] = useState<Graded[]>([]);
   const [phase, setPhase] = useState<Phase>({ kind: "playing" });
+  // Set synchronously on the first click. phase.saving also disables the
+  // buttons, but only once React re-renders: a double-tap that lands before
+  // then reads the old phase, and a second request would apply SM-2 again to
+  // the row the first one already updated.
+  const submittingRef = useRef(false);
+
+  useEffect(() => {
+    if (phase.kind !== "graded") return;
+    const { grade, nextReviewAt } = phase;
+    const timer = setTimeout(() => {
+      setResults((current) => [...current, { grade, nextReviewAt }]);
+      setPhase({ kind: "playing" });
+    }, GRADED_PAUSE_MS);
+    return () => clearTimeout(timer);
+  }, [phase]);
 
   // One result per graded lesson, in queue order, so the count of results is
   // also the index of the lesson in play.
@@ -52,7 +73,8 @@ export function ReviewSession({ items, upcomingNextDueAt }: ReviewSessionProps) 
   const item = items[index];
 
   async function grade(chosen: Grade, quality: Quality) {
-    if (phase.kind !== "grading" || phase.saving !== null) return;
+    if (submittingRef.current || phase.kind !== "grading") return;
+    submittingRef.current = true;
     const run = phase.run;
     setPhase({ kind: "grading", run, saving: chosen, error: null });
 
@@ -60,12 +82,14 @@ export function ReviewSession({ items, upcomingNextDueAt }: ReviewSessionProps) 
 
     if (result.status === "error") {
       // The buttons come back, so choosing again is the retry.
+      submittingRef.current = false;
       setPhase({ kind: "grading", run, saving: null, error: result.error });
       return;
     }
 
-    setResults((current) => [...current, { grade: chosen, nextReviewAt: result.nextReviewAt }]);
-    setPhase({ kind: "playing" });
+    // Not released here. The lock holds until the next lesson's grade card
+    // opens, so nothing can reach this card while it is being swapped out.
+    setPhase({ kind: "graded", run, grade: chosen, nextReviewAt: result.nextReviewAt });
   }
 
   return (
@@ -79,14 +103,18 @@ export function ReviewSession({ items, upcomingNextDueAt }: ReviewSessionProps) 
           key={index}
           lesson={item.lesson}
           mode="review"
-          onComplete={(run) => setPhase({ kind: "grading", run, saving: null, error: null })}
+          onComplete={(run) => {
+            submittingRef.current = false;
+            setPhase({ kind: "grading", run, saving: null, error: null });
+          }}
         />
       ) : (
         <GradeCard
           title={item.lesson.title}
           run={phase.run}
-          saving={phase.saving}
-          error={phase.error}
+          saving={phase.kind === "grading" ? phase.saving : null}
+          error={phase.kind === "grading" ? phase.error : null}
+          saved={phase.kind === "graded" ? { nextReviewAt: phase.nextReviewAt } : null}
           onGrade={grade}
         />
       )}
@@ -134,19 +162,23 @@ function GradeCard({
   run,
   saving,
   error,
+  saved,
   onGrade,
 }: {
   title: string;
   run: RunResult;
   saving: Grade | null;
   error: ReviewErrorKind | null;
+  saved: { nextReviewAt: string | null } | null;
   onGrade: (grade: Grade, quality: Quality) => void;
 }) {
+  const locked = saving !== null || saved !== null;
+
   return (
     <div className="flex flex-1 items-center justify-center p-4">
       <div className="w-full max-w-sm border border-ink bg-panel p-6">
         <p className="font-mono text-[11px] text-muted">{title}</p>
-        <h1 className="mt-1 text-lg font-semibold">How did that go?</h1>
+        <h1 className="mt-1 text-lg font-semibold">How well did you remember it?</h1>
 
         <dl className="mt-5 border-t border-dashed border-hairline pt-3 font-mono text-[11px]">
           <div className="flex justify-between py-1">
@@ -164,7 +196,8 @@ function GradeCard({
             <Button
               key={grade}
               type="button"
-              disabled={saving !== null}
+              disabled={locked}
+              aria-disabled={locked}
               onClick={() => onGrade(grade, quality)}
               className="px-2"
             >
@@ -176,6 +209,12 @@ function GradeCard({
         <div aria-live="polite">
           {error !== null ? (
             <p className={NOTE}>{ERROR_MESSAGES[error]}</p>
+          ) : saved !== null ? (
+            <p className={NOTE}>
+              {saved.nextReviewAt === null
+                ? "Saved."
+                : `Saved. This lesson comes back ${formatDueIn(saved.nextReviewAt, new Date())}.`}
+            </p>
           ) : (
             <p className={NOTE}>Your answer decides when this lesson comes back.</p>
           )}
@@ -218,7 +257,7 @@ function SessionSummary({
           {results.length} {results.length === 1 ? "lesson" : "lessons"} reviewed
         </h1>
         {nextReviewAt !== null ? (
-          <p className="text-sm text-muted">Next review {formatDueIn(nextReviewAt, new Date())}</p>
+          <p className="text-sm text-muted">Next review {formatDueIn(nextReviewAt, new Date())}.</p>
         ) : null}
 
         <p className="mt-6 border-t border-dashed border-hairline pt-5 font-mono text-[11px] text-muted">

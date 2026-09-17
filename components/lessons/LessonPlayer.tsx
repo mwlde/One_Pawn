@@ -344,11 +344,11 @@ const INLINE_ACTION = "underline underline-offset-2 hover:text-ink";
 function savedMessage(graduation: GraduationStatus | null): string {
   switch (graduation) {
     case "graduated_now":
-      return "Progress saved. You finished without hints, so this lesson now joins your reviews and will come back before you forget it.";
+      return "Progress saved. You finished without hints, so this lesson is now in your review queue.";
     case "not_graduated":
-      return "Progress saved. Finish it again without hints to add it to your reviews.";
+      return "Progress saved. Finish it again without hints to add it to your review queue.";
     case "already_graduated":
-      return "Progress saved. This lesson is already in your reviews.";
+      return "Progress saved. This lesson is already in your review queue.";
     case null:
       return "Progress saved to your profile.";
   }

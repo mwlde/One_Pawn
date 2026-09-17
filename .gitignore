@@ -44,9 +44,14 @@ next-env.d.ts
 # WASM build output
 /engine/build/
 
-# local-only project docs (not committed; kept on Maria's machine)
+# local-only project docs (not committed; kept on Maria's machine).
+# Every markdown file is local-only except README.md, which is the one
+# document the repo publishes. Covers /docs/, design/DEVIATIONS.md and any
+# notes added later, wherever they sit.
 /CLAUDE.md
 /docs/
+*.md
+!README.md
 
 # cloudflare adapter build output and wrangler dev scratch space
 .open-next

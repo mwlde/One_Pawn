@@ -51,7 +51,7 @@ next-env.d.ts
 /CLAUDE.md
 /docs/
 *.md
-!README.md
+!DEVIATIONS.md
 
 # cloudflare adapter build output and wrangler dev scratch space
 .open-next

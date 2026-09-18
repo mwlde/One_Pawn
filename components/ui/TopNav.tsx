@@ -23,6 +23,7 @@ type Tab = {
 // on desktop any tab can pull a player out of a live game; on mobile /play
 // hides this bar.
 const TABS: readonly Tab[] = [
+  { label: "Home", href: "/dashboard" },
   { label: "Play", href: "/play" },
   { label: "Learn", href: "/learn" },
   { label: "Reinforce", href: "/reinforce" },
@@ -204,7 +205,7 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
 
       <nav
         aria-label="Main"
-        className={`${mobileNavHidden ? "hidden" : "grid"} order-last shrink-0 grid-cols-4 border-t border-ink text-center font-mono text-[10px] md:hidden`}
+        className={`${mobileNavHidden ? "hidden" : "grid"} order-last shrink-0 grid-cols-5 border-t border-ink text-center font-mono text-[10px] md:hidden`}
       >
         {TABS.map((tab) => {
           const active = isActive(pathname, tab.href);

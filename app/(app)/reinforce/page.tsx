@@ -31,7 +31,7 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-12 md:px-12">
-      <div className="w-full max-w-[560px]">
+      <div className="w-full max-w-[560px] text-center">
         <div className="mb-3 font-mono text-[10px] tracking-[0.1em] text-muted">{label}</div>
         <h1 className="mb-3 text-2xl font-semibold tracking-[-0.01em] md:text-3xl">{headline}</h1>
         {children}
@@ -131,19 +131,17 @@ async function ReinforceHub() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-end justify-between gap-4 border-b border-dashed border-hairline px-4 py-6 md:px-10 md:py-8">
-        <div>
-          <div className="font-mono text-[10px] tracking-[0.14em] text-muted">REINFORCE</div>
-          <h1 className="mt-1 text-2xl font-semibold tracking-[-0.01em] md:text-3xl">
-            {formatDueCount(queue.due.length)}
-          </h1>
-        </div>
+      <div className="flex flex-col items-center gap-1 border-b border-dashed border-hairline px-4 py-6 text-center md:px-10 md:py-8">
+        <div className="font-mono text-[10px] tracking-[0.14em] text-muted">REINFORCE</div>
+        <h1 className="text-2xl font-semibold tracking-[-0.01em] md:text-3xl">
+          {formatDueCount(queue.due.length)}
+        </h1>
         {queue.upcomingCount > 0 ? (
           <div className={MONO_NOTE}>{queue.upcomingCount} upcoming</div>
         ) : null}
       </div>
 
-      <div className="flex w-full max-w-xl flex-col gap-4 px-4 py-6 md:px-10">
+      <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4 py-6 md:px-10">
         <ul className="flex flex-col gap-1.5">
           {queue.due.map((item) => (
             <QueueRow key={item.lesson.id} item={item} now={now} />

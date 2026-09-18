@@ -102,12 +102,12 @@ export default async function LearnPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="border-b border-dashed border-hairline px-4 py-6 md:px-10 md:py-8">
+      <div className="border-b border-dashed border-hairline px-4 py-6 text-center md:px-10 md:py-8">
         <div className="font-mono text-[10px] tracking-[0.14em] text-muted">LEARN</div>
         <h1 className="mt-1 text-2xl font-semibold tracking-[-0.01em] md:text-3xl">Tracks</h1>
       </div>
 
-      <div className="flex w-full max-w-4xl flex-col gap-4 px-4 py-6 md:px-10">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 py-6 md:px-10">
         <ProgressNotice progress={progress} />
 
         <ul className="flex flex-col gap-2 md:gap-2.5">

@@ -9,9 +9,11 @@ import { SiteFooter } from "@/components/ui/SiteFooter";
 // row of legal links would push it smaller.
 //
 // A denylist rather than an allowlist so screens added later inherit the footer
-// without anyone having to remember to opt in. /play is the one exception, and
-// the prefix match covers any sub-route it grows.
-const FOOTERLESS_ROUTES: readonly string[] = ["/play"];
+// without anyone having to remember to opt in. /play and /dashboard are the
+// exceptions: both fill the viewport as a single screen, and a row of legal
+// links would push that layout into a scroll. The prefix match covers any
+// sub-routes they grow.
+const FOOTERLESS_ROUTES: readonly string[] = ["/play", "/dashboard"];
 
 export function AppFooter() {
   const pathname = usePathname();

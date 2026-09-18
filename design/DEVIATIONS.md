@@ -339,6 +339,94 @@ changelog, or a blog. Until then the split stands.
 
 ---
 
+## 16. Dashboard: honest subset of screen 01b, new route and Home tab
+
+Recorded: 2026-09-18, dashboard integration session (before Phase 4).
+
+**Deviation.** Screens 01b (desktop) and 01bm (mobile) draw a signed-in home
+built around features that mostly do not exist yet or that the product identity
+rules out. The build ships a grounded subset of the same screen.
+
+**Why.** Most of 01b is Phase 4+ or multiplayer furniture, or it conflicts with
+`docs/PRODUCT.md`'s "focused, not gamified" commitment. Building it as drawn
+would mean stubbing features that are not there and putting invented numbers on
+a production screen, which CLAUDE.md forbids.
+
+**Built.** A new route, `/dashboard` (server component, same auth-then-parallel-
+fetch shape as `/profile`; logged-out visitors are redirected to `/login`). It
+holds:
+
+- **Greeting header.** Date label and "Welcome back." with the account email
+  beneath, and the honest stats inline on the right (total games, this week's
+  games with a W/D/L record, and lessons done). The wireframe's "3-day streak"
+  subline and its five-figure stats strip are dropped to these three (see
+  omissions).
+- **Play a game.** A small primary button in the header linking to `/play`, not
+  a card. The wireframe leads with a large Play panel; the build makes it a
+  compact always-visible action instead, so the body space goes to learning and
+  the coming analysis features. The wireframe's time-control grid, vs Human /
+  Custom toggles and "opponent found in ~4s" line are left out: `/play` is engine
+  setup (deviation 1), and matchmaking is Phase 8.
+- **Learn.** The four tracks with "X / Y" and the 05 progress bar, and a primary
+  action that resumes the most recently active unfinished track. When nothing is
+  mid-track it offers to browse or start, never a fabricated "resume". This folds
+  01b's separate "Continue where you left off" card into the Learn card, and
+  drops its correspondence-game row, which is multiplayer.
+- **Reinforce.** The 01b Reinforce-queue card, fed by `readReviewQueue` (the
+  same reader the `/reinforce` hub uses), with due count, up to three due
+  lessons, upcoming count and "Start review (N) →". Empty and caught-up states
+  reuse the Reinforce hub's wording.
+- **Recent games.** The last five games: result, engine-depth opponent and
+  relative date, linking to `/profile`. No games yet shows a "play your first
+  game" state rather than an empty card.
+- **Placeholder cards.** Game analysis (screen 09) and Playing style (screens
+  09-10 mistake patterns), through `components/ui/PlaceholderCard.tsx`: dashed,
+  dimmed, an "In development" tag, and one sentence on what will appear. They
+  show no example data.
+
+**One screen, no scroll.** The layout is a height-filling grid rather than a
+stack: on desktop the Play hero runs down the left, Reinforce and Learn sit
+across the top-right, Recent games below Reinforce, and the two placeholders
+below Learn, all sized to fit the viewport without a page scroll. `/dashboard`
+is added to the footer denylist (alongside `/play`) so a row of legal links
+does not push the grid into a scroll. On mobile the cards stack in priority
+order and the placeholders are hidden; everything here cannot honestly fit a
+phone at once, so mobile scrolls.
+
+**Nav.** 01b draws no Dashboard tab (it highlights Play while showing the
+dashboard, which is itself inconsistent). A **Home** tab was added as the first
+entry of the app shell nav, so the app shell's tabs are now
+`Home · Play · Learn · Reinforce · Profile` against the drawing's
+`Play · Learn · Reinforce · Profile`. Home is a login-gated tab, the same as
+Profile already is.
+
+**Omitted as identity conflicts** (recorded per the session's D.5 rule):
+
+- **Streak** — greeting subline and the stats strip's STREAK column.
+  `docs/PRODUCT.md` lists "Streaks and daily rewards" under "Explicitly not
+  features" as contradicting "focused, not gamified". `/profile` already omits
+  it for the same reason.
+- **Rating, rating delta, puzzle rating** — the stats strip's RATING and PUZZLE
+  RATING columns. PRODUCT.md rules out rating ladders, One Pawn plays the engine
+  only, and the `games` table stores no rating. There is nothing true to show.
+
+**Omitted as features that do not exist yet:**
+
+- **Play quick-match** (bullet/blitz/rapid time controls) and **vs Human /
+  matchmaking** — Phase 8 (deviations 1 and 7).
+- **Daily puzzle** card — there is no daily-puzzle feature.
+- **Correspondence "Continue"** row (the "vs Nadia · your move" example) —
+  multiplayer.
+- **Import PGN** button in the greeting — no import feature exists.
+- **Accuracy** (stats strip and greeting) — Phase 4 analysis; `/profile` omits
+  it too, because a "--" in a stats header reads as a broken number.
+
+**For the revision.** Redraw 01b around engine play and the honest stat set;
+mark rating, accuracy, streak, matchmaking and the daily puzzle with the phase
+that brings them, or cut them; and draw the Home/Dashboard tab into the nav.
+
+---
+
 ## Smaller deviations
 
 - **No leave-game confirm on the nav tabs.** Every tab is a link as of Phase 3

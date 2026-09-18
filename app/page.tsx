@@ -32,7 +32,7 @@ export default function Home() {
           ))}
         </nav>
       </header>
-      <main className="flex flex-1 items-center px-6 py-16 md:px-20">
+      <main className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center md:px-20">
         <div className="max-w-xl">
           <Suspense fallback={null}>
             <DeletedNotice />

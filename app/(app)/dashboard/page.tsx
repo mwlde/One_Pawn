@@ -135,7 +135,7 @@ function PlayCard() {
       <p className="text-sm leading-relaxed text-muted">
         Pick a side, a difficulty and a time control, then play the engine.
       </p>
-      <Link href="/play" className={PRIMARY_LINK}>
+      <Link href="/play" className={`${PRIMARY_LINK} mt-auto`}>
         Start a game →
       </Link>
     </div>
@@ -182,7 +182,7 @@ function LearnCard({ read }: { read: LearnDashboardRead }) {
           );
         })}
       </ul>
-      <Link href={cta.href} className={cta.primary ? PRIMARY_LINK : SECONDARY_LINK}>
+      <Link href={cta.href} className={`${cta.primary ? PRIMARY_LINK : SECONDARY_LINK} mt-auto`}>
         {cta.label}
       </Link>
     </div>
@@ -201,7 +201,7 @@ function ReinforceCard({ read, now }: { read: QueueRead; now: Date }) {
         <p className="text-sm leading-relaxed text-muted">
           Finish a lesson in Learn without hints to add it to your review queue.
         </p>
-        <Link href="/learn" className={SECONDARY_LINK}>
+        <Link href="/learn" className={`${SECONDARY_LINK} mt-auto`}>
           Open Learn →
         </Link>
       </div>
@@ -217,7 +217,7 @@ function ReinforceCard({ read, now }: { read: QueueRead; now: Date }) {
             ? "Nothing is scheduled yet."
             : `Nothing is due. Next review ${formatDueIn(queue.nextDueAt, now)}.`}
         </p>
-        <Link href="/reinforce" className={SECONDARY_LINK}>
+        <Link href="/reinforce" className={`${SECONDARY_LINK} mt-auto`}>
           Open Reinforce →
         </Link>
       </div>
@@ -244,7 +244,7 @@ function ReinforceCard({ read, now }: { read: QueueRead; now: Date }) {
           </li>
         ))}
       </ul>
-      <Link href="/reinforce/review" className={PRIMARY_LINK}>
+      <Link href="/reinforce/review" className={`${PRIMARY_LINK} mt-auto`}>
         Start review ({queue.due.length}) →
       </Link>
     </div>
@@ -279,7 +279,7 @@ function RecentGamesCard({ read, now }: { read: GamesDashboardRead; now: Date })
         <p className="text-sm leading-relaxed text-muted">
           You have not played a game yet. Your last games will show up here.
         </p>
-        <Link href="/play" className={SECONDARY_LINK}>
+        <Link href="/play" className={`${SECONDARY_LINK} mt-auto`}>
           Play your first game →
         </Link>
       </div>
@@ -328,7 +328,7 @@ export default async function DashboardPage() {
     // dashboard reads as one screen. Mobile stacks and scrolls: everything here
     // cannot honestly fit a phone at once.
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex flex-col items-center gap-4 border-b border-dashed border-hairline px-4 py-5 text-center md:px-10 md:py-6">
+      <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3 border-b border-dashed border-hairline px-4 py-4 md:px-10 md:py-5">
         <div className="min-w-0">
           <div className="font-mono text-[10px] tracking-[0.14em] text-muted">{dateLabel(now)}</div>
           <h1 className="mt-1 text-xl font-semibold tracking-[-0.01em] md:text-2xl">
@@ -343,31 +343,21 @@ export default async function DashboardPage() {
         <HeaderStats games={gamesRead} learn={learnRead} />
       </div>
 
-      {/* Centered and capped so the cards are not stretched across a wide screen.
-          Two wider cards on top, three under. Heights are natural (items-start),
-          so a shorter card leaves space below rather than stretching to match. */}
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-start gap-3 p-4 md:grid-cols-6 md:p-6">
-        <div className="md:col-span-3">
-          <ReinforceCard read={reviewRead} now={now} />
-        </div>
-        <div className="md:col-span-3">
-          <LearnCard read={learnRead} />
-        </div>
-        <div className="md:col-span-2">
-          <PlayCard />
-        </div>
-        <div className="md:col-span-2">
-          <RecentGamesCard read={gamesRead} now={now} />
-        </div>
-        <div className="flex flex-col gap-3 md:col-span-2">
-          <PlaceholderCard title="Game analysis">
-            Where each finished game turned, and the moves worth a second look. Coming with Phase 4
-            analysis.
-          </PlaceholderCard>
-          <PlaceholderCard title="Playing style">
-            Recurring patterns across your games, once there are enough to read a trend from.
-          </PlaceholderCard>
-        </div>
+      {/* Three even columns filling the width. Cards in a row share a height
+          (the grid stretches them), and each card's primary action is pinned to
+          the bottom with mt-auto so those actions line up across the row. */}
+      <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 md:grid-cols-3 md:p-6">
+        <PlayCard />
+        <ReinforceCard read={reviewRead} now={now} />
+        <LearnCard read={learnRead} />
+        <RecentGamesCard read={gamesRead} now={now} />
+        <PlaceholderCard title="Game analysis">
+          Where each finished game turned, and the moves worth a second look. Coming with Phase 4
+          analysis.
+        </PlaceholderCard>
+        <PlaceholderCard title="Playing style">
+          Recurring patterns across your games, once there are enough to read a trend from.
+        </PlaceholderCard>
       </div>
     </div>
   );

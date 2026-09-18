@@ -62,8 +62,12 @@ app root rather than inside the `(marketing)` route group that
 `docs/ARCHITECTURE.md` specifies.
 
 **Why.** A route group exists to give several pages a shared layout, and there
-is only one marketing page. It moves into `(marketing)` when about and legal
-pages arrive in Stage F prep.
+is only one marketing page. It was to move into `(marketing)` when about and
+legal pages arrived in Stage F prep.
+
+**Still true as of Phase 3 session 3C**, though both of those pages now exist:
+legal went into its own `(legal)` group, and about into `(marketing)`. The
+landing page has still not moved. See deviation 15.
 
 **Also.** The built landing is the minimal version: heading, tagline, one CTA.
 The wireframe's interactive puzzle demo and three feature bullets need Phase 2
@@ -186,9 +190,20 @@ heading is conditional.
 into `/login` was the app shell's own nav, which a logged-out visitor reaches
 only by starting a game first.
 
-**Built.** The full nav from Screen 01. Log in is a live link. Learn is Phase 2
-and About is Stage F prep, so both render muted and inert, the same treatment
-the app shell gives its unbuilt tabs. The line under the CTA also matches the
+**Built.** The full nav from Screen 01. Log in is a live link. Learn and About
+originally rendered muted and inert, the same treatment the app shell gives its
+unbuilt tabs. **As of Phase 3 session 3C About is a live link** to `/about`.
+
+**Updated 2026-09-17 (housekeeping).** Every entry is now a live link and the
+inert branch is gone from the code. The nav also gained a fourth entry,
+Reinforce, which Screen 01 does not draw: it shipped in Phase 3 and, like
+Learn, is open to logged-out visitors, so leaving it out of the only nav a
+logged-out visitor sees would hide half of what the site does. The nav is
+therefore `Learn · Reinforce · About · Log in` against the drawing's
+`Learn · About · Log in`.
+
+**For the revision.** Redraw Screen 01's nav with four entries, or say which
+one should not be there. The line under the CTA also matches the
 wireframe now, "no account · sign in to save games", with sign in linking to
 `/login`. It previously read "no account needed" with no link.
 
@@ -275,8 +290,10 @@ lesson player, and SM-2 takes a self-grade on three buttons.
   "Start review (N) →" as the primary action. Each row shows title, track, when
   it was last reviewed and the interval.
 - **Empty states** use 08e's shell (mono label, headline, one sentence, one way
-  forward) for three cases: no graduated lessons ("No reviews yet."), nothing
-  due ("You're caught up. Next review in 6 hours."), and logged out. 08e's
+  forward) for three cases: no graduated lessons ("Your review queue is
+  empty."), nothing due ("Nothing is due. Next review in 6 days."), and logged
+  out. The copy pass in session 3C rewrote all three; the wording here is the
+  current one. 08e's
   START HERE card is left out: nothing picks a recommended lesson yet.
 - **Review, `/reinforce/review`.** The lesson player as in Learn, under a slim
   in-page row with 08m's "← quit", 08's "last seen · interval" context, and 08's
@@ -293,6 +310,32 @@ lesson player, and SM-2 takes a self-grade on three buttons.
 **For the revision.** Redraw 08 around a lesson replay and a grade card, draw
 the hub (or decide the dashboard card replaces it), and decide whether the
 opening-line drill in 08 is still a future mode or has been cut.
+
+---
+
+## 15. About page in `(marketing)`, landing still at the root
+
+Recorded: 2026-09-17, Phase 3 session 3C.
+
+**Deviation.** Structural, not visual. `docs/ARCHITECTURE.md` puts landing,
+about and legal together in `(marketing)`. The build splits them: legal in
+`(legal)`, about in `(marketing)`, landing still at `app/page.tsx`.
+
+**Why.** About is the first page in the group, and it was put there rather than
+in `(app)` so that it does not inherit the app shell: `TopNav` with its game and
+engine indicators, `SessionProvider`, and the `EngineProvider` that starts
+downloading the WASM engine. None of that belongs on a static page about the
+project. `(marketing)/layout.tsx` is a header, a reading column and
+`SiteFooter`, which is the `(legal)` layout rather than the root one.
+
+**Known cost.** `(marketing)/layout.tsx` and `(legal)/layout.tsx` are
+near-identical, so there are two copies of the same 28 lines. Accepted for now:
+merging them means either moving About under a group called `(legal)` or
+renaming that group, and neither is worth doing for one page.
+
+**When this changes.** Move the landing page in, and consider sharing one
+layout, when a second marketing-shaped page arrives: a longer About, a
+changelog, or a blog. Until then the split stands.
 
 ---
 
@@ -324,13 +367,126 @@ opening-line drill in 08 is still a future mode or has been cut.
 Visual defects in the build, not intended departures from the wireframes.
 Recorded so they are not rediscovered as new.
 
-- **Some rank numbers are unreadable on dark squares.** Recorded 2026-09-17,
-  Phase 2 session 2B. On the board, the rank labels drawn on the tint squares
-  (7, 5, 3 with White at the bottom) barely show against the square colour.
-  `NOTATION_STYLE` in `components/board/GameBoard.tsx` sets font and size but
-  no colour, so the labels keep react-chessboard's default, which does not
-  suit the wireframe's tint. The board is shared, so the play, replay and
-  lesson screens are all affected.
+- **Board coordinates are unreadable on dark squares.** Recorded 2026-09-17,
+  Phase 2 session 2B. Seen again 2026-09-17, Phase 3 session 3C. Both the rank
+  numbers (1-8) and the file letters (a-h) drawn on the tint squares barely
+  show against the square colour. `NOTATION_STYLE` in
+  `components/board/GameBoard.tsx` sets font and size but no colour, so the
+  labels keep react-chessboard's default, which does not suit the wireframe's
+  tint. One constant feeds both `alphaNotationStyle` and
+  `numericNotationStyle`, and the board is shared, so play, replay, the lesson
+  player and the Reinforce review screen are all affected equally.
+
+  **Fix once, in `NOTATION_STYLE`.** It is a react-chessboard styling concern,
+  not a per-screen one: adding a colour there covers all four screens. Not
+  urgent. Suitable for a future polish pass.
+
+---
+
+## Untracked debt and open questions
+
+Things noticed in passing that are not visual defects and not wireframe
+departures: contradictions between docs and code, and decisions left open.
+Recorded here so they stop living in session reports and chat history.
+
+Recorded: 2026-09-17, Phase 3 session 3C.
+
+- **`docs/PRODUCT.md` scopes SRS to openings; the build graduates every
+  track.** The built graduation rule is track-agnostic: any lesson finished
+  without hints enters `srs_state`, basics and endgames included.
+  **Half-resolved on 2026-09-17:** PRODUCT.md's core-features entry was
+  rewritten to describe track-agnostic graduation, matching the code. Its
+  "Explicitly not features" list still carries **"Broad SRS beyond openings
+  ... deferred indefinitely"**, which now contradicts both the code and the
+  rest of the same document. Left standing because deleting it is a product
+  decision, not a documentation fix: it needs Maria to say whether broad SRS
+  is the plan now or whether graduation should be filtered to openings.
+- **The landing nav rendered "Learn" as inert.** ~~Learn shipped in Phase 2,
+  so the muted treatment was wrong.~~ **Fixed 2026-09-17:** Learn now links to
+  `/learn`, Reinforce was added beside it, and the inert-link branch was
+  removed from `app/page.tsx` because no entry uses it any more. Adding
+  Reinforce puts a fourth item in a nav that Screen 01 draws with three; see
+  deviation 11.
+- **`app/(marketing)/.gitkeep` was redundant.** ~~The group holds a real layout
+  and page as of 3C.~~ **Fixed 2026-09-17:** deleted.
+- **Disabled buttons darkened rather than faded.** ~~`Button.tsx` rendered a
+  disabled button as hairline text on a hairline border, which took the label
+  with it.~~ **Fixed 2026-09-17:** `components/ui/Button.tsx` now fades a
+  disabled button with `disabled:opacity-40` and keeps the label's own colour,
+  app-wide. Hover is pinned to each variant's normal background so a disabled
+  button does not respond to a pointer. `TopNav`'s log-out button styles itself
+  and already faded; it was left alone.
+
+Added 2026-09-17 by a housekeeping sweep of Phase 2 (sessions 2A-2E) and
+Phase 3 (3A-3C), before Phase 4 opens. No session reports are kept in the
+repo, so these were found by reading the Phase 2 and Phase 3 code, schema and
+migrations rather than the reports themselves.
+
+**Lesson authoring is hand-wired and unchecked.** Four items that all bite
+harder as content grows:
+
+- **Every new lesson needs three hand edits in `lib/lessons/load.ts`.** A JSON
+  import, an entry in the `LESSON_FILES` map, and a matching file path. There
+  is no directory discovery, which is deliberate (it keeps the lesson set
+  static and checkable), but it means adding content is a code change. Worth
+  splitting the id map into its own module when content authoring starts in
+  earnest. Not worth doing for four lessons.
+- **Nothing enforces that a lesson's `track` field matches the folder it sits
+  in.** `loadLesson` checks that the file's `id` matches its registry key, but
+  a lesson declaring `track: "tactics"` from inside `content/lessons/basics/`
+  loads happily and appears under Tactics. `lib/lessons/types.ts` states the
+  folder rule as an invariant; no code tests it.
+- **Nothing enforces that `order` is unique within a track.** Two lessons
+  sharing `order: 2` sort against each other by map insertion order, silently.
+  Every track currently holds exactly one lesson at `order: 1`, so this is
+  invisible today and lands the moment any track gets a second lesson.
+- **Underpromotion lessons cannot be authored.** The schema accepts a
+  promotion suffix in `acceptedMoves` (`e7e8n` passes the move regex), but the
+  board auto-queens: `judgeMove` hands chess.js `promotion: "q"` because there
+  is no promotion picker. A step whose accepted move is a knight promotion can
+  never be completed. Either the picker gets built or the schema should reject
+  a non-queen promotion as a content error.
+
+**Database row shapes are asserted, not generated.** Four queries
+(`lib/lessons/completions.ts`, `lib/srs/queue.ts`, and both profile pages)
+narrow their result with `.returns<T>()` against a hand-written type, because
+the project does not generate types from the Supabase schema. A column renamed
+or made nullable in a migration will not fail typecheck; it will produce
+`undefined` at runtime on whichever screen reads it. Generating types is the
+real fix and is a tooling decision, not a code one.
+
+**A lesson graduates straight into being due.** `srs_state.next_review_at`
+defaults to `now()` while `interval_days` defaults to 1, so a lesson finished
+without hints is due for review immediately, not a day later. A user can
+finish a lesson in Learn and be offered the same lesson in Reinforce seconds
+afterwards. Whether that is intended is undecided: it makes the queue feel
+alive on day one, and it also means the first interval is not the one SM-2
+describes.
+
+**A review session is as long as the queue.** `/reinforce/review` takes every
+due lesson and plays them back to back, with no per-session cap and no
+stopping point short of "← quit". Twelve due lessons is twelve full replays in
+one sitting. Each grade is saved as it is given, so quitting loses nothing,
+but nothing in the UI says so.
+
+**Small UI quirks, not wireframe departures:**
+
+- **Every lesson page has the same browser tab title.**
+  `app/(app)/learn/[track]/[lesson]/page.tsx` exports a static
+  `"Lesson · One Pawn"` rather than generating one from the lesson title, so
+  open tabs and history entries are indistinguishable.
+- **The lesson player cannot go back a step.** The controls are Next, Finish,
+  Restart lesson and Back to lessons. A user who wants to re-read the
+  explanation on step 2 while on step 4 has to restart the whole lesson.
+- **Three buttons still darken when disabled instead of fading.** `Button.tsx`
+  was switched to `disabled:opacity-40` on 2026-09-17, but the submit button in
+  `app/(auth)/AuthForm.tsx`, the confirm-delete button in
+  `app/(app)/profile/DeleteAccount.tsx` and the replay step controls in
+  `app/(app)/profile/games/[id]/GameReplay.tsx` do not use `Button`. They
+  hand-roll `disabled:bg-hairline` / `disabled:text-hairline` and so keep the
+  old treatment, which now makes them the odd ones out. The fix is either to
+  move them onto `Button` or to copy the fade into each; moving them is the
+  better one and is a small refactor rather than a styling tweak.
 
 ---
 

@@ -73,7 +73,7 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
         </span>
       </div>
 
-      <GameReplay gameId={id} pgn={data.pgn} orientation={data.user_color} meta={meta} />
+      <GameReplay gameId={id} pgn={data.pgn} orientation={data.user_color} mode={data.mode} meta={meta} />
     </div>
   );
 }

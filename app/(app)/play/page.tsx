@@ -36,6 +36,7 @@ import {
 import { GameSetup } from "./GameSetup";
 import { PostGame } from "./PostGame";
 import { ResignButton } from "./ResignButton";
+import { useCoachAnalysis } from "./useCoachAnalysis";
 import { useGameClock } from "./useGameClock";
 
 type Phase = "setup" | "playing" | "over";
@@ -87,6 +88,11 @@ export default function PlayPage() {
   // the game that ended rather than whatever a rematch has since played.
   const [savePayload, setSavePayload] = useState<SaveGamePayload | null>(null);
   const [saveState, setSaveState] = useState<SaveState>({ status: "idle" });
+
+  // Coach-mode analysis and commentary. Idle in Play mode; the effect below only
+  // starts it for a saved Coach-mode game.
+  const coach = useCoachAnalysis();
+  const { start: startCoach } = coach;
 
   // Bumped whenever the game the engine was asked about stops being the game on
   // the board. A search already in flight cannot be cancelled (see
@@ -171,6 +177,17 @@ export default function PlayPage() {
     if (userId === null) return;
     void saveGame(savePayload).then(setSaveState);
   }, [savePayload, userId]);
+
+  // Once a Coach-mode game is saved, run the engine analysis and commentary
+  // pipeline. It is keyed off the saved game's id, so it waits for the save
+  // above. startCoach is idempotent per game id, so re-renders cannot restart
+  // it, and the mode guard keeps Play games out entirely.
+  useEffect(() => {
+    if (settings.mode !== "coach") return;
+    if (saveState.status !== "saved") return;
+    if (savePayload === null) return;
+    startCoach(saveState.id, savePayload.pgn, savePayload.user_color);
+  }, [settings.mode, saveState, savePayload, startCoach]);
 
   // Shared tail of both sides' moves: stop the mover's clock, publish the new
   // position, and check whether that move ended the game.
@@ -375,6 +392,10 @@ export default function PlayPage() {
           onRetrySave={savePayload === null ? null : () => retrySave(savePayload)}
           onRematch={() => startGame({ ...settings, side: opposite(settings.side) })}
           onNewGame={() => setPhase("setup")}
+          coach={coach}
+          gameId={saveState.status === "saved" ? saveState.id : null}
+          pgn={savePayload?.pgn ?? null}
+          userColor={settings.side}
         />
       ) : null}
     </div>

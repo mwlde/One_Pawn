@@ -5,8 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import { GameBoard } from "@/components/board/GameBoard";
 import { MoveHistory } from "@/components/panels/MoveHistory";
+import type { GameMode } from "@/lib/game/mode";
 import type { Side } from "@/lib/game/settings";
 
+import { CoachPanel } from "./CoachPanel";
 import { GameAnalysis } from "./GameAnalysis";
 
 export type MetaItem = { label: string; value: string };
@@ -17,6 +19,9 @@ type GameReplayProps = {
   // The user's colour: the board faces this way, and it is which side's moves
   // the analysis classifies.
   orientation: Side;
+  // How the game was played. A Coach-mode game shows the coach view (summary and
+  // commentary); a Play-mode game keeps the on-demand "Analyse this game" panel.
+  mode: GameMode;
   meta: readonly MetaItem[];
 };
 
@@ -88,10 +93,11 @@ function ControlButton({
   );
 }
 
-export function GameReplay({ gameId, pgn, orientation, meta }: GameReplayProps) {
+export function GameReplay({ gameId, pgn, orientation, mode, meta }: GameReplayProps) {
   const replay = useMemo(() => buildReplay(pgn), [pgn]);
   const [ply, setPly] = useState(0);
   const [tab, setTab] = useState<Tab>("moves");
+  const isCoach = mode === "coach";
 
   const lastPly = replay === null ? 0 : replay.fens.length - 1;
 
@@ -200,7 +206,7 @@ export function GameReplay({ gameId, pgn, orientation, meta }: GameReplayProps) 
             onClick={() => setTab("analysis")}
             className={`flex-1 py-3 ${tab === "analysis" ? "bg-ink text-panel" : "text-muted hover:text-ink"}`}
           >
-            Analysis
+            {isCoach ? "Coach" : "Analysis"}
           </button>
         </div>
 
@@ -217,14 +223,25 @@ export function GameReplay({ gameId, pgn, orientation, meta }: GameReplayProps) 
           />
         </div>
         <div className={`flex min-h-0 flex-1 flex-col ${tab === "analysis" ? "" : "hidden"}`}>
-          <GameAnalysis
-            gameId={gameId}
-            pgn={pgn}
-            userColor={orientation}
-            fens={replay.fens}
-            sanByPly={replay.moves}
-            onSelectPly={(selectedPly) => setPly(selectedPly)}
-          />
+          {isCoach ? (
+            <CoachPanel
+              gameId={gameId}
+              pgn={pgn}
+              userColor={orientation}
+              fens={replay.fens}
+              sanByPly={replay.moves}
+              onSelectPly={(selectedPly) => setPly(selectedPly)}
+            />
+          ) : (
+            <GameAnalysis
+              gameId={gameId}
+              pgn={pgn}
+              userColor={orientation}
+              fens={replay.fens}
+              sanByPly={replay.moves}
+              onSelectPly={(selectedPly) => setPly(selectedPly)}
+            />
+          )}
         </div>
       </aside>
     </div>

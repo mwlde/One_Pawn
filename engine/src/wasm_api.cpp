@@ -6,7 +6,7 @@
 // header would only exist to be included by callers that do not exist.
 //
 // Exporting: rather than mark each function EMSCRIPTEN_KEEPALIVE here, the
-// three names are listed individually in build.sh's EXPORTED_FUNCTIONS. That
+// names are listed individually in build.sh's EXPORTED_FUNCTIONS. That
 // list already has to name them (it is how JS gets a Module._engineGetBestMove
 // to call), and EXPORTED_FUNCTIONS also roots them against dead-code
 // elimination the same way the attribute would. Marking them here too would
@@ -24,8 +24,11 @@
 //
 // Exceptions: chess.js-level bugs aside, the one call in this file that can
 // throw is parseFen, and only for malformed input. Every exception is caught
-// here and turned into a NULL return plus an error the JS side can read back
-// with engineGetError. No C++ exception is allowed to reach the WASM/JS
+// here and turned into a failure the JS side can read back with engineGetError:
+// a NULL return from the string-returning calls, a 0 return from the
+// score-returning one. Either way engineHasError() is what tells a real result
+// from a failed one, since 0 is also a legitimate score (a stalemate) and ""
+// a legitimate move buffer. No C++ exception is allowed to reach the WASM/JS
 // boundary; letting one propagate out of an extern "C" function is undefined
 // behaviour under Emscripten's default (JS-based) exception handling.
 
@@ -96,6 +99,41 @@ const char* engineGetBestMove(const char* fen, int depth) {
   } catch (...) {
     setError("unknown error");
     return nullptr;
+  }
+}
+
+int engineEvaluatePosition(const char* fen, int depth) {
+  // Same clean-slate and null-fen contract as engineGetBestMove: a stale error
+  // must not survive into this call, and std::string from a null pointer is
+  // undefined behaviour rather than a catchable throw.
+  g_hasError = false;
+
+  if (fen == nullptr) {
+    setError("fen is null");
+    return 0;
+  }
+
+  try {
+    Board board = parseFen(fen);
+
+    // The score, not the move. findBestMove already settles every case this
+    // needs: it runs the same negamax, and it writes lastSearchScore() to the
+    // negamax value for a normal position, to evaluate(board) at depth <= 0,
+    // and to the terminal verdict when there are no legal moves (-MATE_SCORE
+    // for checkmate, 0 for stalemate, both from the side-to-move perspective).
+    // Re-deriving any of that here would just be a second copy of logic the
+    // search already owns.
+    findBestMove(board, depth);
+    return lastSearchScore();
+  } catch (const std::invalid_argument& error) {
+    setError(error.what());
+    return 0;
+  } catch (const std::exception& error) {
+    setError(error.what());
+    return 0;
+  } catch (...) {
+    setError("unknown error");
+    return 0;
   }
 }
 

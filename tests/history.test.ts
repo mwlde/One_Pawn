@@ -20,6 +20,7 @@ function game(partial: Partial<GameSummary>): GameSummary {
     time_control: "10+0",
     move_count: 40,
     played_at: "2026-09-01T12:00:00.000Z",
+    mode: "play",
     ...partial,
   };
 }

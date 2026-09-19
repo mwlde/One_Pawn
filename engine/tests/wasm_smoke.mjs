@@ -62,8 +62,17 @@ const Module = await createModule({
 // caller the call failed. That distinction is the whole reason the error
 // path below checks hasError() rather than testing the move string alone.
 const engineGetBestMove = Module.cwrap("engineGetBestMove", "string", ["string", "number"]);
+const engineEvaluatePosition = Module.cwrap("engineEvaluatePosition", "number", ["string", "number"]);
 const engineGetError = Module.cwrap("engineGetError", "string", []);
 const engineHasError = Module.cwrap("engineHasError", "number", []);
+
+// White to move, up a full queen (Black's queen removed from the opening
+// setup). Chosen over a bare KQ-vs-K position on purpose: with only kings and
+// a queen the search would find a forced mate at this depth and return a mate
+// score in the tens of thousands, not a material verdict. A crowded board with
+// no mate in sight keeps the score in centipawns where this check can read it.
+const WHITE_UP_A_QUEEN = "rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const BLACK_DOWN_A_QUEEN = "rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1";
 
 console.log("1. Starting position, depth 3");
 const move = engineGetBestMove(STARTING_FEN, 3);
@@ -88,6 +97,26 @@ engineGetBestMove("this is not a fen", 1); // leaves an error pending
 const secondMove = engineGetBestMove(STARTING_FEN, 3);
 check("hasError() is 0 after a successful call", engineHasError() === 0);
 check("the successful move is still legal", LEGAL_STARTING_MOVES.has(secondMove), `got "${secondMove}"`);
+
+console.log("5. engineEvaluatePosition: starting position is roughly balanced");
+const startScore = engineEvaluatePosition(STARTING_FEN, 3);
+console.log(`  engineEvaluatePosition(start, 3) -> ${startScore}`);
+check("no error flagged", engineHasError() === 0, `hasError() returned ${engineHasError()}`);
+// The opening is mirror-symmetric, so material and piece-square terms cancel
+// and the search should settle within a pawn of dead level either way.
+check("start score is within a pawn of zero", Math.abs(startScore) <= 100, `got ${startScore}`);
+
+console.log("6. engineEvaluatePosition: a queen up reads as clearly winning, from the mover's side");
+const whiteScore = engineEvaluatePosition(WHITE_UP_A_QUEEN, 3);
+const blackScore = engineEvaluatePosition(BLACK_DOWN_A_QUEEN, 3);
+console.log(`  white to move -> ${whiteScore}, black to move -> ${blackScore}`);
+// A queen is 900cp. Search noise and piece-square terms move that around, so
+// the bar is "at least most of a queen" rather than exactly 900.
+check("white to move, a queen up, scores clearly positive", whiteScore >= 600, `got ${whiteScore}`);
+// The same board with Black to move must score clearly negative: evaluation is
+// from the side-to-move's perspective, and the whole analysis loop depends on
+// that sign flipping when the move changes whose turn it is.
+check("black to move, a queen down, scores clearly negative", blackScore <= -600, `got ${blackScore}`);
 
 console.log("");
 if (failures > 0) {

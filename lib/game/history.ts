@@ -4,6 +4,7 @@
 // this runs: a relative date computed in the browser would disagree with the
 // one the server rendered a moment earlier.
 
+import type { GameMode } from "./mode";
 import type { GameResult } from "./save";
 import { DIFFICULTY_DEPTHS, DIFFICULTY_LABELS, type Difficulty, type Side, type TimeControlId } from "./settings";
 
@@ -17,6 +18,7 @@ export type GameSummary = {
   time_control: TimeControlId;
   move_count: number;
   played_at: string;
+  mode: GameMode;
 };
 
 // The whole row. Only the replay screen needs it.
@@ -25,7 +27,7 @@ export type SavedGame = GameSummary & { pgn: string };
 // Column lists rather than select("*"), so a column added later does not start
 // arriving on a screen that never asked for it.
 export const GAME_SUMMARY_COLUMNS =
-  "id, result, user_color, difficulty, time_control, move_count, played_at";
+  "id, result, user_color, difficulty, time_control, move_count, played_at, mode";
 export const SAVED_GAME_COLUMNS = `${GAME_SUMMARY_COLUMNS}, pgn`;
 
 export type ResultLabel = "You won" | "You lost" | "Draw" | "You resigned";

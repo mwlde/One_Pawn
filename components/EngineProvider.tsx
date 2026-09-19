@@ -7,6 +7,7 @@ import { useEngine } from "@/engine-wasm/useEngine";
 type EngineContextValue = {
   isReady: boolean;
   getBestMove: (fen: string, depth: number) => Promise<string>;
+  evaluatePosition: (fen: string, depth: number) => Promise<number>;
 };
 
 const EngineContext = createContext<EngineContextValue | null>(null);
@@ -17,9 +18,12 @@ const EngineContext = createContext<EngineContextValue | null>(null);
 // benefit, so it is called once here and shared. Context is the state pattern
 // this project already commits to (docs/ARCHITECTURE.md, "State management").
 export function EngineProvider({ children }: { children: ReactNode }) {
-  const { isReady, getBestMove } = useEngine();
+  const { isReady, getBestMove, evaluatePosition } = useEngine();
 
-  const value = useMemo(() => ({ isReady, getBestMove }), [isReady, getBestMove]);
+  const value = useMemo(
+    () => ({ isReady, getBestMove, evaluatePosition }),
+    [isReady, getBestMove, evaluatePosition],
+  );
 
   return <EngineContext.Provider value={value}>{children}</EngineContext.Provider>;
 }

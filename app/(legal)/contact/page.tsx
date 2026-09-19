@@ -44,7 +44,7 @@ export default function ContactPage() {
             anything about the terms, the privacy policy, or a request about your own data.
           </Li>
           <Li>
-            <strong>Security disclosure:</strong> <Contact address="security@mwlde.com" />. Use
+            <strong>Security disclosure:</strong> <Contact address="hello@mwlde.com" />. Use
             this to report a vulnerability. Machine-readable details are published at{" "}
             <a href="/.well-known/security.txt" className="font-mono text-[13px] underline hover:text-muted">
               /.well-known/security.txt

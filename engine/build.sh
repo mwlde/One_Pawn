@@ -15,7 +15,7 @@ emcc engine/src/wasm_api.cpp \
   engine/src/search.cpp \
   -O2 \
   -fexceptions \
-  -s EXPORTED_FUNCTIONS='["_engineGetBestMove","_engineGetError","_engineHasError"]' \
+  -s EXPORTED_FUNCTIONS='["_engineGetBestMove","_engineEvaluatePosition","_engineGetError","_engineHasError"]' \
   -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]' \
   -s MODULARIZE=1 \
   -s EXPORT_ES6=1 \

@@ -14,6 +14,8 @@ export type GameRow = {
   opponent: string;
   playedAt: string;
   moves: string;
+  // Played in coach mode. Shown as a small marker, not filtered or sorted on.
+  coach: boolean;
 };
 
 // Wireframe 06 draws the result as a bordered pill with no colour in it, so the
@@ -139,7 +141,17 @@ export function GamesList({ rows }: { rows: GameRow[] }) {
                     {row.result}
                   </span>
                 </div>
-                <div>{row.opponent}</div>
+                <div className="flex items-center gap-2">
+                  <span>{row.opponent}</span>
+                  {row.coach ? (
+                    <span
+                      title="Played in coach mode"
+                      className="shrink-0 border border-hairline px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wide text-muted"
+                    >
+                      coach
+                    </span>
+                  ) : null}
+                </div>
                 <div className="font-mono text-xs text-muted md:text-[13px] md:text-ink">
                   {row.moves}
                 </div>

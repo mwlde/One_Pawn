@@ -5,6 +5,7 @@
 
 import type { Chess } from "chess.js";
 
+import type { GameMode } from "./mode";
 import type { GameEnd } from "./result";
 import { depthFor, type GameSettings, type Side, type TimeControlId } from "./settings";
 
@@ -24,6 +25,7 @@ export type SaveGamePayload = {
   difficulty: number;
   time_control: TimeControlId;
   move_count: number;
+  mode: GameMode;
 };
 
 export type SaveErrorKind =
@@ -75,6 +77,9 @@ export function buildSavePayload(
     // and anything displaying it divides, the way the post-game screen already
     // does. A four-ply game is stored as 4 and shown as "2 moves".
     move_count: chess.history().length,
+    // The mode is fixed at setup and stored as played, so it survives even when
+    // coach behaviour arrives later and starts reading it.
+    mode: settings.mode,
   };
 }
 

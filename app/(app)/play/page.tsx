@@ -369,6 +369,7 @@ export default function PlayPage() {
         <PostGame
           end={end}
           moveCount={moveCount}
+          mode={settings.mode}
           saveState={saveState}
           isLoggedIn={userId !== null}
           onRetrySave={savePayload === null ? null : () => retrySave(savePayload)}

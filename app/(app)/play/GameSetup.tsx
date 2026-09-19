@@ -1,9 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import {
+  getPreferredModeServerSnapshot,
+  getPreferredModeSnapshot,
+  MODE_DESCRIPTIONS,
+  MODE_LABELS,
+  MODES,
+  subscribePreferredMode,
+  writePreferredMode,
+} from "@/lib/game/mode";
 import {
   DIFFICULTIES,
   DIFFICULTY_LABELS,
@@ -37,6 +46,18 @@ const TIME_CONTROL_OPTIONS = TIME_CONTROL_IDS.map((id) => ({
 export function GameSetup({ initialSettings, onStart }: GameSetupProps) {
   const [settings, setSettings] = useState<GameSettings>(initialSettings);
 
+  // The remembered mode lives in localStorage, an external store. Reading it
+  // through useSyncExternalStore keeps it SSR-safe (the server and first client
+  // render both see the default, so hydration matches) and needs no
+  // setState-in-effect: a change in another tab, or this one, re-renders on its
+  // own. It is the source of truth for the selected mode; settings.mode is only
+  // read when a game actually starts.
+  const preferredMode = useSyncExternalStore(
+    subscribePreferredMode,
+    getPreferredModeSnapshot,
+    getPreferredModeServerSnapshot,
+  );
+
   const timeControl = TIME_CONTROLS[settings.timeControl];
   const incrementNote =
     timeControl.incrementSeconds === 0
@@ -54,6 +75,44 @@ export function GameSetup({ initialSettings, onStart }: GameSetupProps) {
         </h1>
 
         <div className="flex flex-col gap-5 md:gap-6">
+          <div>
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+              Mode
+            </div>
+            <div role="radiogroup" aria-label="Mode" className="flex flex-col gap-2">
+              {MODES.map((mode) => {
+                const selected = preferredMode === mode;
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => writePreferredMode(mode)}
+                    className={`border p-3 text-left transition-colors ${
+                      selected ? "border-ink bg-tint" : "border-hairline hover:border-ink"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`text-sm ${selected ? "font-semibold" : ""}`}>
+                        {MODE_LABELS[mode]}
+                      </span>
+                      <span
+                        aria-hidden
+                        className={`h-3 w-3 shrink-0 border ${
+                          selected ? "border-ink bg-ink" : "border-hairline"
+                        }`}
+                      />
+                    </div>
+                    <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted">
+                      {MODE_DESCRIPTIONS[mode]}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <SegmentedControl
             label="Your side"
             options={SIDE_OPTIONS}
@@ -85,7 +144,11 @@ export function GameSetup({ initialSettings, onStart }: GameSetupProps) {
         {/* Not gated on engine readiness. The Worker queues any request that
             arrives before WASM has finished loading, so a game started early
             simply waits on the engine's first move rather than failing. */}
-        <Button variant="primary" className="mt-6 w-full md:mt-8" onClick={() => onStart(settings)}>
+        <Button
+          variant="primary"
+          className="mt-6 w-full md:mt-8"
+          onClick={() => onStart({ ...settings, mode: preferredMode })}
+        >
           New game
         </Button>
       </div>

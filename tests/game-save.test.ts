@@ -119,7 +119,12 @@ describe("resultFor", () => {
 });
 
 describe("buildSavePayload", () => {
-  const settings: GameSettings = { side: "white", difficulty: "easy", timeControl: "3+2" };
+  const settings: GameSettings = {
+    side: "white",
+    difficulty: "easy",
+    timeControl: "3+2",
+    mode: "play",
+  };
 
   it("reads the settings as the columns store them", () => {
     const chess = foolsMate();
@@ -131,8 +136,19 @@ describe("buildSavePayload", () => {
       difficulty: 3,
       time_control: "3+2",
       move_count: 4,
+      mode: "play",
     });
     expect(payload.pgn).toContain("Qh4#");
+  });
+
+  it("carries the coach mode through to the payload", () => {
+    const chess = foolsMate();
+    const payload = buildSavePayload(
+      chess,
+      { ...settings, mode: "coach" },
+      describeEnd(chess, "white")!,
+    );
+    expect(payload.mode).toBe("coach");
   });
 
   it("stores a resignation as an abandoned game with the moves played so far", () => {
@@ -203,11 +219,17 @@ describe("saveGameSchema", () => {
     difficulty: 3,
     time_control: "3+2",
     move_count: 4,
+    mode: "play",
   };
 
   it("accepts what buildSavePayload produces", () => {
     const chess = foolsMate();
-    const settings: GameSettings = { side: "black", difficulty: "hard", timeControl: "1+0" };
+    const settings: GameSettings = {
+      side: "black",
+      difficulty: "hard",
+      timeControl: "1+0",
+      mode: "coach",
+    };
     const payload = buildSavePayload(chess, settings, describeEnd(chess, "black")!);
 
     expect(saveGameSchema.safeParse(payload).success).toBe(true);
@@ -257,6 +279,14 @@ describe("saveGameSchema", () => {
       expect(saveGameSchema.safeParse({ ...valid, move_count }).success).toBe(false);
     }
     expect(saveGameSchema.safeParse({ ...valid, move_count: 1000 }).success).toBe(true);
+  });
+
+  it("accepts both modes and rejects anything else", () => {
+    expect(saveGameSchema.safeParse({ ...valid, mode: "play" }).success).toBe(true);
+    expect(saveGameSchema.safeParse({ ...valid, mode: "coach" }).success).toBe(true);
+    for (const mode of ["Play", "analysis", "", undefined]) {
+      expect(saveGameSchema.safeParse({ ...valid, mode }).success).toBe(false);
+    }
   });
 
   it("rejects a payload trying to choose its own user_id", () => {

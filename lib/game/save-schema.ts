@@ -4,6 +4,7 @@
 
 import { z } from "zod";
 
+import { MODES } from "./mode";
 import { DIFFICULTY_DEPTHS, type TimeControlId } from "./settings";
 
 // Both lists are derived from the game settings rather than retyped, so a change
@@ -20,4 +21,5 @@ export const saveGameSchema = z.object({
   difficulty: z.number().int().refine((depth) => ALLOWED_DEPTHS.includes(depth)),
   time_control: z.enum(ALLOWED_TIME_CONTROLS),
   move_count: z.number().int().positive().max(1000),
+  mode: z.enum(MODES),
 });

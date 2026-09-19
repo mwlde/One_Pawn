@@ -22,6 +22,7 @@ type EngineFactory = () => Promise<EngineModule>;
 
 type Engine = {
   getBestMove: (fen: string, depth: number) => string;
+  evaluatePosition: (fen: string, depth: number) => number;
   getError: () => string;
   hasError: () => number;
 };
@@ -33,10 +34,29 @@ type FindBestMoveMessage = {
   requestId: string;
 };
 
+type EvaluatePositionMessage = {
+  type: "evaluate_position";
+  fen: string;
+  depth: number;
+  requestId: string;
+};
+
+// Both requests carry the same fields; only the type tag decides which engine
+// call runs. Kept as a union rather than one message with a mode flag so the
+// result types can differ (a move string vs a score) without either side
+// having to narrow an over-wide message.
+type RequestMessage = FindBestMoveMessage | EvaluatePositionMessage;
+
 type BestMoveResultMessage = {
   type: "best_move_result";
   requestId: string;
   move: string;
+};
+
+type EvaluatePositionResultMessage = {
+  type: "evaluate_position_result";
+  requestId: string;
+  score: number;
 };
 
 type ErrorMessage = {
@@ -60,8 +80,14 @@ const ENGINE_PATH = "/engine.js";
 // MessageEvent itself still comes from "dom" unchanged: it is the same type
 // on both sides of a postMessage call.
 type WorkerSelf = {
-  postMessage: (message: BestMoveResultMessage | ErrorMessage | ReadyMessage) => void;
-  onmessage: ((event: MessageEvent<FindBestMoveMessage>) => void) | null;
+  postMessage: (
+    message:
+      | BestMoveResultMessage
+      | EvaluatePositionResultMessage
+      | ErrorMessage
+      | ReadyMessage,
+  ) => void;
+  onmessage: ((event: MessageEvent<RequestMessage>) => void) | null;
 };
 
 const workerSelf = self as unknown as WorkerSelf;
@@ -72,6 +98,10 @@ function wrapEngine(module: EngineModule): Engine {
       fen: string,
       depth: number,
     ) => string,
+    evaluatePosition: module.cwrap("engineEvaluatePosition", "number", ["string", "number"]) as (
+      fen: string,
+      depth: number,
+    ) => number,
     getError: module.cwrap("engineGetError", "string", []) as () => string,
     hasError: module.cwrap("engineHasError", "number", []) as () => number,
   };
@@ -81,25 +111,35 @@ let engine: Engine | null = null;
 
 // Messages that arrive before the WASM module has finished loading are
 // queued here rather than dropped. The main thread has no way to know when
-// "ready" fires, so it is free to post find_best_move the moment it creates
-// the worker; this queue is what makes that safe.
-const pendingMessages: FindBestMoveMessage[] = [];
+// "ready" fires, so it is free to post a request the moment it creates the
+// worker; this queue is what makes that safe.
+const pendingMessages: RequestMessage[] = [];
 
-function handleFindBestMove(engine: Engine, message: FindBestMoveMessage): void {
+function handleRequest(engine: Engine, message: RequestMessage): void {
   const { fen, depth, requestId } = message;
 
-  const move = engine.getBestMove(fen, depth);
-  if (engine.hasError()) {
-    const result: ErrorMessage = { type: "error", requestId, message: engine.getError() };
-    workerSelf.postMessage(result);
+  // hasError() is checked immediately after each engine call because the shim
+  // clears its error flag at the start of every call (see wasm_api.cpp). Read
+  // it late and a later call would already have reset it.
+  if (message.type === "find_best_move") {
+    const move = engine.getBestMove(fen, depth);
+    if (engine.hasError()) {
+      workerSelf.postMessage({ type: "error", requestId, message: engine.getError() });
+      return;
+    }
+    workerSelf.postMessage({ type: "best_move_result", requestId, move });
     return;
   }
 
-  const result: BestMoveResultMessage = { type: "best_move_result", requestId, move };
-  workerSelf.postMessage(result);
+  const score = engine.evaluatePosition(fen, depth);
+  if (engine.hasError()) {
+    workerSelf.postMessage({ type: "error", requestId, message: engine.getError() });
+    return;
+  }
+  workerSelf.postMessage({ type: "evaluate_position_result", requestId, score });
 }
 
-workerSelf.onmessage = (event: MessageEvent<FindBestMoveMessage>) => {
+workerSelf.onmessage = (event: MessageEvent<RequestMessage>) => {
   const message = event.data;
 
   if (engine === null) {
@@ -110,7 +150,7 @@ workerSelf.onmessage = (event: MessageEvent<FindBestMoveMessage>) => {
   dispatch(engine, message);
 };
 
-function dispatch(engine: Engine, message: FindBestMoveMessage): void {
+function dispatch(engine: Engine, message: RequestMessage): void {
   // The engine boundary already turns its own failures into hasError() plus
   // a message (see wasm_api.cpp). This try/catch is for the class of failure
   // that boundary cannot cover: a JS-level exception from cwrap or the glue
@@ -119,7 +159,7 @@ function dispatch(engine: Engine, message: FindBestMoveMessage): void {
   // thrown error here would kill the worker silently and every request after
   // it would hang forever with no response.
   try {
-    handleFindBestMove(engine, message);
+    handleRequest(engine, message);
   } catch {
     const result: ErrorMessage = {
       type: "error",

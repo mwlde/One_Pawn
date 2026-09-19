@@ -3,12 +3,14 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/Button";
+import type { GameMode } from "@/lib/game/mode";
 import type { GameEnd } from "@/lib/game/result";
 import type { SaveState } from "@/lib/game/save";
 
 type PostGameProps = {
   end: GameEnd;
   moveCount: number;
+  mode: GameMode;
   saveState: SaveState;
   isLoggedIn: boolean;
   // Null before there is anything to retry, which cannot happen while this
@@ -91,6 +93,7 @@ function SaveIndicator({
 export function PostGame({
   end,
   moveCount,
+  mode,
   saveState,
   isLoggedIn,
   onRetrySave,
@@ -105,13 +108,26 @@ export function PostGame({
       className="fixed inset-0 z-20 flex items-end justify-center bg-ink/40 md:items-center"
     >
       <div className="w-full border-t-2 border-ink bg-panel p-5 md:w-[560px] md:border md:p-10">
-        <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted">
-          Result
+        <div className="flex items-center justify-between gap-2">
+          <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted">
+            Result
+          </div>
+          {/* Play mode leaves this screen exactly as it was; coach mode adds a
+              small marker so the game reads as one that expects analysis. No
+              analysis is triggered here yet: that is 4B. */}
+          {mode === "coach" ? (
+            <span className="border border-ink px-2 py-0.5 font-mono text-[10px]">Coach mode</span>
+          ) : null}
         </div>
         <h2 className="mt-1 text-3xl font-bold tracking-tight md:text-5xl">{end.headline}</h2>
         <p className="mt-1 text-sm text-muted">
           {end.reason} in {moveCount} {moveCount === 1 ? "move" : "moves"}
         </p>
+        {mode === "coach" ? (
+          <p className="mt-1 font-mono text-[10px] text-muted">
+            This game will be analysed. Commentary arrives in a later update.
+          </p>
+        ) : null}
 
         <div className="mt-6 grid grid-cols-3 border border-ink md:mt-8">
           {STATS.map((stat, index) => (

@@ -254,11 +254,19 @@ function ReinforceCard({ read, now }: { read: QueueRead; now: Date }) {
 function GameRow({ game, now }: { game: GameSummary; now: Date }) {
   return (
     <li className="flex items-center justify-between gap-3 border-b border-dashed border-hairline py-2 last:border-b-0">
-      <div className="min-w-0">
+      <div className="flex min-w-0 items-center gap-2">
         <span className="text-[13px] font-semibold">{resultLabel(game.result, game.user_color)}</span>
-        <span className="ml-2 truncate font-mono text-[10px] text-muted">
+        <span className="truncate font-mono text-[10px] text-muted">
           {describeOpponent(game.difficulty)}
         </span>
+        {game.mode === "coach" ? (
+          <span
+            title="Played in coach mode"
+            className="shrink-0 border border-hairline px-1 font-mono text-[9px] uppercase tracking-wide text-muted"
+          >
+            coach
+          </span>
+        ) : null}
       </div>
       <span className="shrink-0 font-mono text-[10px] text-muted">
         {formatPlayedAt(game.played_at, now)}

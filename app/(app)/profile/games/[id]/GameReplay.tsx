@@ -7,13 +7,20 @@ import { GameBoard } from "@/components/board/GameBoard";
 import { MoveHistory } from "@/components/panels/MoveHistory";
 import type { Side } from "@/lib/game/settings";
 
+import { GameAnalysis } from "./GameAnalysis";
+
 export type MetaItem = { label: string; value: string };
 
 type GameReplayProps = {
+  gameId: string;
   pgn: string;
+  // The user's colour: the board faces this way, and it is which side's moves
+  // the analysis classifies.
   orientation: Side;
   meta: readonly MetaItem[];
 };
+
+type Tab = "moves" | "analysis";
 
 // The board is read-only here, so nothing can be dropped on it. GameBoard locks
 // dragging when movableColor is null and never calls this, but the prop is
@@ -81,9 +88,10 @@ function ControlButton({
   );
 }
 
-export function GameReplay({ pgn, orientation, meta }: GameReplayProps) {
+export function GameReplay({ gameId, pgn, orientation, meta }: GameReplayProps) {
   const replay = useMemo(() => buildReplay(pgn), [pgn]);
   const [ply, setPly] = useState(0);
+  const [tab, setTab] = useState<Tab>("moves");
 
   const lastPly = replay === null ? 0 : replay.fens.length - 1;
 
@@ -179,16 +187,45 @@ export function GameReplay({ pgn, orientation, meta }: GameReplayProps) {
           ))}
         </dl>
 
-        <div className="shrink-0 border-b border-dashed border-hairline px-4 py-3 text-center text-xs font-semibold">
-          Moves
+        <div className="flex shrink-0 border-b border-dashed border-hairline text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => setTab("moves")}
+            className={`flex-1 py-3 ${tab === "moves" ? "bg-ink text-panel" : "text-muted hover:text-ink"}`}
+          >
+            Moves
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("analysis")}
+            className={`flex-1 py-3 ${tab === "analysis" ? "bg-ink text-panel" : "text-muted hover:text-ink"}`}
+          >
+            Analysis
+          </button>
         </div>
-        {/* activeIndex is the move that produced the position on the board, so
-            it trails the ply by one and is -1 at the starting position. */}
-        <MoveHistory
-          moves={replay.moves}
-          activeIndex={ply - 1}
-          onSelect={(index) => setPly(index + 1)}
-        />
+
+        {/* Both panels fill the same slot; the inactive one is hidden rather
+            than unmounted, so an analysis in progress keeps running and its
+            results survive a switch to the move list and back. activeIndex on
+            the move list is the move that produced the position on the board,
+            so it trails the ply by one and is -1 at the starting position. */}
+        <div className={`flex min-h-0 flex-1 flex-col ${tab === "moves" ? "" : "hidden"}`}>
+          <MoveHistory
+            moves={replay.moves}
+            activeIndex={ply - 1}
+            onSelect={(index) => setPly(index + 1)}
+          />
+        </div>
+        <div className={`flex min-h-0 flex-1 flex-col ${tab === "analysis" ? "" : "hidden"}`}>
+          <GameAnalysis
+            gameId={gameId}
+            pgn={pgn}
+            userColor={orientation}
+            fens={replay.fens}
+            sanByPly={replay.moves}
+            onSelectPly={(selectedPly) => setPly(selectedPly)}
+          />
+        </div>
       </aside>
     </div>
   );

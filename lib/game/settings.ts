@@ -2,6 +2,8 @@
 // rest of the app. Everything here is a fixed table: no derived difficulty, no
 // adaptive depth. Phase 1 keeps the mapping visible and boring on purpose.
 
+import { DEFAULT_MODE, type GameMode } from "./mode";
+
 export type Side = "white" | "black";
 
 export type Difficulty = "easy" | "medium" | "hard";
@@ -19,6 +21,7 @@ export type GameSettings = {
   side: Side;
   difficulty: Difficulty;
   timeControl: TimeControlId;
+  mode: GameMode;
 };
 
 export const SIDES: readonly Side[] = ["white", "black"];
@@ -59,6 +62,9 @@ export const DEFAULT_SETTINGS: GameSettings = {
   side: "white",
   difficulty: "medium",
   timeControl: "10+0",
+  // The setup screen overrides this from the remembered preference on mount;
+  // this is the value the first server render and a storage-less browser use.
+  mode: DEFAULT_MODE,
 };
 
 export function depthFor(difficulty: Difficulty): number {

@@ -67,6 +67,7 @@ function toRow(game: GameSummary): GameRow {
     opponent: describeOpponent(game.difficulty),
     playedAt: formatPlayedAt(game.played_at),
     moves: formatMoveCount(game.move_count),
+    coach: game.mode === "coach",
   };
 }
 

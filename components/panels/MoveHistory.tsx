@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import type { Classification } from "@/lib/analysis/types";
+
 type MoveHistoryProps = {
   // SAN, in play order, straight from chess.js history().
   moves: string[];
@@ -11,12 +13,32 @@ type MoveHistoryProps = {
   activeIndex?: number;
   // Supplied only where the moves are navigable. Without it they are text.
   onSelect?: (index: number) => void;
+  // How each analysed move was classified, keyed by the same index as `moves`.
+  // Only the user's own moves are in here; the engine's replies are not the
+  // user's play to judge, so they carry no mark. Absent during a live game.
+  classifications?: ReadonlyMap<number, Classification>;
 };
 
 type MovePair = {
   number: number;
   white: { san: string; index: number };
   black: { san: string; index: number } | null;
+};
+
+// The mark against a classified move. Square, like everything else on this
+// paper, and small enough to scan past: it answers "was there a problem here"
+// without competing with the move it belongs to.
+//
+// Good stays the neutral hairline for the same reason its badge does. A good
+// move is the unremarkable baseline, but it still earns a mark, because the
+// absence of one has to keep meaning "not analysed".
+const DOT_COLORS: Record<Classification, string> = {
+  best: "#4f7a3f",
+  excellent: "#7d9a6b",
+  good: "var(--color-hairline)",
+  inaccuracy: "#b08a1c",
+  mistake: "#c06a22",
+  blunder: "#b03226",
 };
 
 function toPairs(moves: string[]): MovePair[] {
@@ -32,7 +54,7 @@ function toPairs(moves: string[]): MovePair[] {
   return pairs;
 }
 
-export function MoveHistory({ moves, activeIndex, onSelect }: MoveHistoryProps) {
+export function MoveHistory({ moves, activeIndex, onSelect, classifications }: MoveHistoryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLLIElement>(null);
 
@@ -57,17 +79,43 @@ export function MoveHistory({ moves, activeIndex, onSelect }: MoveHistoryProps) 
   function cell(move: { san: string; index: number } | null) {
     if (move === null) return null;
     const highlight = move.index === active ? "bg-ink px-1 text-panel" : "";
+    const classification = classifications?.get(move.index);
 
-    if (onSelect === undefined) return <span className={highlight}>{move.san}</span>;
+    // The dot sits outside the highlight, so the inverted background of the
+    // selected move never lands behind a colour it was not designed for. It is
+    // decorative: the classification reaches a screen reader through the move's
+    // own label, because colour alone cannot carry it.
+    const dot =
+      classification === undefined ? null : (
+        <span
+          aria-hidden
+          className="size-[5px] shrink-0"
+          style={{ backgroundColor: DOT_COLORS[classification] }}
+        />
+      );
+
+    const label =
+      classification === undefined ? move.san : `${move.san}, ${classification}`;
+
+    const text =
+      onSelect === undefined ? (
+        <span className={highlight}>{move.san}</span>
+      ) : (
+        <button
+          type="button"
+          aria-label={label}
+          onClick={() => onSelect(move.index)}
+          className={`text-left hover:underline ${highlight}`}
+        >
+          {move.san}
+        </button>
+      );
 
     return (
-      <button
-        type="button"
-        onClick={() => onSelect(move.index)}
-        className={`text-left hover:underline ${highlight}`}
-      >
-        {move.san}
-      </button>
+      <span className="flex min-w-0 items-center gap-1">
+        {text}
+        {dot}
+      </span>
     );
   }
 

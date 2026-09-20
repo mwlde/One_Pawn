@@ -1,12 +1,11 @@
 "use client";
 
-import { Chess } from "chess.js";
 import Link from "next/link";
-import { useMemo } from "react";
 
-import { CoachView } from "@/components/coach/CoachView";
+import { RetryButton } from "@/components/coach/CoachView";
 import { Button } from "@/components/ui/Button";
-import { buildClassificationDisplay, buildNotableDisplay } from "@/lib/coach/display";
+import { isRetriableFailure } from "@/lib/coach/client";
+import { COMMENTARY_FAILURE_MESSAGE, firstSentence } from "@/lib/coach/display";
 import type { GameMode } from "@/lib/game/mode";
 import type { GameEnd } from "@/lib/game/result";
 import type { SaveState } from "@/lib/game/save";
@@ -35,7 +34,8 @@ type PostGameProps = {
 };
 
 // Play mode's three stubs, unchanged: they still read as placeholders until a
-// later phase fills them. Coach mode replaces this block with the coach view.
+// later phase fills them. Coach mode replaces this block with one sentence and
+// a way into the coach view.
 const STATS: readonly { label: string; value: string }[] = [
   { label: "accuracy", value: "--" },
   { label: "blunders", value: "--" },
@@ -98,58 +98,29 @@ function SaveIndicator({
   return null;
 }
 
-// The finished game's positions, so the coach view can name moves in SAN. Built
-// from the frozen PGN, not the live board.
-type ReplayPositions = { fens: string[]; sanByPly: string[] };
-
-function buildPositions(pgn: string | null): ReplayPositions | null {
-  if (pgn === null) return null;
-  const chess = new Chess();
-  try {
-    chess.loadPgn(pgn);
-  } catch {
-    return null;
-  }
-  const history = chess.history({ verbose: true });
-  return {
-    fens: [history[0]?.before ?? chess.fen(), ...history.map((move) => move.after)],
-    sanByPly: history.map((move) => move.san),
-  };
-}
-
+// The coach on the post-game screen is a doorway, not the room. It says how the
+// game went in one sentence and hands the reader to the replay, where the
+// commentary sits next to a board that can show the moves it is talking about.
+// Repeating the notes here would mean reading them twice, once without a board.
 function CoachSection({
   coach,
   gameId,
-  positions,
   onRetryAnalysis,
 }: {
   coach: CoachAnalysis;
   gameId: string | null;
-  positions: ReplayPositions | null;
   onRetryAnalysis: (() => void) | null;
 }) {
-  const notableMoves = useMemo(() => {
-    if (coach.commentary === null || positions === null) return [];
-    return buildNotableDisplay(coach.commentary.moves, coach.analyses, positions.fens, positions.sanByPly);
-  }, [coach.commentary, coach.analyses, positions]);
-
-  const fallbackMoves = useMemo(() => {
-    if (positions === null) return [];
-    return buildClassificationDisplay(coach.analyses, positions.fens, positions.sanByPly);
-  }, [coach.analyses, positions]);
-
   const heading = (
-    <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.1em] text-muted md:mt-8">
-      Coach
-    </p>
+    <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted">Coach</p>
   );
 
   if (coach.phase === "idle") {
     return (
-      <>
+      <div className="mt-6 md:mt-8">
         {heading}
         <p className={NOTE}>Analysis starts once the game is saved.</p>
-      </>
+      </div>
     );
   }
 
@@ -171,11 +142,17 @@ function CoachSection({
     );
   }
 
+  // The generation is running. The retry is on screen but inert, so the wait
+  // reads as a wait rather than as nothing happening, and an impatient second
+  // press cannot start a second run of the same calls.
   if (coach.phase === "commentating") {
     return (
       <div className="mt-6 md:mt-8">
         {heading}
         <p className="mt-2 text-center font-mono text-[11px] text-muted">Coach is thinking...</p>
+        <div className="mt-2 flex justify-center">
+          <RetryButton onClick={null} pending />
+        </div>
       </div>
     );
   }
@@ -200,8 +177,7 @@ function CoachSection({
     );
   }
 
-  // Ready. Either the coach view, the degraded classifications, or, for a game
-  // with none of the user's moves, a plain note.
+  // Ready. A game with none of the user's moves has nothing to open.
   if (coach.analyses.length === 0) {
     return (
       <div className="mt-6 md:mt-8">
@@ -213,15 +189,36 @@ function CoachSection({
     );
   }
 
+  const summary = coach.commentary?.summary ?? null;
+  const failure = coach.commentaryFailure;
+
   return (
-    <div className="mt-6 flex max-h-[42vh] flex-col border border-ink md:mt-8">
-      <CoachView
-        summary={coach.commentary?.summary ?? null}
-        notableMoves={notableMoves}
-        commentaryUnavailable={coach.commentaryFailed}
-        fallbackMoves={fallbackMoves}
-        onRetryCommentary={gameId === null ? null : () => coach.retryCommentary(gameId)}
-      />
+    <div className="mt-6 border border-ink p-4 md:mt-8 md:p-5">
+      {heading}
+      <p className="mt-2 text-sm leading-relaxed">
+        {failure === null && summary !== null
+          ? firstSentence(summary)
+          : COMMENTARY_FAILURE_MESSAGE[failure ?? "groq"]}
+      </p>
+
+      {/* A failure the student can do something about gets a button that
+          re-POSTs. One that they cannot gets none: the coach view still opens
+          and shows the classifications, which are computed and reliable. */}
+      {failure !== null && isRetriableFailure(failure) && gameId !== null ? (
+        <RetryButton onClick={() => coach.retryCommentary(gameId)} className="mt-3" />
+      ) : null}
+      {gameId === null ? (
+        // The save has not landed, so there is no page to open yet. The game is
+        // still in the profile once it does; this only guards the dead link.
+        <p className={NOTE}>The full coach view opens from your profile once this game saves.</p>
+      ) : (
+        <Link
+          href={`/profile/games/${gameId}`}
+          className="mt-3 block border border-ink bg-ink py-3 text-center text-sm font-semibold text-panel hover:bg-transparent hover:text-ink"
+        >
+          Open coach view
+        </Link>
+      )}
     </div>
   );
 }
@@ -242,7 +239,6 @@ export function PostGame({
   pgn,
   userColor,
 }: PostGameProps) {
-  const positions = useMemo(() => buildPositions(pgn), [pgn]);
   const isCoach = mode === "coach" && coach !== null;
 
   return (
@@ -268,7 +264,6 @@ export function PostGame({
           <CoachSection
             coach={coach}
             gameId={gameId}
-            positions={positions}
             onRetryAnalysis={
               gameId === null || pgn === null ? null : () => coach.retryAnalysis(gameId, pgn, userColor)
             }

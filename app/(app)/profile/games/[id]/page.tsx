@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { readStoredAnalysis } from "@/lib/analysis/server";
 import { loginPath } from "@/lib/auth/next-path";
+import { readStoredCommentary } from "@/lib/coach/server";
 import {
   describeDifficulty,
   describeOpponent,
@@ -52,6 +54,16 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
   // visitor that the id exists at all.
   if (data === null) notFound();
 
+  // Both reads happen here rather than on mount in the panels below, so the
+  // page knows whether it is a coach view before it renders anything. Fetching
+  // them on the client would paint the plain replay first and then swap the
+  // whole layout under the reader. They are read together: two round trips to
+  // the same database from the same request cost less than one to the browser.
+  const [analyses, commentary] = await Promise.all([
+    readStoredAnalysis(supabase, id),
+    readStoredCommentary(supabase, id),
+  ]);
+
   const meta: readonly MetaItem[] = [
     { label: "result", value: resultLabel(data.result, data.user_color) },
     { label: "opponent", value: describeOpponent(data.difficulty) },
@@ -73,7 +85,16 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
         </span>
       </div>
 
-      <GameReplay gameId={id} pgn={data.pgn} orientation={data.user_color} mode={data.mode} meta={meta} />
+      <GameReplay
+        gameId={id}
+        pgn={data.pgn}
+        orientation={data.user_color}
+        mode={data.mode}
+        meta={meta}
+        resultHeading={`${resultLabel(data.result, data.user_color)} · ${formatMoveCount(data.move_count)}`}
+        initialAnalyses={analyses}
+        initialCommentary={commentary}
+      />
     </div>
   );
 }

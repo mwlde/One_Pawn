@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useEngineContext } from "@/components/EngineProvider";
 import { analyzeGame } from "@/lib/analysis/analyze-game";
-import { fetchAnalysis, saveAnalysis, type StoredAnalysis } from "@/lib/analysis/client";
+import { saveAnalysis, type StoredAnalysis } from "@/lib/analysis/client";
 import { CLASSIFICATION_DISPLAY, formatMoveLabel } from "@/lib/analysis/display";
 import { ANALYSIS_DEPTH } from "@/lib/analysis/types";
 import { parseEngineMove } from "@/lib/game/engine-move";
@@ -16,16 +16,22 @@ type GameAnalysisProps = {
   gameId: string;
   pgn: string;
   userColor: Side;
+  // Whatever the page read on the server. Empty means the game has not been
+  // analysed, which is the normal state and what the Analyse button is for.
+  initialAnalyses: StoredAnalysis[];
   // From the replay: fens[0] is the starting position and fens[p] is the
   // position after ply p, so fens[p - 1] is the position ply p was played from.
   fens: string[];
   // SAN of each ply, indexed from zero: sanByPly[p - 1] is ply p.
   sanByPly: string[];
+  // A fresh analysis goes back to the replay screen, which puts the
+  // classification marks on the move list.
+  onAnalyses: (rows: StoredAnalysis[]) => void;
   // Jumps the board to the position after the given 1-indexed ply.
   onSelectPly: (ply: number) => void;
 };
 
-type Status = "loading" | "empty" | "analyzing" | "ready" | "error";
+type Status = "empty" | "analyzing" | "ready" | "error";
 
 // The engine's best move, rendered as SAN for the position it was played from.
 // Returns null for anything unreadable, so a stray row falls back to the raw
@@ -52,18 +58,22 @@ export function GameAnalysis({
   gameId,
   pgn,
   userColor,
+  initialAnalyses,
   fens,
   sanByPly,
+  onAnalyses,
   onSelectPly,
 }: GameAnalysisProps) {
   const engine = useEngineContext();
 
-  const [status, setStatus] = useState<Status>("loading");
-  const [rows, setRows] = useState<StoredAnalysis[]>([]);
-  const [cached, setCached] = useState(false);
+  const [status, setStatus] = useState<Status>(initialAnalyses.length > 0 ? "ready" : "empty");
+  const [rows, setRows] = useState(initialAnalyses);
+  // Whether the rows on screen came out of the database rather than out of the
+  // engine a moment ago. The page reads them on the server now, so the first
+  // render of an analysed game is always the cached one.
+  const [cached, setCached] = useState(initialAnalyses.length > 0);
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
-  const [loadNote, setLoadNote] = useState<string | null>(null);
 
   const totalUserMoves = useMemo(
     () => countUserMoves(sanByPly.length, userColor),
@@ -79,36 +89,9 @@ export function GameAnalysis({
     };
   }, []);
 
-  // On mount, load any stored analysis. Empty is a normal answer: the game has
-  // not been analysed yet, so the Analyse button is shown. A failed load is not
-  // fatal either: the button still works, and a note explains what happened.
-  useEffect(() => {
-    let cancelled = false;
-    fetchAnalysis(gameId)
-      .then((moves) => {
-        if (cancelled) return;
-        if (moves.length > 0) {
-          setRows(moves);
-          setCached(true);
-          setStatus("ready");
-        } else {
-          setStatus("empty");
-        }
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setLoadNote("Saved analysis could not be loaded. You can still analyse the game.");
-        setStatus("empty");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [gameId]);
-
   async function run() {
     setStatus("analyzing");
     setError(null);
-    setLoadNote(null);
     setProgress({ completed: 0, total: totalUserMoves });
 
     try {
@@ -126,6 +109,7 @@ export function GameAnalysis({
       setRows(stored);
       setCached(false);
       setStatus("ready");
+      onAnalyses(stored);
     } catch (cause) {
       if (!activeRef.current) return;
       setError(cause instanceof Error ? cause.message : "The analysis could not be completed.");
@@ -150,10 +134,6 @@ export function GameAnalysis({
       }),
     [rows, fens, sanByPly],
   );
-
-  if (status === "loading") {
-    return <p className="p-4 text-[11px] text-muted">Loading analysis...</p>;
-  }
 
   if (status === "empty") {
     // A game can be saved with none of the user's moves in it (resigning right
@@ -180,7 +160,6 @@ export function GameAnalysis({
         >
           {engine.isReady ? "Analyse this game" : "Engine loading..."}
         </button>
-        {loadNote === null ? null : <p className="text-[10px] text-muted">{loadNote}</p>}
       </div>
     );
   }

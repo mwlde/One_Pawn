@@ -1,14 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { CoachView } from "@/components/coach/CoachView";
+import { CoachView, RetryButton } from "@/components/coach/CoachView";
 import { useEngineContext } from "@/components/EngineProvider";
 import { analyzeGame } from "@/lib/analysis/analyze-game";
-import { fetchAnalysis, saveAnalysis, type StoredAnalysis } from "@/lib/analysis/client";
+import { saveAnalysis, type StoredAnalysis } from "@/lib/analysis/client";
 import { ANALYSIS_DEPTH } from "@/lib/analysis/types";
-import { fetchCommentary, generateCommentary } from "@/lib/coach/client";
-import { buildClassificationDisplay, buildNotableDisplay } from "@/lib/coach/display";
+import {
+  generateCommentary,
+  isRetriableFailure,
+  type CommentaryFailure,
+} from "@/lib/coach/client";
+import { COMMENTARY_FAILURE_MESSAGE, type ClassificationDisplay } from "@/lib/coach/display";
 import type { GameCommentary } from "@/lib/coach/types";
 import type { Side } from "@/lib/game/settings";
 
@@ -16,39 +20,55 @@ type CoachPanelProps = {
   gameId: string;
   pgn: string;
   userColor: Side;
-  // From the replay: fens[p - 1] is the position ply p was played from.
-  fens: string[];
-  // SAN of each ply, zero-indexed: sanByPly[p - 1] is ply p.
-  sanByPly: string[];
+  // Whatever the page already read. Empty means the game was never analysed.
+  analyses: StoredAnalysis[];
+  // The plain classification list, for the degraded view below.
+  fallbackMoves: ClassificationDisplay[];
+  totalUserMoves: number;
+  // Results go back to the replay screen, which owns them: commentary arriving
+  // is what turns this panel's page into the coach view.
+  onAnalyses: (rows: StoredAnalysis[]) => void;
+  onCommentary: (commentary: GameCommentary) => void;
   onSelectPly: (ply: number) => void;
 };
 
-// The coach view for a game opened from the profile. A Coach-mode game usually
-// has its analysis and commentary saved from the moment it finished, so the
-// common path is a plain load and display. The generate path covers the rest: a
-// game whose commentary failed at the time (retry), or one saved before it
-// finished analysing (rare).
+// The generate half of the coach, for a Coach-mode game that has no commentary
+// stored. The common case never reaches this panel at all: a game commentated
+// when it finished arrives with its notes already read on the server, and the
+// replay screen renders the coach view instead. This covers the rest, which is
+// a game whose commentary failed at the time and a game saved before it
+// finished analysing.
+//
+// The states below exist to keep one question answerable at all times: is the
+// coach still working, or did it stop? A single "something went wrong" cannot
+// tell those apart, and a student who cannot tell will either press the button
+// again (spending a second run of a call we already made) or give up on one
+// that only needed asking twice.
 type Status =
-  | "loading"
-  | "ready"
   | "prompt"
   | "analyzing"
   | "generating"
-  | "unavailable"
+  | "failed"
+  | "refused"
   | "error";
 
-function countUserMoves(totalPlies: number, userColor: Side): number {
-  return userColor === "white" ? Math.ceil(totalPlies / 2) : Math.floor(totalPlies / 2);
-}
-
-export function CoachPanel({ gameId, pgn, userColor, fens, sanByPly, onSelectPly }: CoachPanelProps) {
+export function CoachPanel({
+  gameId,
+  pgn,
+  userColor,
+  analyses,
+  fallbackMoves,
+  totalUserMoves,
+  onAnalyses,
+  onCommentary,
+  onSelectPly,
+}: CoachPanelProps) {
   const engine = useEngineContext();
 
-  const [status, setStatus] = useState<Status>("loading");
-  const [analyses, setAnalyses] = useState<StoredAnalysis[]>([]);
-  const [commentary, setCommentary] = useState<GameCommentary | null>(null);
+  const [status, setStatus] = useState<Status>("prompt");
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
+  const [failure, setFailure] = useState<CommentaryFailure | null>(null);
 
   const activeRef = useRef(true);
   useEffect(() => {
@@ -58,85 +78,63 @@ export function CoachPanel({ gameId, pgn, userColor, fens, sanByPly, onSelectPly
     };
   }, []);
 
-  const totalUserMoves = useMemo(
-    () => countUserMoves(sanByPly.length, userColor),
-    [sanByPly.length, userColor],
-  );
-
-  // On mount, load whatever is already saved: the analysis and the commentary.
-  // Commentary present is the common case and shows straight away. Otherwise the
-  // panel offers to generate it.
-  useEffect(() => {
-    let cancelled = false;
-    Promise.all([fetchAnalysis(gameId), fetchCommentary(gameId)])
-      .then(([storedAnalyses, storedCommentary]) => {
-        if (cancelled) return;
-        setAnalyses(storedAnalyses);
-        if (storedCommentary.summary !== null || storedCommentary.moves.length > 0) {
-          setCommentary(storedCommentary);
-          setStatus("ready");
-        } else {
-          setStatus("prompt");
-        }
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setStatus("prompt");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [gameId]);
+  // A run already under way. Checked rather than relying on the button being
+  // disabled: the disabled attribute is a hint to the pointer, not a guarantee,
+  // and every path through here ends in a paid engine pass or a Groq call.
+  const inFlightRef = useRef(false);
 
   const generate = useCallback(async () => {
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     setError(null);
+    setFailure(null);
 
-    let currentAnalyses = analyses;
     try {
+      let currentAnalyses = analyses;
+
       // Run the engine only if the analysis is not already saved. Revisiting a
       // game whose commentary failed should not pay for the analysis again.
       if (currentAnalyses.length === 0) {
         setStatus("analyzing");
         setProgress({ completed: 0, total: totalUserMoves });
-        const computed = await analyzeGame(pgn, userColor, engine, ANALYSIS_DEPTH, (completed, total) => {
-          if (activeRef.current) setProgress({ completed, total });
-        });
-        if (computed.length === 0) {
+        try {
+          const computed = await analyzeGame(pgn, userColor, engine, ANALYSIS_DEPTH, (completed, total) => {
+            if (activeRef.current) setProgress({ completed, total });
+          });
+          if (computed.length === 0) {
+            if (!activeRef.current) return;
+            setStatus("prompt");
+            return;
+          }
+          currentAnalyses = await saveAnalysis(gameId, computed);
           if (!activeRef.current) return;
-          setStatus("ready");
+          onAnalyses(currentAnalyses);
+        } catch (cause) {
+          if (!activeRef.current) return;
+          setError(cause instanceof Error ? cause.message : "The analysis could not be completed.");
+          setStatus("error");
           return;
         }
-        currentAnalyses = await saveAnalysis(gameId, computed);
-        if (!activeRef.current) return;
-        setAnalyses(currentAnalyses);
       }
-    } catch (cause) {
+
+      setStatus("generating");
+      const result = await generateCommentary(gameId);
       if (!activeRef.current) return;
-      setError(cause instanceof Error ? cause.message : "The analysis could not be completed.");
-      setStatus("error");
-      return;
+
+      // A successful generation hands the commentary up and this panel is gone:
+      // the replay screen re-renders as the coach view. Only a failure stays
+      // here, and which failure decides whether a retry is offered at all.
+      onCommentary(result.commentary);
+      if (result.failure === null) {
+        setStatus("prompt");
+        return;
+      }
+      setFailure(result.failure);
+      setStatus(isRetriableFailure(result.failure) ? "failed" : "refused");
+    } finally {
+      inFlightRef.current = false;
     }
-
-    setStatus("generating");
-    const result = await generateCommentary(gameId);
-    if (!activeRef.current) return;
-    setCommentary(result.commentary);
-    setStatus(result.failed ? "unavailable" : "ready");
-  }, [analyses, engine, gameId, pgn, totalUserMoves, userColor]);
-
-  const notableMoves = useMemo(() => {
-    if (commentary === null) return [];
-    return buildNotableDisplay(commentary.moves, analyses, fens, sanByPly);
-  }, [commentary, analyses, fens, sanByPly]);
-
-  const fallbackMoves = useMemo(
-    () => buildClassificationDisplay(analyses, fens, sanByPly),
-    [analyses, fens, sanByPly],
-  );
-
-  if (status === "loading") {
-    return <p className="p-4 text-[11px] text-muted">Loading coach...</p>;
-  }
+  }, [analyses, engine, gameId, onAnalyses, onCommentary, pgn, totalUserMoves, userColor]);
 
   if (status === "prompt") {
     if (totalUserMoves === 0) {
@@ -178,37 +176,45 @@ export function CoachPanel({ gameId, pgn, userColor, fens, sanByPly, onSelectPly
     );
   }
 
-  if (status === "generating") {
-    return (
-      <p className="flex min-h-0 flex-1 items-center justify-center p-4 font-mono text-[11px] text-muted">
-        Coach is thinking...
-      </p>
-    );
-  }
-
   if (status === "error") {
     return (
       <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 p-4 text-center">
         <p className="text-xs leading-relaxed">{error}</p>
-        <button
-          type="button"
-          onClick={generate}
-          className="mx-auto border border-ink px-4 py-2 font-mono text-xs hover:bg-tint"
-        >
-          Try again
-        </button>
+        <RetryButton onClick={generate} className="mx-auto" />
       </div>
     );
   }
 
+  const message = failure === null ? null : COMMENTARY_FAILURE_MESSAGE[failure];
+  const pending = status === "generating";
+
+  // With an analysis in hand the degraded view is worth keeping on screen
+  // through all of this: the classifications are already reliable, and a retry
+  // that blanked them would make the panel feel like it had lost the game.
+  if (fallbackMoves.length > 0) {
+    return (
+      <CoachView
+        notableMoves={[]}
+        selectedPly={null}
+        onSelect={onSelectPly}
+        commentaryUnavailable
+        fallbackMoves={fallbackMoves}
+        unavailableMessage={message ?? undefined}
+        retryPending={pending}
+        onRetryCommentary={status === "refused" ? null : generate}
+      />
+    );
+  }
+
+  // No analysis to fall back on, so the panel is only these few words.
   return (
-    <CoachView
-      summary={commentary?.summary ?? null}
-      notableMoves={notableMoves}
-      commentaryUnavailable={status === "unavailable"}
-      fallbackMoves={fallbackMoves}
-      onRetryCommentary={generate}
-      onSelectPly={onSelectPly}
-    />
+    <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 p-4 text-center">
+      <p className="text-xs leading-relaxed">
+        {pending ? "Coach analysis in progress. This takes a moment." : message}
+      </p>
+      {status === "refused" ? null : (
+        <RetryButton onClick={generate} pending={pending} className="mx-auto" />
+      )}
+    </div>
   );
 }

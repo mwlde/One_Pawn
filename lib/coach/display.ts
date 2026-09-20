@@ -9,7 +9,19 @@ import { formatMoveLabel } from "@/lib/analysis/display";
 import type { Classification, MoveAnalysis } from "@/lib/analysis/types";
 import { parseEngineMove } from "@/lib/game/engine-move";
 
+import type { CommentaryFailure } from "./client";
 import type { CommentaryReason, StoredMoveCommentary } from "./types";
+
+// What each failure says on screen. Kept apart from the transport that names
+// them: the reasons are facts about the request, these are sentences for a
+// student who does not know what Groq is and should not have to.
+export const COMMENTARY_FAILURE_MESSAGE: Record<CommentaryFailure, string> = {
+  groq: "The coach could not write up this game. This usually clears on a second try.",
+  network: "The request did not reach the server. Check your connection and try again.",
+  not_analyzed: "This game needs analysing before the coach can write about it.",
+  server: "Something went wrong while saving the commentary.",
+  refused: "The coach is not available for this game.",
+};
 
 // How each reason reads as a heading. blunder/mistake/inaccuracy repeat the
 // classification badge, so the view shows a reason heading only for the two that
@@ -25,6 +37,34 @@ export const REASON_DISPLAY: Record<CommentaryReason, string> = {
 // The reasons whose heading adds something the classification badge does not.
 export function reasonAddsHeading(reason: CommentaryReason): boolean {
   return reason === "best_move" || reason === "critical_moment";
+}
+
+// The opening sentence of a note, for the collapsed row in the coach's notes.
+// Splitting on a full stop alone would cut "12. Nxd4" in half, so a stop that
+// follows a digit or another stop is read as move notation ("12." and "1...")
+// rather than the end of a sentence. Written as a scan rather than a lookbehind
+// regex, which older Safari cannot parse at all.
+//
+// Text with no sentence end this can find comes back whole. A slightly long
+// excerpt is a better failure than an empty one.
+export function firstSentence(text: string): string {
+  const trimmed = text.trim();
+
+  for (let index = 0; index < trimmed.length; index += 1) {
+    const char = trimmed[index];
+    if (char !== "." && char !== "!" && char !== "?") continue;
+
+    const before = trimmed[index - 1];
+    if (before !== undefined && (before === "." || (before >= "0" && before <= "9"))) continue;
+
+    const after = trimmed[index + 1];
+    if (after === undefined) return trimmed;
+    if (!/\s/.test(after)) continue;
+
+    return trimmed.slice(0, index + 1);
+  }
+
+  return trimmed;
 }
 
 export type NotableDisplay = {

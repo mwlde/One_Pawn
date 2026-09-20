@@ -7,16 +7,54 @@
 
 import type { GameCommentary, StoredMoveCommentary } from "./types";
 
-// The outcome of asking the server to generate commentary. `failed` means no
-// summary could be produced and the game is worth retrying; `partial` means the
-// summary shipped but at least one per-move note did not. Either way `commentary`
-// holds whatever is available, so the caller can always render something.
+// Why a generation attempt produced no commentary. A flat boolean cannot tell a
+// model that fell over from a request the route refused outright, and the two
+// want different screens: one gets a Try again button, the other must not,
+// because pressing it would spend another call to be told the same thing.
+export type CommentaryFailure =
+  // Groq could not produce a summary. The commonest failure and the one most
+  // worth retrying: rate limits and timeouts both land here.
+  | "groq"
+  // The request never completed. Offline, or a dropped connection.
+  | "network"
+  // The analysis has to be saved before commentary can be written from it.
+  | "not_analyzed"
+  // Our own route failed on a read or a write.
+  | "server"
+  // Not this user's game, not a Coach-mode game, or no session. Retrying the
+  // same request gets the same answer.
+  | "refused";
+
+// The outcome of asking the server to generate commentary. `failure` is null on
+// success; `partial` means the summary shipped but at least one per-move note
+// did not. Either way `commentary` holds whatever is available, so the caller
+// can always render something.
 export type CommentaryResult = {
   commentary: GameCommentary;
-  failed: boolean;
+  failure: CommentaryFailure | null;
   partial: boolean;
   cached: boolean;
 };
+
+// Whether pressing Try again could plausibly end differently. Everything but an
+// outright refusal could: Groq is flaky, the network comes back, a server read
+// can succeed on a second pass, and a missing analysis is something the caller
+// runs before asking again.
+export function isRetriableFailure(failure: CommentaryFailure): boolean {
+  return failure !== "refused";
+}
+
+// What a non-2xx answer from our own route means. Pure, and separate from the
+// fetch, so the mapping from the route's error codes to the five outcomes above
+// can be read and tested in one place. An unrecognised code is treated as a
+// server fault rather than a refusal: guessing "retry cannot help" would strand
+// the user, and guessing the other way costs one request.
+export function classifyFailure(status: number, errorCode: string | null): CommentaryFailure {
+  if (errorCode === "not_analyzed") return "not_analyzed";
+  if (errorCode === "not_coach_mode") return "refused";
+  if (status === 401 || status === 403 || status === 404) return "refused";
+  return "server";
+}
 
 function endpoint(gameId: string): string {
   return `/api/games/${encodeURIComponent(gameId)}/coach`;
@@ -51,36 +89,50 @@ export async function fetchCommentary(gameId: string): Promise<GameCommentary> {
   return readCommentary(body);
 }
 
+// The route's own error code from a non-2xx body, when it sent one.
+function readErrorCode(body: unknown): string | null {
+  if (body === null || typeof body !== "object") return null;
+  const error = (body as { error?: unknown }).error;
+  return typeof error === "string" ? error : null;
+}
+
+const NOTHING: GameCommentary = { summary: null, moves: [] };
+
 // Asks the server to generate commentary, or return what it already has. Never
-// throws for a Groq-side failure: that comes back as `failed` so the caller can
-// degrade to showing the classifications rather than blocking. It throws only
-// when the request itself could not be made, which the caller also treats as a
-// failed generation.
+// throws: every way this can go wrong comes back as a `failure`, so the caller
+// can degrade to showing the classifications and decide whether to offer a
+// retry, rather than wrapping the call in a catch to find out.
 export async function generateCommentary(gameId: string): Promise<CommentaryResult> {
   let response: Response;
   try {
     response = await fetch(endpoint(gameId), { method: "POST" });
   } catch {
-    // Offline or a dropped connection: nothing was generated. Report it as a
-    // failure with empty commentary rather than throwing.
-    return { commentary: { summary: null, moves: [] }, failed: true, partial: false, cached: false };
+    // Offline or a dropped connection: nothing was generated, and nothing was
+    // spent either, so this is always worth trying again.
+    return { commentary: NOTHING, failure: "network", partial: false, cached: false };
   }
 
   const body: unknown = await response.json().catch(() => null);
 
   if (!response.ok) {
-    // A refusal (not analysed, not coach mode, auth) is not something the user
-    // can act on from here, so it degrades the same way a Groq failure does.
-    return { commentary: { summary: null, moves: [] }, failed: true, partial: false, cached: false };
+    return {
+      commentary: NOTHING,
+      failure: classifyFailure(response.status, readErrorCode(body)),
+      partial: false,
+      cached: false,
+    };
   }
 
   const commentary = readCommentary(body);
   // A 200 with failed:true is the route's "Groq could not produce a summary"
-  // signal. Otherwise a summary means success, even if some notes are missing.
-  const failed = readFlag(body, "failed") || commentary.summary === null;
+  // signal, and it writes nothing when that happens, so the game stays whole
+  // and retriable. Otherwise a summary means success, even if some notes are
+  // missing: those are degraded, not failed.
+  const groqFailed = readFlag(body, "failed") || commentary.summary === null;
+
   return {
     commentary,
-    failed,
+    failure: groqFailed ? "groq" : null,
     partial: readFlag(body, "partial"),
     cached: readFlag(body, "cached"),
   };

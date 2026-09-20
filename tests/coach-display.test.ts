@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import type { MoveAnalysis } from "@/lib/analysis/types";
-import { buildClassificationDisplay, buildNotableDisplay } from "@/lib/coach/display";
+import {
+  buildClassificationDisplay,
+  buildNotableDisplay,
+  firstSentence,
+} from "@/lib/coach/display";
 import type { StoredMoveCommentary } from "@/lib/coach/types";
 
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -82,5 +86,40 @@ describe("buildClassificationDisplay", () => {
     expect(rows.map((row) => row.ply)).toEqual([1, 3]);
     expect(rows[0]).toMatchObject({ label: "1. e4", classification: "best", bestSan: null });
     expect(rows[1]).toMatchObject({ label: "2. Ke2", classification: "mistake", bestSan: "Nf3" });
+  });
+});
+
+describe("firstSentence", () => {
+  it("returns the opening sentence of a note", () => {
+    expect(firstSentence("This drops a knight. The engine wanted Nxe5 instead.")).toBe(
+      "This drops a knight.",
+    );
+  });
+
+  it("does not cut a move number in half", () => {
+    expect(firstSentence("On 12. Nxd4 you lose a piece. Play Nxe5.")).toBe(
+      "On 12. Nxd4 you lose a piece.",
+    );
+  });
+
+  it("reads through the ellipsis in a Black move number", () => {
+    expect(firstSentence("After 1... e5 the centre is contested. Then develop.")).toBe(
+      "After 1... e5 the centre is contested.",
+    );
+  });
+
+  it("keeps an annotation mark attached to its move", () => {
+    expect(firstSentence("Nf3! keeps the tension. Well played.")).toBe(
+      "Nf3! keeps the tension.",
+    );
+  });
+
+  it("handles a question and a single sentence with no trailing space", () => {
+    expect(firstSentence("Why take there? The bishop was hanging.")).toBe("Why take there?");
+    expect(firstSentence("A clean finish.")).toBe("A clean finish.");
+  });
+
+  it("returns the whole note when it finds no sentence end", () => {
+    expect(firstSentence("  Solid development  ")).toBe("Solid development");
   });
 });

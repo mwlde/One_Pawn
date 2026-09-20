@@ -6,7 +6,7 @@ import { useEngineContext } from "@/components/EngineProvider";
 import { analyzeGame } from "@/lib/analysis/analyze-game";
 import { saveAnalysis, type StoredAnalysis } from "@/lib/analysis/client";
 import { ANALYSIS_DEPTH } from "@/lib/analysis/types";
-import { generateCommentary } from "@/lib/coach/client";
+import { generateCommentary, type CommentaryFailure } from "@/lib/coach/client";
 import type { GameCommentary } from "@/lib/coach/types";
 import type { Side } from "@/lib/game/settings";
 
@@ -18,7 +18,7 @@ import type { Side } from "@/lib/game/settings";
 // Two failures are handled differently. If the engine analysis or its save
 // fails, the phase is "error" and nothing is shown: there is nothing reliable to
 // show yet, so the user retries the whole pass. If only the Groq commentary
-// fails, the phase is still "ready" with commentaryFailed set: the
+// fails, the phase is still "ready" with commentaryFailure set: the
 // classifications are computed and reliable, so they are shown with a retry for
 // the commentary alone. This is the graceful-degradation split from the brief.
 
@@ -29,8 +29,10 @@ export type CoachAnalysis = {
   progress: { completed: number; total: number };
   analyses: StoredAnalysis[];
   commentary: GameCommentary | null;
-  // The summary could not be generated, but the analysis is present.
-  commentaryFailed: boolean;
+  // Why the summary could not be generated, or null when it was. The analysis
+  // is present either way. The post-game screen reads this to decide whether a
+  // Try again button would do anything.
+  commentaryFailure: CommentaryFailure | null;
   error: string | null;
   start: (gameId: string, pgn: string, userColor: Side) => void;
   retryAnalysis: (gameId: string, pgn: string, userColor: Side) => void;
@@ -44,7 +46,7 @@ export function useCoachAnalysis(): CoachAnalysis {
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [analyses, setAnalyses] = useState<StoredAnalysis[]>([]);
   const [commentary, setCommentary] = useState<GameCommentary | null>(null);
-  const [commentaryFailed, setCommentaryFailed] = useState(false);
+  const [commentaryFailure, setCommentaryFailure] = useState<CommentaryFailure | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // A pass in flight when the component unmounts must not set state afterwards.
@@ -61,14 +63,24 @@ export function useCoachAnalysis(): CoachAnalysis {
   // failure so a retry can run again.
   const startedRef = useRef<string | null>(null);
 
+  // Guarded the same way the profile panel is: the phase already gates the
+  // button, but a second call here would mean a second Groq run for one game.
+  const commentaryInFlightRef = useRef(false);
+
   const runCommentary = useCallback(async (gameId: string) => {
+    if (commentaryInFlightRef.current) return;
+    commentaryInFlightRef.current = true;
     setPhase("commentating");
-    setCommentaryFailed(false);
-    const result = await generateCommentary(gameId);
-    if (!activeRef.current) return;
-    setCommentary(result.commentary);
-    setCommentaryFailed(result.failed);
-    setPhase("ready");
+    setCommentaryFailure(null);
+    try {
+      const result = await generateCommentary(gameId);
+      if (!activeRef.current) return;
+      setCommentary(result.commentary);
+      setCommentaryFailure(result.failure);
+      setPhase("ready");
+    } finally {
+      commentaryInFlightRef.current = false;
+    }
   }, []);
 
   const start = useCallback(
@@ -79,7 +91,7 @@ export function useCoachAnalysis(): CoachAnalysis {
       setPhase("analyzing");
       setError(null);
       setCommentary(null);
-      setCommentaryFailed(false);
+      setCommentaryFailure(null);
       setAnalyses([]);
       setProgress({ completed: 0, total: 0 });
 
@@ -135,7 +147,7 @@ export function useCoachAnalysis(): CoachAnalysis {
     progress,
     analyses,
     commentary,
-    commentaryFailed,
+    commentaryFailure,
     error,
     start,
     retryAnalysis,

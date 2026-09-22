@@ -4,10 +4,13 @@
 
 import { z } from "zod";
 
+import checkAndCheckmate from "@/content/lessons/basics/check-and-checkmate.json";
 import pawnMovement from "@/content/lessons/basics/pawn-movement.json";
 import opposition from "@/content/lessons/endgames/opposition.json";
 import italianGame from "@/content/lessons/openings/italian-game.json";
+import queensGambit from "@/content/lessons/openings/queens-gambit.json";
 import knightFork from "@/content/lessons/tactics/knight-fork.json";
+import pin from "@/content/lessons/tactics/pin.json";
 
 import { TRACKS, type Lesson, type Track } from "./types";
 
@@ -62,9 +65,12 @@ const lessonSchema: z.ZodType<Lesson> = z.object({
 // here by hand. Learn navigation lists lessons from this map too, through
 // loadTrackLessons below.
 const LESSON_FILES: Record<string, unknown> = {
+  "check-and-checkmate": checkAndCheckmate,
   "pawn-movement": pawnMovement,
   "italian-game": italianGame,
+  "queens-gambit": queensGambit,
   "knight-fork": knightFork,
+  pin,
   opposition,
 };
 

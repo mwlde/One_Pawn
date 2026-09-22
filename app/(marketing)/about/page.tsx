@@ -12,16 +12,6 @@ function Heading({ children }: { children: ReactNode }) {
   return <h2 className="mt-10 text-lg font-semibold tracking-[-0.01em]">{children}</h2>;
 }
 
-// Marks text Maria has not written yet. Loud on purpose, so none of it can ship
-// unnoticed. Search the repo for "TODO: replace" to find every one.
-function Todo({ children }: { children: ReactNode }) {
-  return (
-    <span className="border border-dashed border-ink bg-tint px-1 font-mono text-[13px]">
-      [TODO: replace with real text] {children}
-    </span>
-  );
-}
-
 export default function AboutPage() {
   return (
     <>

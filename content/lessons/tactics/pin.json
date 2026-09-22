@@ -1,0 +1,63 @@
+{
+  "id": "pin",
+  "track": "tactics",
+  "title": "The pin",
+  "order": 2,
+  "description": "A pin freezes a piece in place. It cannot move without exposing something more valuable behind it, so you can attack it freely and it cannot run.",
+  "steps": [
+    {
+      "id": "make-the-pin",
+      "kind": "move",
+      "fen": "r1bqkbnr/ppp2ppp/2np4/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 0 4",
+      "instruction": "You are White, so develop your light-squared bishop to b5, where it lines up against Black's knight on c6.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Send the bishop out along the light squares towards Black's side, so it eyes the knight that guards the centre."
+        },
+        {
+          "level": "tell",
+          "text": "Move the bishop from f1 to b5."
+        }
+      ],
+      "explanation": "The bishop on b5 attacks the knight on c6, but the knight is now stuck. Behind it, on the same diagonal, stands Black's king on e8. If the knight moved, the bishop would attack the king, and that is illegal. So the knight cannot move at all. This is a pin. When the piece behind is the king it is called an absolute pin, because the rules forbid the pinned piece from moving. A pinned piece is a weak piece: it cannot run, and it often cannot do its job of defending or attacking either.",
+      "acceptedMoves": ["f1b5"]
+    },
+    {
+      "id": "pile-on-the-pin",
+      "kind": "move",
+      "fen": "3k4/4pppp/3b4/8/2P5/8/5PPP/3R2K1 w - - 0 1",
+      "instruction": "The black bishop on d6 is pinned to its king and cannot move, so attack it a second time.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Your rook on d1 already attacks the pinned bishop once. Bring a pawn up to hit it as well, from a square the bishop cannot answer."
+        },
+        {
+          "level": "tell",
+          "text": "Push the pawn from c4 to c5. It attacks the bishop on d6, which cannot move out of the way."
+        }
+      ],
+      "explanation": "The bishop on d6 is pinned to the king on d8 by your rook, so it cannot step off the file. That makes it a fixed target. It is defended once, by the pawn on e7, and attacked once, by the rook. By pushing the pawn to c5 you attack it a second time, so it is hit twice and guarded only once. Next move you take it, and Black cannot save the bishop, because the one piece that could carry it away is nailed in place. The way to punish a pin is to load more attackers onto the frozen piece than it has defenders.",
+      "acceptedMoves": ["c4c5"]
+    },
+    {
+      "id": "relative-pin",
+      "kind": "move",
+      "fen": "3q2k1/ppp2ppp/4pn2/6B1/4P3/5N2/PPP2PPP/6K1 w - - 0 1",
+      "instruction": "The knight on f6 is pinned to Black's queen, so win it by attacking it with a pawn.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Your bishop on g5 holds the knight to the queen behind it. Push the pawn that stands two squares in front of the knight to attack it."
+        },
+        {
+          "level": "tell",
+          "text": "Advance the pawn from e4 to e5. It attacks the knight, which dare not move."
+        }
+      ],
+      "explanation": "Your bishop on g5 pins the knight on f6 to the queen on d8. This time the piece behind is the queen, not the king, so it is a relative pin: the knight is allowed to move, but doing so would let your bishop take the queen. When you attack the pinned knight with e5, Black is stuck. If the knight stays, you capture it next move. If it runs, you win the queen, which is worth far more. A pin bites whenever the piece behind is worth more than the pinned piece, not only when it is the king.",
+      "acceptedMoves": ["e4e5"]
+    }
+  ]
+}

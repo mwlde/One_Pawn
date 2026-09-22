@@ -1,0 +1,65 @@
+{
+  "id": "queens-gambit",
+  "track": "openings",
+  "title": "The Queen's Gambit",
+  "order": 2,
+  "description": "The opening 1.d4 d5 2.c4. White offers a pawn to pull Black's centre pawn away from the middle, one of the oldest and most trusted ways to fight for the centre.",
+  "steps": [
+    {
+      "id": "queen-pawn",
+      "kind": "move",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "instruction": "You are White, so start the game by moving the pawn in front of your queen two squares forward.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Your queen sits on d1. The pawn you want is directly in front of it."
+        },
+        {
+          "level": "tell",
+          "text": "Move the pawn from d2 to d4."
+        }
+      ],
+      "explanation": "This move is written 1.d4. The pawn takes a central square and stakes a claim in the middle of the board, the same idea as 1.e4 but on the queen's side. It also opens a line for your dark-squared bishop. Black replies 1...d5, matching you in the centre.",
+      "acceptedMoves": ["d2d4"],
+      "opponentReply": "d7d5"
+    },
+    {
+      "id": "offer-the-c-pawn",
+      "kind": "move",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2",
+      "instruction": "Offer your c-pawn by advancing it two squares, alongside your pawn on d4.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "The pawn is on the queenside, next to your d-pawn. Push it as far as it will go on its first move."
+        },
+        {
+          "level": "tell",
+          "text": "Move the pawn from c2 to c4."
+        }
+      ],
+      "explanation": "This is the Queen's Gambit: 2.c4. You are offering the c-pawn, but it is not a true sacrifice. If Black takes with 2...dxc4, the pawn is awkward to hold and White wins it back later without trouble. The point is to tempt Black's d-pawn away from the centre, so your d-pawn is left unchallenged in the middle. Black often declines with 2...e6, guarding d5 and keeping the tension.",
+      "acceptedMoves": ["c2c4"],
+      "opponentReply": "e7e6"
+    },
+    {
+      "id": "develop-the-knight",
+      "kind": "move",
+      "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3",
+      "instruction": "Develop your queenside knight to the square that adds another attacker to d5.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "A knight belongs near the centre. From its starting square on b1, which move points it at Black's pawn on d5?"
+        },
+        {
+          "level": "tell",
+          "text": "Move the knight from b1 to c3."
+        }
+      ],
+      "explanation": "3.Nc3 develops a piece and adds to the pressure on d5. Now two white units, the c-pawn and the knight, bear down on Black's central pawn. Development follows the same rules whichever side of the board you play on: bring your pieces out, aim them at the centre, and prepare to castle your king to safety. The Queen's Gambit reaches those goals through the fight over d5.",
+      "acceptedMoves": ["b1c3"]
+    }
+  ]
+}

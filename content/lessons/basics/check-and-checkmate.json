@@ -1,0 +1,81 @@
+{
+  "id": "check-and-checkmate",
+  "track": "basics",
+  "title": "Check and checkmate",
+  "order": 2,
+  "description": "What check is, what checkmate is, and the three ways to answer a check: move the king, block the line, or capture the checker.",
+  "steps": [
+    {
+      "id": "answer-the-check",
+      "kind": "move",
+      "fen": "7k/8/8/4r3/8/6N1/1B6/4K3 w - - 0 1",
+      "instruction": "Your king is in check from the black rook, so find a way to save it.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "A rook attacks in straight lines. Trace the line from the rook to your king and look for a white piece that can step onto it, or take the rook."
+        },
+        {
+          "level": "tell",
+          "text": "For example, capture the rook with your bishop: b2 to e5. Blocking with the knight on e4, or stepping the king to d2, also work."
+        }
+      ],
+      "explanation": "Check means your king is attacked and could be captured next move, so the rules force you to deal with it at once. There are only three ways to answer a check. Move the king off the attacked square, block the line with another piece, or capture the piece giving check. Here all three were possible: the bishop could take the rook, the knight could block on e4, and the king could step to d2 or f2.",
+      "acceptedMoves": ["b2e5", "g3e4", "g3e2", "e1d1", "e1d2", "e1f1", "e1f2"]
+    },
+    {
+      "id": "only-one-answer",
+      "kind": "move",
+      "fen": "k7/8/8/8/8/8/5nPP/6BK w - - 0 1",
+      "instruction": "You are in check again, and only one of the three answers is available here.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "The knight sits close to your king, there is no room to block, and the king has nowhere safe to step, so that leaves one answer."
+        },
+        {
+          "level": "tell",
+          "text": "Take the knight with your bishop: g1 to f2."
+        }
+      ],
+      "explanation": "Not every check offers all three answers. A knight cannot be blocked, because it jumps over pieces rather than moving in a line. Here the king was hemmed in by its own pawns and had no square to run to. So the only legal reply was to capture the checking knight. When you are in check, look for a capture or a block before assuming you must move the king.",
+      "acceptedMoves": ["g1f2"]
+    },
+    {
+      "id": "deliver-checkmate",
+      "kind": "move",
+      "fen": "6k1/5ppp/8/8/8/8/8/4R1K1 w - - 0 1",
+      "instruction": "It is your move, so find the rook move that delivers checkmate.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Black's king is shut in behind its own pawns on f7, g7 and h7, with no escape along the back rank. Bring a piece to attack it there."
+        },
+        {
+          "level": "tell",
+          "text": "Move the rook to e8. It checks along the eighth rank, and the king has no way out."
+        }
+      ],
+      "explanation": "Checkmate is check that cannot be answered. The rook on e8 attacks the king along the eighth rank. The king cannot move, because f8 and h8 lie on that same rank and its own pawns block f7, g7 and h7. Nothing can block the check or capture the rook. With no legal reply to the check, the game is over. Every checkmate is simply a check where none of the three answers exist.",
+      "acceptedMoves": ["e1e8"]
+    },
+    {
+      "id": "cannot-expose-king",
+      "kind": "attempt",
+      "fen": "k3r3/8/8/8/8/8/4N3/4K3 w - - 0 1",
+      "instruction": "The knight on e2 is the only thing standing between your king and the black rook, so try to move it away to c3.",
+      "hints": [
+        {
+          "level": "nudge",
+          "text": "Look at the knight standing directly in front of your king."
+        },
+        {
+          "level": "tell",
+          "text": "Try to move the knight from e2 to c3."
+        }
+      ],
+      "explanation": "The move is rejected. The knight cannot leave the e-file, because the black rook on e8 is aimed straight at your king and only the knight blocks it. Moving the knight would put your own king in check, and that is never allowed. This is not a weak move, it is against the rules. You may never make a move that leaves your own king in check, which is exactly why checkmate ends the game: the king is in check and every escape is illegal.",
+      "attemptedMove": "e2c3"
+    }
+  ]
+}

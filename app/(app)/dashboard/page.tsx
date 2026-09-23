@@ -360,8 +360,7 @@ export default async function DashboardPage() {
         <LearnCard read={learnRead} />
         <RecentGamesCard read={gamesRead} now={now} />
         <PlaceholderCard title="Game analysis">
-          Where each finished game turned, and the moves worth a second look. Coming with Phase 4
-          analysis.
+          Integrating to be part of the game itself. In the future an overview of the analysis will be available here.
         </PlaceholderCard>
         <PlaceholderCard title="Playing style">
           Recurring patterns across your games, once there are enough to read a trend from.

@@ -6,7 +6,11 @@ import { useEngineContext } from "@/components/EngineProvider";
 import { analyzeGame } from "@/lib/analysis/analyze-game";
 import { saveAnalysis, type StoredAnalysis } from "@/lib/analysis/client";
 import { ANALYSIS_DEPTH } from "@/lib/analysis/types";
-import { generateCommentary, type CommentaryFailure } from "@/lib/coach/client";
+import {
+  generateCommentary,
+  type CommentaryFailure,
+  type RateLimitInfo,
+} from "@/lib/coach/client";
 import type { GameCommentary } from "@/lib/coach/types";
 import type { Side } from "@/lib/game/settings";
 
@@ -33,6 +37,9 @@ export type CoachAnalysis = {
   // is present either way. The post-game screen reads this to decide whether a
   // Try again button would do anything.
   commentaryFailure: CommentaryFailure | null;
+  // The count and reset time when commentaryFailure is "rate_limited", so the
+  // post-game screen can say how many were used and when the next one frees up.
+  rateLimit: RateLimitInfo | null;
   error: string | null;
   start: (gameId: string, pgn: string, userColor: Side) => void;
   retryAnalysis: (gameId: string, pgn: string, userColor: Side) => void;
@@ -47,6 +54,7 @@ export function useCoachAnalysis(): CoachAnalysis {
   const [analyses, setAnalyses] = useState<StoredAnalysis[]>([]);
   const [commentary, setCommentary] = useState<GameCommentary | null>(null);
   const [commentaryFailure, setCommentaryFailure] = useState<CommentaryFailure | null>(null);
+  const [rateLimit, setRateLimit] = useState<RateLimitInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // A pass in flight when the component unmounts must not set state afterwards.
@@ -72,11 +80,13 @@ export function useCoachAnalysis(): CoachAnalysis {
     commentaryInFlightRef.current = true;
     setPhase("commentating");
     setCommentaryFailure(null);
+    setRateLimit(null);
     try {
       const result = await generateCommentary(gameId);
       if (!activeRef.current) return;
       setCommentary(result.commentary);
       setCommentaryFailure(result.failure);
+      setRateLimit(result.rateLimit);
       setPhase("ready");
     } finally {
       commentaryInFlightRef.current = false;
@@ -92,6 +102,7 @@ export function useCoachAnalysis(): CoachAnalysis {
       setError(null);
       setCommentary(null);
       setCommentaryFailure(null);
+      setRateLimit(null);
       setAnalyses([]);
       setProgress({ completed: 0, total: 0 });
 
@@ -148,6 +159,7 @@ export function useCoachAnalysis(): CoachAnalysis {
     analyses,
     commentary,
     commentaryFailure,
+    rateLimit,
     error,
     start,
     retryAnalysis,

@@ -1,32 +1,26 @@
-// The decorative left column of wireframe screen 04. Desktop only; mobile drops
-// it entirely, which is what the wireframe's own mobile note calls for.
+import { DemoBoard } from "@/components/board/DemoBoard";
+
+// The left column of wireframe screen 04, shared by the landing page and the
+// auth routes. Desktop only; mobile drops it, which is what the wireframe's own
+// mobile note calls for and why the landing page carries a separate mobile hero.
 //
-// The wireframe fills this panel with a live grandmaster game ("LIVE —
-// SPECTATING", two named players, running clocks). Phase 1 has no spectating
-// and no live games, and inventing a plausible-looking one would be fake data
-// on a production screen. The panel keeps the wireframe's shape and weight but
-// says something true instead.
+// The wireframe fills this panel with a live grandmaster game. There is no
+// spectating yet, and a faked one would be fake data on a production screen, so
+// the panel leads with the product line and a real, movable demo board instead.
 export function AuthPanel() {
   return (
     <div className="hidden flex-col gap-8 border-r border-ink p-12 md:flex">
-      <div className="font-mono text-[11px] tracking-[0.1em] text-muted">ONE PAWN</div>
-
-      <div className="flex flex-1 items-center justify-center">
-        <div
-          aria-hidden
-          className="aspect-square w-full max-w-[420px] border border-ink"
-          style={{
-            background:
-              "repeating-conic-gradient(var(--color-tint) 0 25%, var(--color-surface) 0 50%) 0 0 / 25% 25%",
-          }}
-        />
+      <div>
+        <div className="font-mono text-[11px] tracking-[0.1em] text-muted">ONE PAWN</div>
+        <p className="mt-4 max-w-[14ch] text-3xl font-bold leading-[1.1] tracking-tight">
+          Play a real engine in your browser. Learn from every game.
+        </p>
       </div>
 
-      <div className="border-t border-dashed border-hairline pt-4">
-        <p className="text-sm text-ink">Play the engine. Review the game. Remember the lesson.</p>
-        <p className="mt-2 font-mono text-[10px] text-muted">
-          {"// no account needed to play, only to save"}
-        </p>
+      <div className="flex flex-1 items-center justify-center">
+        <div className="w-full max-w-[420px]">
+          <DemoBoard />
+        </div>
       </div>
     </div>
   );

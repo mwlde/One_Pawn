@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import type { MoveAnalysis } from "@/lib/analysis/types";
 import { callGroq, GroqError } from "@/lib/coach/groq";
 import { buildMoveCommentaryPrompt, buildSummaryPrompt } from "@/lib/coach/prompts";
+import { checkCoachRateLimit, type CoachRateLimit } from "@/lib/coach/rate-limit";
 import { selectNotableMoves } from "@/lib/coach/select-notable-moves";
 import type { GameCommentary, MoveCommentary, StoredMoveCommentary } from "@/lib/coach/types";
 import { parseEngineMove } from "@/lib/game/engine-move";
@@ -31,7 +32,7 @@ type GameRow = {
   mode: string;
 };
 
-type OwnedGame = { game: GameRow } | { response: NextResponse };
+type OwnedGame = { game: GameRow; userId: string } | { response: NextResponse };
 
 // Auth, uuid check, ownership and the game row in one pass, as the analyze route
 // does. Returns the columns the commentary needs: the PGN to rebuild positions,
@@ -68,7 +69,7 @@ async function requireOwnedGame(
     return { response: NextResponse.json({ error: "not_found" }, { status: 404 }) };
   }
 
-  return { game: game.data };
+  return { game: game.data, userId: user.id };
 }
 
 // Reads whatever commentary is stored for a game: the summary (or null when
@@ -161,7 +162,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
   const owned = await requireOwnedGame(supabase, id);
   if ("response" in owned) return owned.response;
-  const { game } = owned;
+  const { game, userId } = owned;
 
   // Commentary is a Coach-mode feature. Refusing here bounds every LLM call to a
   // game the student chose to have coached, so a Play game can never run up a
@@ -171,7 +172,9 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   }
 
   // Cache: if a summary row exists the game has already been commentated. Return
-  // what is stored and spend nothing.
+  // what is stored and spend nothing. Checked before the rate limit on purpose:
+  // a cache hit costs no Groq call, so it never counts against the limit and is
+  // served even to a user who is otherwise out of analyses for the day.
   const existing = await readStoredCommentary(supabase, id);
   if ("tableMissing" in existing) {
     console.error(
@@ -184,6 +187,28 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   }
   if (existing.summary !== null) {
     return NextResponse.json({ ...existing, cached: true }, { status: 200 });
+  }
+
+  // A cache miss means a real generation is about to run, so this is where the
+  // limit is enforced: before the analysis read and before any Groq call, so a
+  // user who is out of analyses spends nothing on compute or storage.
+  let rate: CoachRateLimit;
+  try {
+    rate = await checkCoachRateLimit(userId, supabase);
+  } catch (cause) {
+    console.error("[games/coach] rate check failed", cause);
+    return NextResponse.json({ error: "read_failed" }, { status: 500 });
+  }
+  if (!rate.allowed) {
+    return NextResponse.json(
+      {
+        error: "rate_limit_exceeded",
+        used: rate.used,
+        limit: rate.limit,
+        resets_at: rate.resetsAt?.toISOString() ?? null,
+      },
+      { status: 429 },
+    );
   }
 
   // The analysis is the source of truth for every eval the prompts use.
@@ -296,6 +321,17 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   if (summaryInsert.error !== null) {
     console.error("[games/coach] summary insert failed", summaryInsert.error);
     return NextResponse.json({ error: "save_failed" }, { status: 500 });
+  }
+
+  // The generation succeeded and is stored, so it counts against the day's
+  // limit. Written after the commentary, not before: a run that fell over on the
+  // summary already returned above without reaching here, so only a real,
+  // completed analysis is ever recorded. A failed insert here is logged but not
+  // fatal: the commentary is saved and the student should still get it, and one
+  // uncounted analysis is a smaller fault than losing the whole response.
+  const usageInsert = await supabase.from("coach_usage").insert({ game_id: id, user_id: userId });
+  if (usageInsert.error !== null) {
+    console.error("[games/coach] usage row insert failed", usageInsert.error);
   }
 
   // Re-read so the response carries the database timestamps and the exact stored

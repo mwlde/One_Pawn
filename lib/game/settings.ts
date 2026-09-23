@@ -8,11 +8,19 @@ export type Side = "white" | "black";
 
 export type Difficulty = "easy" | "medium" | "hard";
 
-export type TimeControlId = "1+0" | "3+2" | "5+3" | "10+0" | "15+10";
+// The id keeps the "base+increment" shorthand, because that is what the game is
+// and what the saved row records. The label is the human-facing name shown on
+// the button and in history: minutes, not shorthand, because a family tester
+// does not read "3+2". The category names the family (Blitz, Rapid, Classical)
+// for the one-line description under the picker.
+export type TimeControlId = "3+2" | "5+0" | "10+0" | "15+10" | "30+0";
+
+export type TimeControlCategory = "Blitz" | "Rapid" | "Classical";
 
 export type TimeControl = {
   id: TimeControlId;
   label: string;
+  category: TimeControlCategory;
   baseSeconds: number;
   incrementSeconds: number;
 };
@@ -49,14 +57,14 @@ export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
 export const DIFFICULTIES: readonly Difficulty[] = ["easy", "medium", "hard"];
 
 export const TIME_CONTROLS: Record<TimeControlId, TimeControl> = {
-  "1+0": { id: "1+0", label: "1+0", baseSeconds: 60, incrementSeconds: 0 },
-  "3+2": { id: "3+2", label: "3+2", baseSeconds: 180, incrementSeconds: 2 },
-  "5+3": { id: "5+3", label: "5+3", baseSeconds: 300, incrementSeconds: 3 },
-  "10+0": { id: "10+0", label: "10+0", baseSeconds: 600, incrementSeconds: 0 },
-  "15+10": { id: "15+10", label: "15+10", baseSeconds: 900, incrementSeconds: 10 },
+  "3+2": { id: "3+2", label: "3 min", category: "Blitz", baseSeconds: 180, incrementSeconds: 2 },
+  "5+0": { id: "5+0", label: "5 min", category: "Blitz", baseSeconds: 300, incrementSeconds: 0 },
+  "10+0": { id: "10+0", label: "10 min", category: "Rapid", baseSeconds: 600, incrementSeconds: 0 },
+  "15+10": { id: "15+10", label: "15 min", category: "Rapid", baseSeconds: 900, incrementSeconds: 10 },
+  "30+0": { id: "30+0", label: "30 min", category: "Classical", baseSeconds: 1800, incrementSeconds: 0 },
 };
 
-export const TIME_CONTROL_IDS: readonly TimeControlId[] = ["1+0", "3+2", "5+3", "10+0", "15+10"];
+export const TIME_CONTROL_IDS: readonly TimeControlId[] = ["3+2", "5+0", "10+0", "15+10", "30+0"];
 
 export const DEFAULT_SETTINGS: GameSettings = {
   side: "white",

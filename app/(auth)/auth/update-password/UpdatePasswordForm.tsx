@@ -11,6 +11,7 @@ import {
   PASSWORD_MIN_LENGTH,
   updatePasswordErrorMessage,
   validatePassword,
+  validatePasswordConfirmation,
 } from "@/lib/auth/validation";
 
 // Opening the emailed link already signed this browser in, so there is nowhere
@@ -21,8 +22,18 @@ const AFTER_UPDATE = "/play";
 export function UpdatePasswordForm() {
   const router = useRouter();
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  function handleConfirmPasswordBlur() {
+    if (confirmPassword.length === 0) {
+      setConfirmPasswordError(null);
+      return;
+    }
+    setConfirmPasswordError(validatePasswordConfirmation(password, confirmPassword));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,6 +42,14 @@ export function UpdatePasswordForm() {
     const fieldError = validatePassword(password);
     if (fieldError !== null) {
       setError(fieldError);
+      return;
+    }
+
+    // A typo in a new password here locks the account out until another reset,
+    // so it is confirmed the same way registration is.
+    const mismatch = validatePasswordConfirmation(password, confirmPassword);
+    if (mismatch !== null) {
+      setConfirmPasswordError(mismatch);
       return;
     }
 
@@ -62,19 +81,39 @@ export function UpdatePasswordForm() {
       {error !== null && <AuthErrorBanner label="UPDATE FAILED" message={error} />}
 
       <form onSubmit={handleSubmit} noValidate>
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col gap-4">
+          <div>
+            <Field
+              id="password"
+              label="NEW PASSWORD"
+              type="password"
+              value={password}
+              autoComplete="new-password"
+              placeholder="••••••••"
+              onChange={(value) => {
+                setPassword(value);
+                setConfirmPasswordError(null);
+              }}
+            />
+            <p className="mt-1.5 font-mono text-[10px] text-muted">
+              {PASSWORD_MIN_LENGTH} characters minimum.
+            </p>
+          </div>
+
           <Field
-            id="password"
-            label="NEW PASSWORD"
+            id="confirm-password"
+            label="CONFIRM NEW PASSWORD"
             type="password"
-            value={password}
+            value={confirmPassword}
             autoComplete="new-password"
             placeholder="••••••••"
-            onChange={setPassword}
+            error={confirmPasswordError}
+            onBlur={handleConfirmPasswordBlur}
+            onChange={(value) => {
+              setConfirmPassword(value);
+              setConfirmPasswordError(null);
+            }}
           />
-          <p className="mt-1.5 font-mono text-[10px] text-muted">
-            {PASSWORD_MIN_LENGTH} characters minimum.
-          </p>
         </div>
 
         <button

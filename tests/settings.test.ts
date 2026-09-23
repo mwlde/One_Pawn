@@ -42,30 +42,37 @@ describe("difficulty", () => {
 
 describe("time controls", () => {
   it("maps each id to its base time and increment", () => {
-    expect(TIME_CONTROLS["1+0"]).toMatchObject({ baseSeconds: 60, incrementSeconds: 0 });
     expect(TIME_CONTROLS["3+2"]).toMatchObject({ baseSeconds: 180, incrementSeconds: 2 });
+    expect(TIME_CONTROLS["5+0"]).toMatchObject({ baseSeconds: 300, incrementSeconds: 0 });
     expect(TIME_CONTROLS["10+0"]).toMatchObject({ baseSeconds: 600, incrementSeconds: 0 });
-  });
-
-  it("gives 5+3 five minutes and a three-second increment", () => {
-    expect(TIME_CONTROLS["5+3"]).toMatchObject({ baseSeconds: 300, incrementSeconds: 3 });
   });
 
   it("gives 15+10 fifteen minutes and a ten-second increment", () => {
     expect(TIME_CONTROLS["15+10"]).toMatchObject({ baseSeconds: 900, incrementSeconds: 10 });
   });
 
-  it("offers the controls in ascending order of base time", () => {
-    expect(TIME_CONTROL_IDS).toEqual(["1+0", "3+2", "5+3", "10+0", "15+10"]);
+  it("gives 30+0 half an hour and no increment", () => {
+    expect(TIME_CONTROLS["30+0"]).toMatchObject({ baseSeconds: 1800, incrementSeconds: 0 });
+  });
+
+  // The shortest option is 3 minutes: a 1-minute bullet game is too fast for a
+  // learner and was dropped on purpose.
+  it("offers the controls in ascending order of base time, none shorter than 3 min", () => {
+    expect(TIME_CONTROL_IDS).toEqual(["3+2", "5+0", "10+0", "15+10", "30+0"]);
+    expect(TIME_CONTROLS[TIME_CONTROL_IDS[0]].baseSeconds).toBe(180);
   });
 
   it("lists every id it defines", () => {
     expect([...TIME_CONTROL_IDS].sort()).toEqual(Object.keys(TIME_CONTROLS).sort());
   });
 
-  it("labels each control by its id", () => {
+  // The label is the human-facing name (minutes), not the shorthand id: a
+  // family tester reads "10 min", not "10+0".
+  it("labels each control in plain minutes and names its category", () => {
     for (const id of TIME_CONTROL_IDS) {
-      expect(TIME_CONTROLS[id].label).toBe(id);
+      const control = TIME_CONTROLS[id];
+      expect(control.label).toBe(`${control.baseSeconds / 60} min`);
+      expect(["Blitz", "Rapid", "Classical"]).toContain(control.category);
     }
   });
 });

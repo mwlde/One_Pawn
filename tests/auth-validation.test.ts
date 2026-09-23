@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  emailsMatch,
   isRegistrationDuplicate,
   loginErrorMessage,
   MINIMUM_AGE,
+  passwordsMatch,
   PASSWORD_MIN_LENGTH,
   registerErrorMessage,
   resendErrorMessage,
@@ -12,7 +12,7 @@ import {
   updatePasswordErrorMessage,
   validateAgeConfirmation,
   validateEmail,
-  validateEmailConfirmation,
+  validatePasswordConfirmation,
   validatePassword,
 } from "@/lib/auth/validation";
 
@@ -123,33 +123,35 @@ describe("age confirmation", () => {
   });
 });
 
-describe("email confirmation", () => {
-  it("accepts two identical addresses", () => {
-    expect(validateEmailConfirmation("you@domain.com", "you@domain.com")).toBeNull();
+describe("password confirmation", () => {
+  it("accepts two identical passwords", () => {
+    expect(validatePasswordConfirmation("correcthorsebattery", "correcthorsebattery")).toBeNull();
   });
 
   it("rejects a mismatch", () => {
-    expect(validateEmailConfirmation("you@domain.com", "yuo@domain.com")).toBe(
-      "Those email addresses don't match.",
+    expect(validatePasswordConfirmation("correcthorsebattery", "correcthorsebattert")).toBe(
+      "Those passwords don't match.",
     );
   });
 
-  it("asks for the second address rather than calling an empty field a mismatch", () => {
-    expect(validateEmailConfirmation("you@domain.com", "  ")).toBe("Confirm your email address.");
+  it("asks for the second password rather than calling an empty field a mismatch", () => {
+    expect(validatePasswordConfirmation("correcthorsebattery", "")).toBe("Confirm your password.");
   });
 
-  // Neither difference changes which mailbox the confirmation lands in, so
-  // neither is worth stopping someone over.
-  it("ignores case", () => {
-    expect(emailsMatch("You@Domain.com", "you@domain.com")).toBe(true);
+  // Unlike the email check, this one is exact: a space or a different case is a
+  // real difference in a password, so it must count as a mismatch.
+  it("does not ignore case", () => {
+    expect(passwordsMatch("CorrectHorse", "correcthorse")).toBe(false);
   });
 
-  it("ignores surrounding whitespace", () => {
-    expect(emailsMatch("you@domain.com", "  you@domain.com ")).toBe(true);
+  it("does not ignore surrounding whitespace", () => {
+    expect(passwordsMatch("correcthorse ", "correcthorse")).toBe(false);
   });
 
-  it("does not ignore a difference inside the address", () => {
-    expect(emailsMatch("you@domain.com", "you@doma in.com")).toBe(false);
+  // An empty confirmation is not a match: an empty second field must never pass
+  // as agreeing with a real password.
+  it("treats an empty confirmation as a non-match", () => {
+    expect(passwordsMatch("correcthorse", "")).toBe(false);
   });
 });
 

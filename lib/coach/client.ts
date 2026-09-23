@@ -23,7 +23,20 @@ export type CommentaryFailure =
   | "server"
   // Not this user's game, not a Coach-mode game, or no session. Retrying the
   // same request gets the same answer.
-  | "refused";
+  | "refused"
+  // The day's coach analyses are used up. Retrying now gets the same answer;
+  // the slot comes back on its own, so the screen shows when rather than a
+  // retry button. `rateLimit` on the result carries the count and reset time.
+  | "rate_limited";
+
+// The count and reset time a 429 carries, so the screen can say how many were
+// used and when the next one frees up. `resetsAt` is null only if the route
+// somehow sent none, which the render sites already tolerate.
+export type RateLimitInfo = {
+  used: number;
+  limit: number;
+  resetsAt: Date | null;
+};
 
 // The outcome of asking the server to generate commentary. `failure` is null on
 // success; `partial` means the summary shipped but at least one per-move note
@@ -32,6 +45,8 @@ export type CommentaryFailure =
 export type CommentaryResult = {
   commentary: GameCommentary;
   failure: CommentaryFailure | null;
+  // Set only when `failure` is "rate_limited". Null otherwise.
+  rateLimit: RateLimitInfo | null;
   partial: boolean;
   cached: boolean;
 };
@@ -41,7 +56,7 @@ export type CommentaryResult = {
 // can succeed on a second pass, and a missing analysis is something the caller
 // runs before asking again.
 export function isRetriableFailure(failure: CommentaryFailure): boolean {
-  return failure !== "refused";
+  return failure !== "refused" && failure !== "rate_limited";
 }
 
 // What a non-2xx answer from our own route means. Pure, and separate from the
@@ -52,6 +67,7 @@ export function isRetriableFailure(failure: CommentaryFailure): boolean {
 export function classifyFailure(status: number, errorCode: string | null): CommentaryFailure {
   if (errorCode === "not_analyzed") return "not_analyzed";
   if (errorCode === "not_coach_mode") return "refused";
+  if (status === 429 || errorCode === "rate_limit_exceeded") return "rate_limited";
   if (status === 401 || status === 403 || status === 404) return "refused";
   return "server";
 }
@@ -96,6 +112,24 @@ function readErrorCode(body: unknown): string | null {
   return typeof error === "string" ? error : null;
 }
 
+// The count and reset time out of a 429 body. Each field is read defensively:
+// the route sends all three, but a number that is missing or not a number falls
+// back to the limit itself, and a bad date to null, so the screen never renders
+// NaN or an "Invalid Date".
+function readRateLimit(body: unknown): RateLimitInfo {
+  const record = body === null || typeof body !== "object" ? {} : (body as Record<string, unknown>);
+  const limit = typeof record.limit === "number" ? record.limit : 0;
+  const used = typeof record.used === "number" ? record.used : limit;
+
+  let resetsAt: Date | null = null;
+  if (typeof record.resets_at === "string") {
+    const parsed = new Date(record.resets_at);
+    if (!Number.isNaN(parsed.getTime())) resetsAt = parsed;
+  }
+
+  return { used, limit, resetsAt };
+}
+
 const NOTHING: GameCommentary = { summary: null, moves: [] };
 
 // Asks the server to generate commentary, or return what it already has. Never
@@ -109,15 +143,17 @@ export async function generateCommentary(gameId: string): Promise<CommentaryResu
   } catch {
     // Offline or a dropped connection: nothing was generated, and nothing was
     // spent either, so this is always worth trying again.
-    return { commentary: NOTHING, failure: "network", partial: false, cached: false };
+    return { commentary: NOTHING, failure: "network", rateLimit: null, partial: false, cached: false };
   }
 
   const body: unknown = await response.json().catch(() => null);
 
   if (!response.ok) {
+    const failure = classifyFailure(response.status, readErrorCode(body));
     return {
       commentary: NOTHING,
-      failure: classifyFailure(response.status, readErrorCode(body)),
+      failure,
+      rateLimit: failure === "rate_limited" ? readRateLimit(body) : null,
       partial: false,
       cached: false,
     };
@@ -133,6 +169,7 @@ export async function generateCommentary(gameId: string): Promise<CommentaryResu
   return {
     commentary,
     failure: groqFailed ? "groq" : null,
+    rateLimit: null,
     partial: readFlag(body, "partial"),
     cached: readFlag(body, "cached"),
   };

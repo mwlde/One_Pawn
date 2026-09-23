@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -25,6 +26,9 @@ import {
 
 type GameSetupProps = {
   initialSettings: GameSettings;
+  // Coach mode is gated behind a session: it saves and analyses the game, and
+  // both need an account. A guest sees the option but cannot pick it.
+  isLoggedIn: boolean;
   onStart: (settings: GameSettings) => void;
 };
 
@@ -43,7 +47,7 @@ const TIME_CONTROL_OPTIONS = TIME_CONTROL_IDS.map((id) => ({
   label: TIME_CONTROLS[id].label,
 }));
 
-export function GameSetup({ initialSettings, onStart }: GameSetupProps) {
+export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupProps) {
   const [settings, setSettings] = useState<GameSettings>(initialSettings);
 
   // The remembered mode lives in localStorage, an external store. Reading it
@@ -58,11 +62,18 @@ export function GameSetup({ initialSettings, onStart }: GameSetupProps) {
     getPreferredModeServerSnapshot,
   );
 
+  // A guest whose remembered choice is coach still starts a Play game: the mode
+  // is gated, and the remembered preference is left untouched so it returns the
+  // moment they log in. Nothing here writes coach back to storage for a guest.
+  const effectiveMode = !isLoggedIn && preferredMode === "coach" ? "play" : preferredMode;
+
   const timeControl = TIME_CONTROLS[settings.timeControl];
+  // Spelled out for a reader who does not know the shorthand: an increment is a
+  // few seconds added to your clock after every move you make.
   const incrementNote =
     timeControl.incrementSeconds === 0
       ? "no increment"
-      : `${timeControl.incrementSeconds}s increment`;
+      : `plus ${timeControl.incrementSeconds} seconds added after each move`;
 
   return (
     <div className="flex flex-1 items-start justify-center overflow-y-auto px-4 py-6 md:items-center md:py-8">
@@ -81,33 +92,54 @@ export function GameSetup({ initialSettings, onStart }: GameSetupProps) {
             </div>
             <div role="radiogroup" aria-label="Mode" className="flex flex-col gap-2">
               {MODES.map((mode) => {
-                const selected = preferredMode === mode;
+                const locked = mode === "coach" && !isLoggedIn;
+                const selected = !locked && effectiveMode === mode;
                 return (
-                  <button
-                    key={mode}
-                    type="button"
-                    role="radio"
-                    aria-checked={selected}
-                    onClick={() => writePreferredMode(mode)}
-                    className={`border p-3 text-left transition-colors ${
-                      selected ? "border-ink bg-tint" : "border-hairline hover:border-ink"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={`text-sm ${selected ? "font-semibold" : ""}`}>
-                        {MODE_LABELS[mode]}
-                      </span>
-                      <span
-                        aria-hidden
-                        className={`h-3 w-3 shrink-0 border ${
-                          selected ? "border-ink bg-ink" : "border-hairline"
-                        }`}
-                      />
-                    </div>
-                    <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted">
-                      {MODE_DESCRIPTIONS[mode]}
-                    </p>
-                  </button>
+                  <div key={mode}>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      aria-disabled={locked || undefined}
+                      disabled={locked}
+                      onClick={() => {
+                        if (!locked) writePreferredMode(mode);
+                      }}
+                      className={`w-full border p-3 text-left transition-colors ${
+                        locked
+                          ? "cursor-not-allowed border-hairline opacity-50"
+                          : selected
+                            ? "border-ink bg-tint"
+                            : "border-hairline hover:border-ink"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`text-sm ${selected ? "font-semibold" : ""}`}>
+                          {MODE_LABELS[mode]}
+                        </span>
+                        <span
+                          aria-hidden
+                          className={`h-3 w-3 shrink-0 border ${
+                            selected ? "border-ink bg-ink" : "border-hairline"
+                          }`}
+                        />
+                      </div>
+                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted">
+                        {MODE_DESCRIPTIONS[mode]}
+                      </p>
+                    </button>
+                    {locked ? (
+                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted">
+                        <Link
+                          href="/login"
+                          className="underline underline-offset-2 hover:text-ink"
+                        >
+                          Log in
+                        </Link>{" "}
+                        to use coach mode.
+                      </p>
+                    ) : null}
+                  </div>
                 );
               })}
             </div>
@@ -136,9 +168,10 @@ export function GameSetup({ initialSettings, onStart }: GameSetupProps) {
         </div>
 
         <p className="mt-5 font-mono text-[11px] leading-relaxed text-muted md:mt-6">
-          Engine searches to depth {depthFor(settings.difficulty)}.
+          {timeControl.category} &middot; {timeControl.baseSeconds / 60} minutes each side,{" "}
+          {incrementNote}.
           <br />
-          {timeControl.baseSeconds / 60} min per side, {incrementNote}.
+          Engine searches to depth {depthFor(settings.difficulty)}.
         </p>
 
         {/* Not gated on engine readiness. The Worker queues any request that
@@ -147,7 +180,7 @@ export function GameSetup({ initialSettings, onStart }: GameSetupProps) {
         <Button
           variant="primary"
           className="mt-6 w-full md:mt-8"
-          onClick={() => onStart({ ...settings, mode: preferredMode })}
+          onClick={() => onStart({ ...settings, mode: effectiveMode })}
         >
           New game
         </Button>

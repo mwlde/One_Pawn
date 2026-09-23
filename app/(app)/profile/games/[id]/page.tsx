@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { readStoredAnalysis } from "@/lib/analysis/server";
 import { loginPath } from "@/lib/auth/next-path";
+import { checkCoachRateLimit, type CoachRateLimit } from "@/lib/coach/rate-limit";
 import { readStoredCommentary } from "@/lib/coach/server";
 import {
   describeDifficulty,
@@ -64,6 +65,20 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
     readStoredCommentary(supabase, id),
   ]);
 
+  // The coach panel shows how many analyses are left before it will let the
+  // student spend another. Only a Coach-mode game reaches that panel, so the
+  // count is read only then. It never blocks the page: a read failure (an
+  // unapplied migration, say) leaves the count off rather than 500ing the
+  // replay, and the route enforces the real limit regardless.
+  let coachRateLimit: CoachRateLimit | null = null;
+  if (data.mode === "coach") {
+    try {
+      coachRateLimit = await checkCoachRateLimit(user.id, supabase);
+    } catch (cause) {
+      console.error("[profile/game] coach rate check failed", cause);
+    }
+  }
+
   const meta: readonly MetaItem[] = [
     { label: "result", value: resultLabel(data.result, data.user_color) },
     { label: "opponent", value: describeOpponent(data.difficulty) },
@@ -94,6 +109,7 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
         resultHeading={`${resultLabel(data.result, data.user_color)} · ${formatMoveCount(data.move_count)}`}
         initialAnalyses={analyses}
         initialCommentary={commentary}
+        coachRateLimit={coachRateLimit}
       />
     </div>
   );

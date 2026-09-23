@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CoachView, RetryButton } from "@/components/coach/CoachView";
+import { RateLimitNotice } from "@/components/coach/RateLimitNotice";
 import { useEngineContext } from "@/components/EngineProvider";
 import { analyzeGame } from "@/lib/analysis/analyze-game";
 import { saveAnalysis, type StoredAnalysis } from "@/lib/analysis/client";
@@ -13,6 +14,7 @@ import {
   type CommentaryFailure,
 } from "@/lib/coach/client";
 import { COMMENTARY_FAILURE_MESSAGE, type ClassificationDisplay } from "@/lib/coach/display";
+import type { CoachRateLimit } from "@/lib/coach/rate-limit";
 import type { GameCommentary } from "@/lib/coach/types";
 import type { Side } from "@/lib/game/settings";
 
@@ -25,6 +27,10 @@ type CoachPanelProps = {
   // The plain classification list, for the degraded view below.
   fallbackMoves: ClassificationDisplay[];
   totalUserMoves: number;
+  // The user's coach usage, read on the server. Null when it could not be read;
+  // the count is then left off the button. Updated in place if a live 429 comes
+  // back, so the message reflects the moment it was hit.
+  initialRateLimit: CoachRateLimit | null;
   // Results go back to the replay screen, which owns them: commentary arriving
   // is what turns this panel's page into the coach view.
   onAnalyses: (rows: StoredAnalysis[]) => void;
@@ -50,7 +56,13 @@ type Status =
   | "generating"
   | "failed"
   | "refused"
+  | "rate_limited"
   | "error";
+
+// Whichever of the two rate-limit shapes is in hand: the server's CoachRateLimit
+// or the client's RateLimitInfo from a 429. Both carry the three fields the
+// notice and the count need.
+type RateLimitLike = { used: number; limit: number; resetsAt: Date | null };
 
 export function CoachPanel({
   gameId,
@@ -59,6 +71,7 @@ export function CoachPanel({
   analyses,
   fallbackMoves,
   totalUserMoves,
+  initialRateLimit,
   onAnalyses,
   onCommentary,
   onSelectPly,
@@ -69,6 +82,7 @@ export function CoachPanel({
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
   const [failure, setFailure] = useState<CommentaryFailure | null>(null);
+  const [rateLimit, setRateLimit] = useState<RateLimitLike | null>(initialRateLimit);
 
   const activeRef = useRef(true);
   useEffect(() => {
@@ -129,12 +143,36 @@ export function CoachPanel({
         setStatus("prompt");
         return;
       }
+      if (result.failure === "rate_limited") {
+        if (result.rateLimit !== null) setRateLimit(result.rateLimit);
+        setStatus("rate_limited");
+        return;
+      }
       setFailure(result.failure);
       setStatus(isRetriableFailure(result.failure) ? "failed" : "refused");
     } finally {
       inFlightRef.current = false;
     }
   }, [analyses, engine, gameId, onAnalyses, onCommentary, pgn, totalUserMoves, userColor]);
+
+  // At the limit before a single click: no button to press, so the message
+  // stands in for it. Shown from the count read on the server, so the panel is
+  // honest about the limit before spending a request to be told the same thing.
+  const atLimit = rateLimit !== null && rateLimit.used >= rateLimit.limit;
+
+  if (status === "rate_limited" || (status === "prompt" && atLimit && rateLimit !== null)) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 p-4 text-center">
+        {rateLimit === null ? (
+          <p className="text-xs leading-relaxed">
+            {COMMENTARY_FAILURE_MESSAGE.rate_limited}
+          </p>
+        ) : (
+          <RateLimitNotice rateLimit={rateLimit} />
+        )}
+      </div>
+    );
+  }
 
   if (status === "prompt") {
     if (totalUserMoves === 0) {
@@ -144,6 +182,10 @@ export function CoachPanel({
         </p>
       );
     }
+    // British "analyses", and a small caption rather than a warning: the count
+    // is there to inform, not to make the student ration the last one.
+    const countSuffix =
+      rateLimit === null ? "" : ` (${rateLimit.used} of ${rateLimit.limit} used today)`;
     return (
       <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 p-4 text-center">
         <p className="text-xs leading-relaxed text-muted">
@@ -155,7 +197,7 @@ export function CoachPanel({
           onClick={generate}
           className="mx-auto border border-ink px-4 py-2 font-mono text-xs hover:bg-tint disabled:cursor-not-allowed disabled:border-hairline disabled:text-hairline disabled:hover:bg-transparent"
         >
-          {engine.isReady ? "Generate coach commentary" : "Engine loading..."}
+          {engine.isReady ? `Generate coach commentary${countSuffix}` : "Engine loading..."}
         </button>
       </div>
     );

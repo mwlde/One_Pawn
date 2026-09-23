@@ -21,6 +21,9 @@ export const COMMENTARY_FAILURE_MESSAGE: Record<CommentaryFailure, string> = {
   not_analyzed: "This game needs analysing before the coach can write about it.",
   server: "Something went wrong while saving the commentary.",
   refused: "The coach is not available for this game.",
+  // A plain fallback. The screens that hit this build a richer sentence with the
+  // reset time and the count; this stands in only if that ever cannot be built.
+  rate_limited: "You've used your coach analyses for today. They reset within a day.",
 };
 
 // How each reason reads as a heading. blunder/mistake/inaccuracy repeat the

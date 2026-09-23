@@ -91,22 +91,22 @@ export function isRegistrationDuplicate(identities: unknown[] | null | undefined
   return Array.isArray(identities) && identities.length === 0;
 }
 
-// Registration asks for the address twice, because a typo in it costs the
-// account: the confirmation link goes somewhere the user cannot open, and the
-// only recovery route is the same broken address. The comparison ignores case
-// and surrounding whitespace, since neither changes which mailbox the link
-// lands in, and telling someone that two addresses they read as identical do
-// not match is worse than letting a stray space through.
-export function emailsMatch(email: string, confirmation: string): boolean {
-  return email.trim().toLowerCase() === confirmation.trim().toLowerCase();
+// The password is asked for twice on every screen that sets one, because a typo
+// in it is invisible (the field is masked) and expensive: on register it makes
+// an account whose password nobody knows, and on a reset it locks the account
+// until another reset. Unlike the email check, this comparison is exact. Leading
+// or trailing spaces are valid password characters and case is significant, so
+// trimming or lowercasing here would call two different passwords a match.
+export function passwordsMatch(password: string, confirmation: string): boolean {
+  return password === confirmation;
 }
 
-export function validateEmailConfirmation(email: string, confirmation: string): string | null {
-  if (confirmation.trim().length === 0) {
-    return "Confirm your email address.";
+export function validatePasswordConfirmation(password: string, confirmation: string): string | null {
+  if (confirmation.length === 0) {
+    return "Confirm your password.";
   }
-  if (!emailsMatch(email, confirmation)) {
-    return "Those email addresses don't match.";
+  if (!passwordsMatch(password, confirmation)) {
+    return "Those passwords don't match.";
   }
   return null;
 }

@@ -17,8 +17,8 @@ import {
   resendErrorMessage,
   validateAgeConfirmation,
   validateEmail,
-  validateEmailConfirmation,
   validatePassword,
+  validatePasswordConfirmation,
 } from "@/lib/auth/validation";
 
 type Mode = "login" | "register";
@@ -84,9 +84,9 @@ export function AuthForm({
   const heading = headingFor(mode, returning);
 
   const [email, setEmail] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
-  const [confirmEmailError, setConfirmEmailError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   // Seeded rather than assigned, so submitting the form clears whatever the
   // redirect put here instead of leaving a stale banner above a fresh attempt.
   const [error, setError] = useState<string | null>(initialError);
@@ -97,15 +97,15 @@ export function AuthForm({
   const [resent, setResent] = useState(false);
   const [resendFailure, setResendFailure] = useState<string | null>(null);
 
-  // On blur rather than on every keystroke: checking as the second address is
+  // On blur rather than on every keystroke: checking as the second password is
   // typed means the field is marked wrong for as long as it is incomplete,
   // which is most of the time someone spends in it.
-  function handleConfirmEmailBlur() {
-    if (confirmEmail.length === 0) {
-      setConfirmEmailError(null);
+  function handleConfirmPasswordBlur() {
+    if (confirmPassword.length === 0) {
+      setConfirmPasswordError(null);
       return;
     }
-    setConfirmEmailError(validateEmailConfirmation(email, confirmEmail));
+    setConfirmPasswordError(validatePasswordConfirmation(password, confirmPassword));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -126,9 +126,9 @@ export function AuthForm({
     // Shown against the field rather than in the banner. The mismatch is a
     // property of one input, and the input is right there to be corrected.
     if (mode === "register") {
-      const mismatch = validateEmailConfirmation(email, confirmEmail);
+      const mismatch = validatePasswordConfirmation(password, confirmPassword);
       if (mismatch !== null) {
-        setConfirmEmailError(mismatch);
+        setConfirmPasswordError(mismatch);
         return;
       }
     }
@@ -282,30 +282,6 @@ export function AuthForm({
             onChange={setEmail}
           />
 
-          {/* A typo here costs the account outright: the confirmation link goes
-              to an address the user cannot open, and so does every recovery
-              email after it. Client-side only, as the second field is a check
-              on the first rather than anything the server needs. */}
-          {mode === "register" && (
-            <Field
-              id="confirm-email"
-              label="CONFIRM EMAIL"
-              type="email"
-              value={confirmEmail}
-              autoComplete="email"
-              placeholder="you@domain.com"
-              error={confirmEmailError}
-              onBlur={handleConfirmEmailBlur}
-              onChange={(value) => {
-                setConfirmEmail(value);
-                // Corrections show up as the error clearing, not as the message
-                // changing under the cursor. It comes back on blur if it is
-                // still wrong.
-                setConfirmEmailError(null);
-              }}
-            />
-          )}
-
           <div>
             <Field
               id="password"
@@ -314,7 +290,13 @@ export function AuthForm({
               value={password}
               autoComplete={mode === "login" ? "current-password" : "new-password"}
               placeholder="••••••••"
-              onChange={setPassword}
+              onChange={(value) => {
+                setPassword(value);
+                // Editing the first password can turn an agreeing confirm field
+                // into a mismatch. Clear the mark and let blur re-check, rather
+                // than leaving a stale error under the second field.
+                if (mode === "register") setConfirmPasswordError(null);
+              }}
             />
             {mode === "register" && (
               <p className="mt-1.5 font-mono text-[10px] text-muted">
@@ -332,6 +314,31 @@ export function AuthForm({
               </p>
             )}
           </div>
+
+          {/* Confirming the password, not the email: a typo in a masked field is
+              invisible and locks the new account out of its own password. The
+              Show toggle on each field lets the two be read back and compared.
+              Client-side only, a check on the field above rather than anything
+              the server needs. */}
+          {mode === "register" && (
+            <Field
+              id="confirm-password"
+              label="CONFIRM PASSWORD"
+              type="password"
+              value={confirmPassword}
+              autoComplete="new-password"
+              placeholder="••••••••"
+              error={confirmPasswordError}
+              onBlur={handleConfirmPasswordBlur}
+              onChange={(value) => {
+                setConfirmPassword(value);
+                // Corrections show up as the error clearing, not as the message
+                // changing under the cursor. It comes back on blur if it is
+                // still wrong.
+                setConfirmPasswordError(null);
+              }}
+            />
+          )}
         </div>
 
         {/* Above the button rather than below it, so it is read before the
@@ -389,15 +396,18 @@ export function AuthForm({
         )}
       </p>
 
-      {/* The wireframe's guest escape hatch. Phase 1 plays without an account
-          anyway, so this is a live link rather than a promise. */}
-      <p className="mt-3 text-center text-xs text-muted">
-        or{" "}
-        <Link href="/play" className="underline hover:text-ink">
-          play as guest
+      {/* The wireframe's guest escape hatch, as a button below the sign-in so it
+          reads as a real second way in rather than an afterthought. Phase 1
+          plays without an account anyway, so it is a live route, not a promise. */}
+      <div className="mt-6 border-t border-dashed border-hairline pt-5">
+        <Link
+          href="/play"
+          className="block border border-ink px-5 py-3.5 text-center text-sm transition-colors hover:bg-tint"
+        >
+          Play as guest
         </Link>
-        , no account needed
-      </p>
+        <p className="mt-2 text-center text-[11px] text-muted">No account needed to play.</p>
+      </div>
     </div>
   );
 }

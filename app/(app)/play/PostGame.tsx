@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { RetryButton } from "@/components/coach/CoachView";
+import { RateLimitNotice } from "@/components/coach/RateLimitNotice";
 import { Button } from "@/components/ui/Button";
 import { isRetriableFailure } from "@/lib/coach/client";
 import { COMMENTARY_FAILURE_MESSAGE, firstSentence } from "@/lib/coach/display";
@@ -157,6 +158,27 @@ function CoachSection({
     );
   }
 
+  // The day's coach analyses are used up. The engine analysis still ran and
+  // saved (it is free and local), so the classifications are there to open, but
+  // the write-up is what the limit gates and it did not happen.
+  if (coach.phase === "ready" && coach.commentaryFailure === "rate_limited" && coach.rateLimit !== null) {
+    return (
+      <div className="mt-6 md:mt-8">
+        {heading}
+        <RateLimitNotice
+          rateLimit={coach.rateLimit}
+          extra="Rematch or start a new game instead; those stay unlimited."
+          className="mt-2"
+        />
+        {gameId !== null && coach.analyses.length > 0 ? (
+          <Link href={`/profile/games/${gameId}`} className={`${NOTE} ${INLINE_ACTION} inline-block`}>
+            See where the game turned
+          </Link>
+        ) : null}
+      </div>
+    );
+  }
+
   if (coach.phase === "error") {
     return (
       <div className="mt-6 md:mt-8">
@@ -302,6 +324,19 @@ export function PostGame({
         <p className="mt-3 text-center text-xs text-muted">
           Rematch keeps the same settings and swaps colours.
         </p>
+
+        {/* A way out that is not another game. Kept as a text link below the two
+            game actions rather than a third button in the row, so it does not
+            compete with them for the primary action or crowd them at 375px.
+            Home for a signed-in player, the landing page for a guest. */}
+        <div className="mt-4 border-t border-dashed border-hairline pt-4 text-center">
+          <Link
+            href={isLoggedIn ? "/dashboard" : "/"}
+            className="font-mono text-[11px] text-muted underline underline-offset-2 hover:text-ink"
+          >
+            &larr; Back to menu
+          </Link>
+        </div>
       </div>
     </div>
   );

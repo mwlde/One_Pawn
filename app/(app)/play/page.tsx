@@ -272,7 +272,9 @@ export default function PlayPage() {
   }, [advance, engineDepth, engineSide, getBestMove, running, snapshot.turn]);
 
   if (phase === "setup") {
-    return <GameSetup initialSettings={settings} onStart={startGame} />;
+    return (
+      <GameSetup initialSettings={settings} isLoggedIn={userId !== null} onStart={startGame} />
+    );
   }
 
   const moveCount = Math.ceil(snapshot.moves.length / 2);

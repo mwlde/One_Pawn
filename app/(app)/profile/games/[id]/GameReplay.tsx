@@ -10,6 +10,7 @@ import { buildMoveArrows, ENGINE_ARROW_COLOR, playedArrowColor } from "@/lib/ana
 import type { StoredAnalysis } from "@/lib/analysis/client";
 import type { Classification } from "@/lib/analysis/types";
 import { buildClassificationDisplay, buildNotableDisplay } from "@/lib/coach/display";
+import type { CoachRateLimit } from "@/lib/coach/rate-limit";
 import type { GameCommentary } from "@/lib/coach/types";
 import type { GameMode } from "@/lib/game/mode";
 import type { Side } from "@/lib/game/settings";
@@ -37,6 +38,10 @@ type GameReplayProps = {
   // asks for it, and the panels below offer to do that.
   initialAnalyses: StoredAnalysis[];
   initialCommentary: GameCommentary;
+  // The user's coach usage, read on the server. Null for a Play-mode game and
+  // when the count could not be read; the coach panel simply omits the count
+  // then. Only the coach panel uses it.
+  coachRateLimit: CoachRateLimit | null;
 };
 
 type Tab = "moves" | "side";
@@ -127,6 +132,7 @@ export function GameReplay({
   resultHeading,
   initialAnalyses,
   initialCommentary,
+  coachRateLimit,
 }: GameReplayProps) {
   const replay = useMemo(() => buildReplay(pgn), [pgn]);
   const [ply, setPly] = useState(0);
@@ -402,6 +408,7 @@ export function GameReplay({
                 analyses={analyses}
                 fallbackMoves={fallbackMoves}
                 totalUserMoves={countUserMoves(replay.moves.length, orientation)}
+                initialRateLimit={coachRateLimit}
                 onAnalyses={setAnalyses}
                 onCommentary={setCommentary}
                 onSelectPly={setPly}

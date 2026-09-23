@@ -227,7 +227,7 @@ describe("saveGameSchema", () => {
     const settings: GameSettings = {
       side: "black",
       difficulty: "hard",
-      timeControl: "1+0",
+      timeControl: "3+2",
       mode: "coach",
     };
     const payload = buildSavePayload(chess, settings, describeEnd(chess, "black")!);
@@ -257,7 +257,7 @@ describe("saveGameSchema", () => {
   });
 
   it("rejects a time control the app cannot produce", () => {
-    for (const time_control of ["5+0", "3+2 ", "", "10+0s"]) {
+    for (const time_control of ["1+0", "5+3", "3+2 ", "", "10+0s"]) {
       expect(saveGameSchema.safeParse({ ...valid, time_control }).success).toBe(false);
     }
   });

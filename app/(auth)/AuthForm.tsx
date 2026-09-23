@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { AuthErrorBanner } from "@/app/(auth)/AuthErrorBanner";
+import { Field } from "@/app/(auth)/AuthField";
 import { createClient } from "@/lib/supabase/client";
 import { markReturningVisitor } from "@/lib/auth/returning-visitor";
 import {
@@ -12,8 +14,10 @@ import {
   MINIMUM_AGE,
   PASSWORD_MIN_LENGTH,
   registerErrorMessage,
+  resendErrorMessage,
   validateAgeConfirmation,
   validateEmail,
+  validateEmailConfirmation,
   validatePassword,
 } from "@/lib/auth/validation";
 
@@ -61,42 +65,6 @@ function Toggle({ mode }: { mode: Mode }) {
   );
 }
 
-function Field({
-  id,
-  label,
-  type,
-  value,
-  autoComplete,
-  placeholder,
-  onChange,
-}: {
-  id: string;
-  label: string;
-  type: "email" | "password";
-  value: string;
-  autoComplete: string;
-  placeholder: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div>
-      <label htmlFor={id} className="mb-1.5 block font-mono text-[10px] tracking-[0.1em] text-muted">
-        {label}
-      </label>
-      <input
-        id={id}
-        name={id}
-        type={type}
-        value={value}
-        autoComplete={autoComplete}
-        placeholder={placeholder}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full border border-ink bg-transparent p-3.5 font-mono text-[13px] text-ink placeholder:text-hairline focus:outline-none focus:ring-1 focus:ring-ink"
-      />
-    </div>
-  );
-}
-
 export function AuthForm({
   mode,
   returning = false,
@@ -116,6 +84,8 @@ export function AuthForm({
   const heading = headingFor(mode, returning);
 
   const [email, setEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [confirmEmailError, setConfirmEmailError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   // Seeded rather than assigned, so submitting the form clears whatever the
   // redirect put here instead of leaving a stale banner above a fresh attempt.
@@ -123,6 +93,20 @@ export function AuthForm({
   const [checkInbox, setCheckInbox] = useState(false);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [pending, setPending] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+  const [resendFailure, setResendFailure] = useState<string | null>(null);
+
+  // On blur rather than on every keystroke: checking as the second address is
+  // typed means the field is marked wrong for as long as it is incomplete,
+  // which is most of the time someone spends in it.
+  function handleConfirmEmailBlur() {
+    if (confirmEmail.length === 0) {
+      setConfirmEmailError(null);
+      return;
+    }
+    setConfirmEmailError(validateEmailConfirmation(email, confirmEmail));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -137,6 +121,16 @@ export function AuthForm({
     if (fieldError !== null) {
       setError(fieldError);
       return;
+    }
+
+    // Shown against the field rather than in the banner. The mismatch is a
+    // property of one input, and the input is right there to be corrected.
+    if (mode === "register") {
+      const mismatch = validateEmailConfirmation(email, confirmEmail);
+      if (mismatch !== null) {
+        setConfirmEmailError(mismatch);
+        return;
+      }
     }
 
     setPending(true);
@@ -188,15 +182,75 @@ export function AuthForm({
     router.refresh();
   }
 
+  async function handleResend() {
+    setResending(true);
+    setResendFailure(null);
+
+    const supabase = createClient();
+    const { error: failure } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
+
+    if (failure) {
+      // Deliberately vague. Asking to resend to an address that is already
+      // confirmed fails with a message that says so, and repeating it here
+      // would tell a stranger which addresses have accounts. Only throttling
+      // gets its own wording, because that one is worth waiting out.
+      setResendFailure(resendErrorMessage(failure.message));
+      setResending(false);
+      return;
+    }
+
+    setResent(true);
+    setResending(false);
+  }
+
   if (checkInbox) {
     return (
       <div className="w-full max-w-[360px]">
         <Toggle mode={mode} />
         <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">Check your email</h1>
-        <p className="mb-8 text-sm text-muted">
-          If that address can be registered, a confirmation link is on its way. Opening it
-          finishes setting up your account and signs you in.
+        <p className="mb-4 text-sm text-muted">
+          We sent a verification link to{" "}
+          <span className="font-mono text-[13px] text-ink">{email}</span>. Opening it finishes
+          setting up your account and signs you in.
         </p>
+
+        {/* Verification is a step people resent when nobody tells them what it
+            buys them. It buys them account recovery, so the note says that. */}
+        <p className="mb-6 border border-dashed border-hairline p-3.5 text-xs leading-relaxed text-muted">
+          Confirming the address proves it is yours. That is what lets us get you back into your
+          account if you forget your password, and it keeps the site free of spam registrations.
+        </p>
+
+        <div className="mb-6 border-t border-dashed border-hairline pt-4">
+          <p className="font-mono text-[10px] text-muted">Nothing in your inbox?</p>
+          <p className="mt-1.5 text-xs leading-relaxed text-muted">
+            Check the spam folder first. The link can take a minute to arrive.
+          </p>
+          {resent ? (
+            <p className="mt-3 font-mono text-[10px] text-ink">
+              Sent again to {email}.
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void handleResend()}
+              disabled={resending}
+              className="mt-3 border border-ink px-4 py-2.5 text-[13px] hover:bg-tint disabled:cursor-not-allowed disabled:border-hairline disabled:text-muted"
+            >
+              {resending ? "Sending..." : "Send it again"}
+            </button>
+          )}
+          {resendFailure === null ? null : (
+            <p role="alert" className="mt-3 font-mono text-[10px] text-ink">
+              ✕ {resendFailure}
+            </p>
+          )}
+        </div>
+
         <Link
           href="/login"
           className="block border border-ink px-5 py-3.5 text-center text-sm hover:bg-tint"
@@ -214,14 +268,7 @@ export function AuthForm({
       <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">{heading}</h1>
       <p className="mb-8 text-sm text-muted">{copy.subheading}</p>
 
-      {/* Wireframe S3: the error banner carries a heavier border rather than a
-          colour, because the palette has no red in it. */}
-      {error !== null && (
-        <div role="alert" className="mb-4 border-[1.5px] border-ink bg-panel px-3.5 py-3">
-          <div className="mb-1 font-mono text-[9px] tracking-[0.14em] text-ink">✕ {copy.failure}</div>
-          <p className="text-xs text-ink">{error}</p>
-        </div>
-      )}
+      {error !== null && <AuthErrorBanner label={copy.failure} message={error} />}
 
       <form onSubmit={handleSubmit} noValidate>
         <div className="mb-6 flex flex-col gap-4">
@@ -234,6 +281,31 @@ export function AuthForm({
             placeholder="you@domain.com"
             onChange={setEmail}
           />
+
+          {/* A typo here costs the account outright: the confirmation link goes
+              to an address the user cannot open, and so does every recovery
+              email after it. Client-side only, as the second field is a check
+              on the first rather than anything the server needs. */}
+          {mode === "register" && (
+            <Field
+              id="confirm-email"
+              label="CONFIRM EMAIL"
+              type="email"
+              value={confirmEmail}
+              autoComplete="email"
+              placeholder="you@domain.com"
+              error={confirmEmailError}
+              onBlur={handleConfirmEmailBlur}
+              onChange={(value) => {
+                setConfirmEmail(value);
+                // Corrections show up as the error clearing, not as the message
+                // changing under the cursor. It comes back on blur if it is
+                // still wrong.
+                setConfirmEmailError(null);
+              }}
+            />
+          )}
+
           <div>
             <Field
               id="password"
@@ -247,6 +319,16 @@ export function AuthForm({
             {mode === "register" && (
               <p className="mt-1.5 font-mono text-[10px] text-muted">
                 {PASSWORD_MIN_LENGTH} characters minimum.
+              </p>
+            )}
+            {mode === "login" && (
+              <p className="mt-1.5 text-right">
+                <Link
+                  href="/auth/reset-password"
+                  className="font-mono text-[10px] text-muted underline underline-offset-2 hover:text-ink"
+                >
+                  Forgot password?
+                </Link>
               </p>
             )}
           </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { loginPath } from "@/lib/auth/next-path";
+import { formatSupportId } from "@/lib/auth/support-id";
 import {
   computeStats,
   describeOpponent,
@@ -100,10 +101,24 @@ export default async function ProfilePage() {
 
   const games = data ?? [];
 
+  // Derived at render time, never stored. A tester reporting a problem can read
+  // this out instead of a UUID, and it is short enough to survive being copied
+  // into a message by hand.
+  const supportId = formatSupportId(user.id);
+
   const header = (
     <div className="border-b border-dashed border-hairline px-4 py-6 md:px-10 md:py-8">
       <div className="font-mono text-[10px] tracking-[0.14em] text-muted">PROFILE</div>
       <h1 className="mt-1 text-2xl font-semibold tracking-[-0.01em] md:text-3xl">{user.email}</h1>
+      {supportId === null ? null : (
+        <div className="mt-4">
+          <span className="font-mono text-[10px] tracking-[0.14em] text-muted">SUPPORT ID</span>{" "}
+          <span className="font-mono text-[13px] tracking-[0.08em] text-ink">{supportId}</span>
+          <p className="mt-1 font-mono text-[10px] text-muted">
+            If you need to contact support about your account, include this ID.
+          </p>
+        </div>
+      )}
     </div>
   );
 

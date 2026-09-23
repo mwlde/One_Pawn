@@ -6,6 +6,7 @@ import { useCallback, useRef, useState } from "react";
 import { GameBoard } from "@/components/board/GameBoard";
 import { useSessionUserId } from "@/components/SessionProvider";
 import { Button } from "@/components/ui/Button";
+import { MOBILE_NAV_CLEARANCE } from "@/components/ui/TopNav";
 import { judgeMove } from "@/lib/lessons/judge-move";
 import {
   buildProgressPayload,
@@ -309,9 +310,13 @@ export function LessonPlayer(props: LessonPlayerProps) {
 
           {/* Sticky on mobile, where the aside sits under the board and a
               long explanation pushes the button below the fold. The strip
-              behind it keeps scrolled text from showing around the edges. */}
+              behind it keeps scrolled text from showing around the edges. It
+              stops a tab bar's height short of the bottom, because that bar is
+              fixed to the viewport and would otherwise sit on top of it. */}
           {run.stepDone && (
-            <div className="sticky bottom-0 -mx-4 mt-auto bg-surface px-4 py-3 md:static md:mx-0 md:bg-transparent md:p-0">
+            <div
+              className={`sticky ${MOBILE_NAV_CLEARANCE} -mx-4 mt-auto bg-surface px-4 py-3 md:static md:mx-0 md:bg-transparent md:p-0`}
+            >
               <Button type="button" variant="primary" onClick={next} className="w-full">
                 {isLastStep ? "Finish" : "Next"}
               </Button>

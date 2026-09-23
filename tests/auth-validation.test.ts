@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  emailsMatch,
   isRegistrationDuplicate,
   loginErrorMessage,
   MINIMUM_AGE,
   PASSWORD_MIN_LENGTH,
   registerErrorMessage,
+  resendErrorMessage,
+  resetRequestErrorMessage,
+  updatePasswordErrorMessage,
   validateAgeConfirmation,
   validateEmail,
+  validateEmailConfirmation,
   validatePassword,
 } from "@/lib/auth/validation";
 
@@ -115,5 +120,77 @@ describe("age confirmation", () => {
 
   it("requires 16, which is what the terms and privacy policy state", () => {
     expect(MINIMUM_AGE).toBe(16);
+  });
+});
+
+describe("email confirmation", () => {
+  it("accepts two identical addresses", () => {
+    expect(validateEmailConfirmation("you@domain.com", "you@domain.com")).toBeNull();
+  });
+
+  it("rejects a mismatch", () => {
+    expect(validateEmailConfirmation("you@domain.com", "yuo@domain.com")).toBe(
+      "Those email addresses don't match.",
+    );
+  });
+
+  it("asks for the second address rather than calling an empty field a mismatch", () => {
+    expect(validateEmailConfirmation("you@domain.com", "  ")).toBe("Confirm your email address.");
+  });
+
+  // Neither difference changes which mailbox the confirmation lands in, so
+  // neither is worth stopping someone over.
+  it("ignores case", () => {
+    expect(emailsMatch("You@Domain.com", "you@domain.com")).toBe(true);
+  });
+
+  it("ignores surrounding whitespace", () => {
+    expect(emailsMatch("you@domain.com", "  you@domain.com ")).toBe(true);
+  });
+
+  it("does not ignore a difference inside the address", () => {
+    expect(emailsMatch("you@domain.com", "you@doma in.com")).toBe(false);
+  });
+});
+
+describe("password reset copy", () => {
+  it("names the wait when a reset request is throttled", () => {
+    expect(resetRequestErrorMessage("For security purposes, you can only request this after 23s")).toBe(
+      "Too many reset requests. Wait a few minutes and try again.",
+    );
+  });
+
+  it("falls back to a neutral message for anything unrecognised", () => {
+    expect(resetRequestErrorMessage("boom")).toBe("Could not send the reset email. Try again.");
+  });
+
+  // Asking to resend to an address that is already confirmed fails with a
+  // message that says so. Repeating it would tell a stranger which addresses
+  // have accounts, so everything but throttling is worded the same way.
+  it("does not repeat what Supabase says about an already confirmed address", () => {
+    const message = resendErrorMessage("Email address already confirmed");
+    expect(message).toBe("Could not send another email. Try again in a moment.");
+    expect(message.toLowerCase()).not.toContain("confirmed");
+  });
+
+  it("treats a spent or expired recovery session as a stale link", () => {
+    expect(updatePasswordErrorMessage("Auth session missing!")).toBe(
+      "That reset link is no longer valid. Ask for a new one.",
+    );
+  });
+
+  // "New password should be different from the old password" contains the word
+  // password, so the order of the checks is what keeps it from being answered
+  // with a length requirement the password already meets.
+  it("answers a reuse complaint as reuse, not as length", () => {
+    expect(
+      updatePasswordErrorMessage("New password should be different from the old password."),
+    ).toBe("Choose a password you have not used on this account before.");
+  });
+
+  it("maps a short password to the length requirement", () => {
+    expect(updatePasswordErrorMessage("Password should be at least 6 characters")).toBe(
+      `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`,
+    );
   });
 });

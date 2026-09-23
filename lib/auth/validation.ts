@@ -90,3 +90,83 @@ export function registerErrorMessage(supabaseMessage: string): string {
 export function isRegistrationDuplicate(identities: unknown[] | null | undefined): boolean {
   return Array.isArray(identities) && identities.length === 0;
 }
+
+// Registration asks for the address twice, because a typo in it costs the
+// account: the confirmation link goes somewhere the user cannot open, and the
+// only recovery route is the same broken address. The comparison ignores case
+// and surrounding whitespace, since neither changes which mailbox the link
+// lands in, and telling someone that two addresses they read as identical do
+// not match is worse than letting a stray space through.
+export function emailsMatch(email: string, confirmation: string): boolean {
+  return email.trim().toLowerCase() === confirmation.trim().toLowerCase();
+}
+
+export function validateEmailConfirmation(email: string, confirmation: string): string | null {
+  if (confirmation.trim().length === 0) {
+    return "Confirm your email address.";
+  }
+  if (!emailsMatch(email, confirmation)) {
+    return "Those email addresses don't match.";
+  }
+  return null;
+}
+
+// Password reset requests always report success to the user, whether or not the
+// address has an account, so the only failures worth wording are the ones that
+// stop the request being made at all.
+export function resetRequestErrorMessage(supabaseMessage: string): string {
+  const message = supabaseMessage.toLowerCase();
+
+  if (isRateLimit(message)) {
+    return "Too many reset requests. Wait a few minutes and try again.";
+  }
+  if (message.includes("invalid") && message.includes("email")) {
+    return "Enter a valid email address.";
+  }
+  return "Could not send the reset email. Try again.";
+}
+
+export function resendErrorMessage(supabaseMessage: string): string {
+  const message = supabaseMessage.toLowerCase();
+
+  if (isRateLimit(message)) {
+    return "Another email has already gone out recently. Wait a few minutes before asking again.";
+  }
+  return "Could not send another email. Try again in a moment.";
+}
+
+export function updatePasswordErrorMessage(supabaseMessage: string): string {
+  const message = supabaseMessage.toLowerCase();
+
+  // No session to update: the link was already spent, it has expired, or it was
+  // opened in a different browser from the one that asked for it.
+  if (
+    message.includes("auth session missing") ||
+    message.includes("session_not_found") ||
+    message.includes("session from session_id claim in jwt does not exist")
+  ) {
+    return "That reset link is no longer valid. Ask for a new one.";
+  }
+  // Checked before the generic password branch below, which would otherwise
+  // answer a reuse complaint with a length requirement the password already meets.
+  if (message.includes("should be different")) {
+    return "Choose a password you have not used on this account before.";
+  }
+  if (isRateLimit(message)) {
+    return "Too many attempts. Wait a minute and try again.";
+  }
+  if (message.includes("password")) {
+    return `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`;
+  }
+  return "Could not update your password. Try again.";
+}
+
+// Supabase words its throttling three different ways depending on which limiter
+// tripped. "For security purposes" is the one the email endpoints use.
+function isRateLimit(message: string): boolean {
+  return (
+    message.includes("too many requests") ||
+    message.includes("rate limit") ||
+    message.includes("for security purposes")
+  );
+}

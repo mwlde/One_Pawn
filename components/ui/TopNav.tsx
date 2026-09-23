@@ -30,6 +30,18 @@ const TABS: readonly Tab[] = [
   { label: "Profile", href: "/profile" },
 ];
 
+// The mobile tab bar is fixed to the viewport, so it occupies no space in the
+// shell's column and a spacer has to stand in for it at the end of the page.
+// Both read this height, so they cannot drift apart. It matches the mobile
+// header's own h-11, which is also a comfortable tap target.
+const MOBILE_NAV_HEIGHT = "h-11";
+
+// The same height as an offset, for a screen that sticks something to the
+// bottom of the viewport and would otherwise stick it underneath the bar.
+// Exported as a class rather than a number because Tailwind has to see the
+// finished utility name to emit it.
+export const MOBILE_NAV_CLEARANCE = "bottom-11";
+
 // A tab owns its subtree, so /profile/games/<id> keeps Profile marked as the
 // current page. The trailing slash matters: without it /profiles would match.
 function isActive(pathname: string, href: string): boolean {
@@ -203,9 +215,18 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
         </div>
       </header>
 
+      {/* Fixed to the bottom of the viewport rather than placed at the end of
+          the column. In flow it was the last thing on the page, so on anything
+          taller than the screen (Profile with a full games table, a lesson) it
+          sat below the footer and could only be reached by scrolling to the
+          very bottom. Fixed, the page scrolls underneath it and the tabs are
+          always where a thumb expects them.
+
+          z-10 puts it over page content but under the post-game sheet at z-20,
+          which covers the screen on purpose. */}
       <nav
         aria-label="Main"
-        className={`${mobileNavHidden ? "hidden" : "grid"} order-last shrink-0 grid-cols-5 border-t border-ink text-center font-mono text-[10px] md:hidden`}
+        className={`${mobileNavHidden ? "hidden" : "grid"} fixed inset-x-0 bottom-0 z-10 ${MOBILE_NAV_HEIGHT} grid-cols-5 border-t border-ink bg-surface text-center font-mono text-[10px] md:hidden`}
       >
         {TABS.map((tab) => {
           const active = isActive(pathname, tab.href);
@@ -214,13 +235,20 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
               key={tab.label}
               href={tab.href}
               aria-current={active ? "page" : undefined}
-              className={`py-3 ${active ? "bg-ink text-panel" : "text-muted"}`}
+              className={`flex items-center justify-center ${active ? "bg-ink text-panel" : "text-muted"}`}
             >
               {tab.label}
             </Link>
           );
         })}
       </nav>
+
+      {/* The height the fixed bar no longer takes in the column. Without it the
+          bar covers the last rows of whatever the page ends with, which on
+          Profile is the footer and the delete-account section above it. */}
+      {mobileNavHidden ? null : (
+        <div aria-hidden className={`order-last shrink-0 ${MOBILE_NAV_HEIGHT} md:hidden`} />
+      )}
     </>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { buttonClasses } from "@/components/ui/Button";
 import type { ResultLabel } from "@/lib/game/history";
 
 // A row as the list draws it. Every field is already formatted: this component
@@ -18,41 +19,40 @@ export type GameRow = {
   coach: boolean;
 };
 
-// Wireframe 06 draws the result as a bordered pill with no colour in it, so the
-// four outcomes are told apart by weight instead: a win is filled, a draw is
-// dashed, and the two ways of losing are plain.
+// The result is a tag with no colour in it. The label carries the outcome; a
+// win reads as selected, and the rest step down in weight.
 const BADGE_CLASSES: Record<ResultLabel, string> = {
-  "You won": "border-ink bg-ink text-panel",
-  "You lost": "border-ink",
-  Draw: "border-dashed border-ink",
-  "You resigned": "border-ink text-muted",
+  "You won": "border-ink bg-surface-sunk font-medium text-ink",
+  "You lost": "border-rule-strong text-ink",
+  Draw: "border-rule-strong text-graphite",
+  "You resigned": "border-rule text-graphite",
 };
 
 const COLUMNS = "md:grid md:grid-cols-[132px_1fr_110px_120px_150px] md:items-center md:gap-4";
 
 const INLINE_ACTION =
-  "font-mono text-[10px] underline underline-offset-2 text-muted hover:text-ink disabled:no-underline disabled:opacity-50";
+  "text-xs underline underline-offset-2 text-graphite transition-colors hover:text-ink disabled:no-underline disabled:opacity-50";
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center gap-4 border border-dashed border-hairline px-6 py-16 text-center">
+    <div className="flex flex-col items-center gap-4 rounded border border-rule bg-surface px-6 py-12 text-center">
       <div
         aria-hidden
-        className="h-20 w-20 border border-hairline opacity-60"
+        className="h-20 w-20 border border-rule opacity-60"
         style={{
           background:
-            "repeating-conic-gradient(var(--color-tint) 0 25%, var(--color-surface) 0 50%) 0 0 / 50% 50%",
+            "repeating-conic-gradient(var(--board-dark) 0 25%, var(--board-light) 0 50%) 0 0 / 50% 50%",
         }}
       />
-      <p className="text-base font-semibold">No games yet</p>
-      <p className="max-w-[240px] text-xs leading-relaxed text-muted">
+      <p className="font-display text-xl font-medium">No games yet</p>
+      <p className="max-w-[240px] text-xs leading-relaxed text-graphite">
         Play your first game and it will show up here.
       </p>
       <Link
         href="/play"
-        className="mt-1 border border-ink bg-ink px-6 py-3 text-[13px] font-semibold text-panel hover:bg-black"
+        className={`${buttonClasses("primary")} mt-1`}
       >
-        Play now →
+        Play now
       </Link>
     </div>
   );
@@ -118,12 +118,12 @@ export function GamesList({ rows }: { rows: GameRow[] }) {
   return (
     <div>
       <div
-        className={`hidden border-b border-ink py-2.5 font-mono text-[10px] tracking-[0.08em] text-muted ${COLUMNS}`}
+        className={`hidden border-b border-rule-strong py-3 text-xs text-graphite ${COLUMNS}`}
       >
-        <div>RESULT</div>
-        <div>OPPONENT</div>
-        <div>MOVES</div>
-        <div>DATE</div>
+        <div>Result</div>
+        <div>Opponent</div>
+        <div>Moves</div>
+        <div>Date</div>
         <div />
       </div>
 
@@ -132,11 +132,11 @@ export function GamesList({ rows }: { rows: GameRow[] }) {
           const armed = armedId === row.id;
 
           return (
-            <li key={row.id} className="border-b border-dashed border-hairline">
-              <div className={`flex flex-col gap-2 py-3.5 text-[13px] ${COLUMNS}`}>
+            <li key={row.id} className="border-b border-rule">
+              <div className={`flex flex-col gap-2 py-3 text-sm ${COLUMNS}`}>
                 <div>
                   <span
-                    className={`border px-2 py-0.5 font-mono text-[10px] ${BADGE_CLASSES[row.result]}`}
+                    className={`rounded-sm border px-2 py-1 text-xs ${BADGE_CLASSES[row.result]}`}
                   >
                     {row.result}
                   </span>
@@ -146,21 +146,21 @@ export function GamesList({ rows }: { rows: GameRow[] }) {
                   {row.coach ? (
                     <span
                       title="Played in coach mode"
-                      className="shrink-0 border border-hairline px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wide text-muted"
+                      className="shrink-0 rounded-sm border border-rule px-1 text-xs text-graphite"
                     >
-                      coach
+                      Coach
                     </span>
                   ) : null}
                 </div>
-                <div className="font-mono text-xs text-muted md:text-[13px] md:text-ink">
+                <div className="font-mono text-xs tabular-nums text-graphite md:text-sm md:text-ink">
                   {row.moves}
                 </div>
-                <div className="text-xs text-muted md:text-[13px]">{row.playedAt}</div>
+                <div className="font-mono text-xs tabular-nums text-graphite md:text-sm">{row.playedAt}</div>
 
                 <div className="flex items-center gap-3 md:justify-end">
                   {armed ? (
                     <>
-                      <span className="font-mono text-[10px] text-ink">Delete this game?</span>
+                      <span className="text-xs text-ink">Delete this game?</span>
                       <button
                         type="button"
                         onClick={() => void handleDelete(row)}
@@ -180,7 +180,7 @@ export function GamesList({ rows }: { rows: GameRow[] }) {
                     <>
                       <Link
                         href={`/profile/games/${row.id}`}
-                        className="border border-ink px-3 py-1.5 font-mono text-[10px] hover:bg-tint"
+                        className="rounded border border-rule-strong px-3 py-2 text-xs transition-colors hover:bg-surface-sunk"
                       >
                         View
                       </Link>
@@ -197,7 +197,7 @@ export function GamesList({ rows }: { rows: GameRow[] }) {
               </div>
 
               {failedId === row.id ? (
-                <p role="alert" className="pb-3 font-mono text-[10px] text-ink">
+                <p role="alert" className="pb-3 text-xs text-ink">
                   That game could not be deleted. It is still here. Try again.
                 </p>
               ) : null}

@@ -77,17 +77,17 @@ export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupPro
 
   return (
     <div className="flex flex-1 items-start justify-center overflow-y-auto px-4 py-6 md:items-center md:py-8">
-      <div className="w-full max-w-md shrink-0 border border-ink bg-panel p-5 md:p-10">
-        <div className="mb-1 font-mono text-[11px] uppercase tracking-[0.1em] text-muted">
+      <div className="w-full max-w-md shrink-0 rounded border border-rule bg-surface p-6 md:p-8">
+        <div className="mb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-graphite">
           New game
         </div>
-        <h1 className="mb-6 text-3xl font-bold tracking-tight md:mb-8 md:text-4xl">
+        <h1 className="mb-6 font-display text-3xl font-bold tracking-[-0.02em] md:mb-8 md:text-4xl">
           Play the engine
         </h1>
 
-        <div className="flex flex-col gap-5 md:gap-6">
+        <div className="flex flex-col gap-6">
           <div>
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+            <div className="mb-2 text-xs text-graphite">
               Mode
             </div>
             <div role="radiogroup" aria-label="Mode" className="flex flex-col gap-2">
@@ -105,34 +105,34 @@ export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupPro
                       onClick={() => {
                         if (!locked) writePreferredMode(mode);
                       }}
-                      className={`w-full border p-3 text-left transition-colors ${
+                      className={`w-full rounded border p-3 text-left transition-colors ${
                         locked
-                          ? "cursor-not-allowed border-hairline opacity-50"
+                          ? "cursor-not-allowed border-rule opacity-50"
                           : selected
-                            ? "border-ink bg-tint"
-                            : "border-hairline hover:border-ink"
+                            ? "border-ink bg-surface-sunk"
+                            : "border-rule hover:border-rule-strong"
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className={`text-sm ${selected ? "font-semibold" : ""}`}>
+                        <span className={`text-sm text-ink ${selected ? "font-medium" : ""}`}>
                           {MODE_LABELS[mode]}
                         </span>
                         <span
                           aria-hidden
-                          className={`h-3 w-3 shrink-0 border ${
-                            selected ? "border-ink bg-ink" : "border-hairline"
+                          className={`h-3 w-3 shrink-0 rounded-full border ${
+                            selected ? "border-ink bg-ink" : "border-rule-strong"
                           }`}
                         />
                       </div>
-                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted">
+                      <p className="mt-1 text-xs leading-relaxed text-graphite">
                         {MODE_DESCRIPTIONS[mode]}
                       </p>
                     </button>
                     {locked ? (
-                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted">
+                      <p className="mt-1 text-xs leading-relaxed text-graphite">
                         <Link
                           href="/login"
-                          className="underline underline-offset-2 hover:text-ink"
+                          className="text-info-text underline underline-offset-2 transition-colors hover:text-ink"
                         >
                           Log in
                         </Link>{" "}
@@ -167,7 +167,7 @@ export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupPro
           />
         </div>
 
-        <p className="mt-5 font-mono text-[11px] leading-relaxed text-muted md:mt-6">
+        <p className="mt-6 text-xs leading-relaxed text-graphite">
           {timeControl.category} &middot; {timeControl.baseSeconds / 60} minutes each side,{" "}
           {incrementNote}.
           <br />

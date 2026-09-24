@@ -23,10 +23,12 @@ export function SegmentedControl<T extends string>({
 }: SegmentedControlProps<T>) {
   return (
     <div>
-      <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-        {label}
-      </div>
-      <div role="radiogroup" aria-label={label} className="flex border border-ink">
+      <div className="mb-2 text-xs text-graphite">{label}</div>
+      <div
+        role="radiogroup"
+        aria-label={label}
+        className="flex overflow-hidden rounded border border-rule"
+      >
         {options.map((option, index) => {
           const selected = option.value === value;
           return (
@@ -36,12 +38,14 @@ export function SegmentedControl<T extends string>({
               role="radio"
               aria-checked={selected}
               onClick={() => onChange(option.value)}
-              className={`flex-1 px-4 py-3 text-sm transition-colors ${
-                index > 0 ? "border-l border-ink" : ""
+              className={`flex-1 whitespace-nowrap px-2 py-3 text-sm transition-colors ${
+                index > 0 ? "border-l border-rule" : ""
               } ${
+                // An inset outline rather than a border, so the selected edge
+                // sits over the shared dividers without shifting the layout.
                 selected
-                  ? "bg-ink font-semibold text-panel"
-                  : "bg-transparent text-muted hover:bg-tint"
+                  ? "bg-surface-sunk font-medium text-ink outline outline-1 -outline-offset-1 outline-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  : "bg-transparent text-graphite hover:bg-surface-sunk"
               }`}
             >
               {option.label}

@@ -42,7 +42,7 @@ export function Field({
 
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block font-mono text-[10px] tracking-[0.1em] text-muted">
+      <label htmlFor={id} className="mb-2 block text-xs text-graphite">
         {label}
       </label>
       <div className="relative">
@@ -58,9 +58,9 @@ export function Field({
           aria-describedby={error === null ? undefined : errorId}
           onChange={(event) => onChange(event.target.value)}
           onBlur={onBlur}
-          className={`w-full bg-transparent p-3.5 font-mono text-[13px] text-ink placeholder:text-hairline focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50 ${
-            isPassword ? "pr-16" : ""
-          } ${error === null ? "border border-ink" : "border-[1.5px] border-ink"}`}
+          className={`w-full rounded border bg-surface p-3 text-sm text-ink transition-colors placeholder:text-muted focus:border-accent focus:outline-none disabled:opacity-50 ${
+            isPassword ? "pr-12" : ""
+          } ${error === null ? "border-rule hover:border-rule-strong" : "border-ink"}`}
         />
         {isPassword && (
           <button
@@ -68,14 +68,14 @@ export function Field({
             onClick={() => setRevealed((current) => !current)}
             aria-pressed={revealed}
             aria-label={revealed ? "Hide password" : "Show password"}
-            className="absolute inset-y-0 right-0 px-3.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted hover:text-ink"
+            className="absolute inset-y-0 right-0 px-3 text-xs text-graphite transition-colors hover:text-ink"
           >
             {revealed ? "Hide" : "Show"}
           </button>
         )}
       </div>
       {error === null ? null : (
-        <p id={errorId} className="mt-1.5 font-mono text-[10px] text-ink">
+        <p id={errorId} className="mt-2 text-xs text-ink">
           ✕ {error}
         </p>
       )}

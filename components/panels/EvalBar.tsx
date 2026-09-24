@@ -11,7 +11,7 @@ type EvalBarProps = {
 export function EvalBar({ balance, orientation }: EvalBarProps) {
   const blackFraction = 1 - whiteShare(balance);
   const blackSegment = (
-    <div className="w-full bg-ink" style={{ height: `${blackFraction * 100}%` }} />
+    <div className="w-full bg-info" style={{ height: `${blackFraction * 100}%` }} />
   );
 
   return (
@@ -19,7 +19,7 @@ export function EvalBar({ balance, orientation }: EvalBarProps) {
       <div
         role="img"
         aria-label={`Material balance ${formatBalance(balance)}`}
-        className="flex w-3.5 flex-1 flex-col border border-ink bg-panel"
+        className="flex w-2 flex-1 flex-col border border-rule bg-surface"
       >
         {orientation === "white" ? (
           <>
@@ -33,7 +33,7 @@ export function EvalBar({ balance, orientation }: EvalBarProps) {
           </>
         )}
       </div>
-      <div className="font-mono text-[10px] tabular-nums text-muted">
+      <div className="font-mono text-xs tabular-nums text-graphite">
         {formatBalance(balance)}
       </div>
     </div>

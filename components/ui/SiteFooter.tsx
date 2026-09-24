@@ -25,15 +25,15 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="shrink-0 border-t border-dashed border-hairline px-4 py-4 md:px-10">
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 font-mono text-[10px] text-muted">
+    <footer className="shrink-0 border-t border-rule px-4 py-4 md:px-8">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-xs text-graphite">
         <span>
-          &copy; {year} One Pawn <span className="text-hairline"></span> v{APP_VERSION}{" "}
-          <span className="text-hairline"></span> {APP_STAGE}
+          &copy; {year} One Pawn <span className="text-muted">·</span> v{APP_VERSION}{" "}
+          <span className="text-muted">·</span> {APP_STAGE}
         </span>
         <nav aria-label="Footer" className="flex items-center gap-4">
           {FOOTER_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:text-ink hover:underline">
+            <Link key={link.href} href={link.href} className="transition-colors hover:text-ink hover:underline">
               {link.label}
             </Link>
           ))}

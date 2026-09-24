@@ -15,7 +15,7 @@ export function DeletedNotice() {
   if (deleted !== "true") return null;
 
   return (
-    <p role="status" className="mb-8 border border-ink px-4 py-3 font-mono text-xs leading-relaxed">
+    <p role="status" className="mb-8 rounded border border-rule bg-surface px-4 py-3 text-sm leading-relaxed">
       Your account has been deleted.
     </p>
   );

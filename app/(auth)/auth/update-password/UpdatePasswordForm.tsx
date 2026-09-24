@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { buttonClasses } from "@/components/ui/Button";
 import { AuthErrorBanner } from "@/app/(auth)/AuthErrorBanner";
 import { Field } from "@/app/(auth)/AuthField";
 import { createClient } from "@/lib/supabase/client";
@@ -73,19 +74,19 @@ export function UpdatePasswordForm() {
 
   return (
     <div className="w-full max-w-[360px]">
-      <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">Set a new password</h1>
-      <p className="mb-8 text-sm text-muted">
+      <h1 className="mb-2 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">Set a new password</h1>
+      <p className="mb-8 text-sm text-graphite">
         Choose a new password. You are signed in once it is saved.
       </p>
 
-      {error !== null && <AuthErrorBanner label="UPDATE FAILED" message={error} />}
+      {error !== null && <AuthErrorBanner label="Update failed" message={error} />}
 
       <form onSubmit={handleSubmit} noValidate>
         <div className="mb-6 flex flex-col gap-4">
           <div>
             <Field
               id="password"
-              label="NEW PASSWORD"
+              label="New password"
               type="password"
               value={password}
               autoComplete="new-password"
@@ -95,14 +96,14 @@ export function UpdatePasswordForm() {
                 setConfirmPasswordError(null);
               }}
             />
-            <p className="mt-1.5 font-mono text-[10px] text-muted">
+            <p className="mt-2 text-xs text-graphite">
               {PASSWORD_MIN_LENGTH} characters minimum.
             </p>
           </div>
 
           <Field
             id="confirm-password"
-            label="CONFIRM NEW PASSWORD"
+            label="Confirm new password"
             type="password"
             value={confirmPassword}
             autoComplete="new-password"
@@ -119,9 +120,9 @@ export function UpdatePasswordForm() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full border border-ink bg-ink px-5 py-4 text-sm font-semibold text-panel transition-colors hover:bg-black disabled:cursor-not-allowed disabled:border-hairline disabled:bg-hairline"
+          className={`${buttonClasses("primary")} w-full`}
         >
-          {pending ? "Working..." : "Save password →"}
+          {pending ? "Working..." : "Save password"}
         </button>
       </form>
     </div>

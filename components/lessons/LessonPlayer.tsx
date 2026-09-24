@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from "react";
 
 import { GameBoard } from "@/components/board/GameBoard";
 import { useSessionUserId } from "@/components/SessionProvider";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonClasses } from "@/components/ui/Button";
 import { MOBILE_NAV_CLEARANCE } from "@/components/ui/TopNav";
 import { judgeMove } from "@/lib/lessons/judge-move";
 import {
@@ -243,15 +243,18 @@ export function LessonPlayer(props: LessonPlayerProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex shrink-0 items-center justify-between border-b border-dashed border-hairline px-4 py-3 md:px-6">
-        <h1 className="text-sm font-semibold">{lesson.title}</h1>
-        <span className="font-mono text-[11px] text-muted">
-          Step {run.stepIndex + 1} of {lesson.steps.length}
+      <div className="flex shrink-0 items-center justify-between border-b border-rule px-4 py-3 md:px-6">
+        <h1 className="font-display text-xl font-medium">{lesson.title}</h1>
+        <span className="text-xs text-graphite">
+          Step{" "}
+          <span className="font-mono tabular-nums">
+            {run.stepIndex + 1} of {lesson.steps.length}
+          </span>
         </span>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col md:grid md:grid-cols-[1fr_340px]">
-        <div className="flex justify-center p-3 md:p-5">
+        <div className="flex justify-center p-3 md:p-6">
           <div className="aspect-square" style={{ width: BOARD_SIZE }}>
             {/* The render that swaps in the next step's position always has
                 stepDone false, and the one that plays a correct move and any
@@ -268,17 +271,17 @@ export function LessonPlayer(props: LessonPlayerProps) {
           </div>
         </div>
 
-        <aside className="flex min-h-0 flex-col gap-5 border-t border-dashed border-hairline px-4 py-5 md:border-l md:border-t-0">
-          <p className="text-[15px] leading-relaxed">{step.instruction}</p>
+        <aside className="flex min-h-0 flex-col gap-6 border-t border-rule px-4 py-6 md:border-l md:border-t-0">
+          <p className="text-sm leading-relaxed">{step.instruction}</p>
 
           {hints.length > 0 && (
             <div className="flex flex-col gap-2">
               {hints.slice(0, run.hintsShown).map((hint, index) => (
-                <div key={index} className="border border-dashed border-hairline bg-panel px-3 py-2.5">
-                  <span className="mb-1 block font-mono text-[10px] uppercase text-muted">
+                <div key={index} className="rounded border border-rule bg-surface px-3 py-3">
+                  <span className="mb-1 block text-xs text-graphite first-letter:uppercase">
                     {hint.level}
                   </span>
-                  <p className="text-[13px] leading-relaxed">{hint.text}</p>
+                  <p className="text-sm leading-relaxed">{hint.text}</p>
                 </div>
               ))}
               {!run.stepDone && run.hintsShown < hints.length && (
@@ -296,13 +299,13 @@ export function LessonPlayer(props: LessonPlayerProps) {
               <p
                 className={
                   run.feedback.tone === "explanation"
-                    ? "border border-ink bg-panel px-3.5 py-3 text-[13px] leading-relaxed"
-                    : "font-mono text-[11px] text-muted"
+                    ? "rounded border border-rule bg-surface px-3 py-3 text-sm leading-relaxed"
+                    : "text-xs text-graphite"
                 }
               >
                 {run.feedback.text}
                 {run.feedback.tone === "error" && run.feedback.repeats > 1 && (
-                  <span className="ml-1.5 text-ink">×{run.feedback.repeats}</span>
+                  <span className="ml-2 text-ink">×{run.feedback.repeats}</span>
                 )}
               </p>
             )}
@@ -315,7 +318,7 @@ export function LessonPlayer(props: LessonPlayerProps) {
               fixed to the viewport and would otherwise sit on top of it. */}
           {run.stepDone && (
             <div
-              className={`sticky ${MOBILE_NAV_CLEARANCE} -mx-4 mt-auto bg-surface px-4 py-3 md:static md:mx-0 md:bg-transparent md:p-0`}
+              className={`sticky ${MOBILE_NAV_CLEARANCE} -mx-4 mt-auto bg-page px-4 py-3 md:static md:mx-0 md:bg-transparent md:p-0`}
             >
               <Button type="button" variant="primary" onClick={next} className="w-full">
                 {isLastStep ? "Finish" : "Next"}
@@ -341,7 +344,7 @@ type LessonCompleteProps = {
 
 // Same weight and styling as the save line on the post-game screen: a receipt,
 // not a control.
-const NOTE = "mt-2 font-mono text-[10px] leading-relaxed text-muted";
+const NOTE = "mt-2 text-xs leading-relaxed text-graphite";
 const INLINE_ACTION = "underline underline-offset-2 hover:text-ink";
 
 // Graduation is the only way into reviews, and nothing else on the Learn screens
@@ -424,18 +427,18 @@ function LessonComplete({
 }: LessonCompleteProps) {
   return (
     <div className="flex flex-1 items-center justify-center p-4">
-      <div className="w-full max-w-sm border border-ink bg-panel p-6">
-        <p className="font-mono text-[11px] text-muted">{title}</p>
-        <h1 className="mt-1 text-lg font-semibold">Lesson complete.</h1>
+      <div className="w-full max-w-sm rounded border border-rule bg-surface p-6">
+        <p className="text-xs text-graphite">{title}</p>
+        <h1 className="mt-1 font-display text-xl font-medium">Lesson complete.</h1>
 
-        <dl className="mt-5 border-t border-dashed border-hairline pt-3 font-mono text-[11px]">
+        <dl className="mt-6 border-t border-rule pt-3 text-xs">
           <div className="flex justify-between py-1">
-            <dt className="text-muted">mistakes</dt>
-            <dd>{mistakes}</dd>
+            <dt className="text-graphite">Mistakes</dt>
+            <dd className="font-mono tabular-nums">{mistakes}</dd>
           </div>
           <div className="flex justify-between py-1">
-            <dt className="text-muted">hints used</dt>
-            <dd>{usedHints ? "yes" : "no"}</dd>
+            <dt className="text-graphite">Hints used</dt>
+            <dd>{usedHints ? "Yes" : "No"}</dd>
           </div>
         </dl>
 
@@ -446,7 +449,7 @@ function LessonComplete({
         <div className="mt-6 flex flex-col gap-2">
           <Link
             href="/learn"
-            className="border border-ink bg-ink px-5 py-3.5 text-center text-sm font-semibold leading-none text-panel transition-colors hover:bg-black"
+            className={buttonClasses("primary")}
           >
             Back to lessons
           </Link>

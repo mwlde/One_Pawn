@@ -32,23 +32,23 @@ const GAME_LIMIT = 50;
 // stubbed: a "--" in a stats header reads as a broken number, not as a promise.
 function StatsHeader({ stats }: { stats: GameStats }) {
   const cells: readonly { label: string; value: string }[] = [
-    { label: "games played", value: String(stats.played) },
-    { label: "win rate", value: formatWinRate(stats.winRate) },
-    { label: "wins", value: String(stats.wins) },
-    { label: "losses", value: String(stats.losses) },
-    { label: "draws", value: String(stats.draws) },
-    { label: "resigned", value: String(stats.resigned) },
+    { label: "Games played", value: String(stats.played) },
+    { label: "Win rate", value: formatWinRate(stats.winRate) },
+    { label: "Wins", value: String(stats.wins) },
+    { label: "Losses", value: String(stats.losses) },
+    { label: "Draws", value: String(stats.draws) },
+    { label: "Resigned", value: String(stats.resigned) },
   ];
 
   return (
-    <div className="grid grid-cols-2 border-b border-dashed border-hairline sm:grid-cols-3 lg:grid-cols-6">
+    <div className="grid grid-cols-2 border-b border-rule sm:grid-cols-3 lg:grid-cols-6">
       {cells.map((cell) => (
         <div
           key={cell.label}
-          className="border-b border-r border-dashed border-hairline p-4 last:border-r-0 md:p-6 lg:border-b-0"
+          className="border-b border-r border-rule p-4 last:border-r-0 md:p-6 lg:border-b-0"
         >
-          <div className="text-2xl font-semibold md:text-4xl">{cell.value}</div>
-          <div className="mt-1.5 font-mono text-[10px] tracking-[0.08em] text-muted">
+          <div className="font-mono text-xl font-medium tabular-nums md:text-3xl">{cell.value}</div>
+          <div className="mt-2 text-xs text-graphite">
             {cell.label}
           </div>
         </div>
@@ -107,14 +107,14 @@ export default async function ProfilePage() {
   const supportId = formatSupportId(user.id);
 
   const header = (
-    <div className="border-b border-dashed border-hairline px-4 py-6 md:px-10 md:py-8">
-      <div className="font-mono text-[10px] tracking-[0.14em] text-muted">PROFILE</div>
-      <h1 className="mt-1 text-2xl font-semibold tracking-[-0.01em] md:text-3xl">{user.email}</h1>
+    <div className="border-b border-rule px-4 py-6 md:px-8 md:py-8">
+      <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-graphite">Profile</div>
+      <h1 className="mt-1 break-all font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">{user.email}</h1>
       {supportId === null ? null : (
         <div className="mt-4">
-          <span className="font-mono text-[10px] tracking-[0.14em] text-muted">SUPPORT ID</span>{" "}
-          <span className="font-mono text-[13px] tracking-[0.08em] text-ink">{supportId}</span>
-          <p className="mt-1 font-mono text-[10px] text-muted">
+          <span className="text-xs text-graphite">Support ID</span>{" "}
+          <span className="font-mono text-sm tracking-[0.08em] text-ink">{supportId}</span>
+          <p className="mt-1 text-xs text-graphite">
             If you need to contact support about your account, include this ID.
           </p>
         </div>
@@ -129,8 +129,8 @@ export default async function ProfilePage() {
     return (
       <div className="flex min-h-0 flex-1 flex-col">
         {header}
-        <div className="px-4 py-6 md:px-10">
-          <p className="border border-ink bg-panel px-4 py-3 text-xs">
+        <div className="px-4 py-6 md:px-8">
+          <p className="rounded border border-rule bg-surface px-4 py-3 text-sm">
             Your games could not be loaded. Refresh the page to try again.
           </p>
         </div>
@@ -144,8 +144,8 @@ export default async function ProfilePage() {
 
       <StatsHeader stats={computeStats(games)} />
 
-      <div className="flex min-h-0 flex-1 flex-col px-4 py-6 md:px-10">
-        <h2 className="mb-4 text-base font-semibold">Past games</h2>
+      <div className="flex min-h-0 flex-1 flex-col px-4 py-6 md:px-8">
+        <h2 className="mb-4 font-display text-xl font-medium">Past games</h2>
         <GamesList rows={games.map(toRow)} />
 
         {/* The address is read from the session here rather than typed into the

@@ -1,32 +1,150 @@
 @import "tailwindcss";
 
-/* Palette and type from the Phase 1 wireframes. One light scheme only: the
-   wireframes commit to a single monochrome look, so there is no dark variant
-   to fall back to and prefers-color-scheme is deliberately not honoured. */
-@theme {
-  --color-canvas: #e0ddd4;
-  --color-surface: #f5f3ee;
-  --color-panel: #eceae5;
-  --color-ink: #1a1a1a;
-  --color-muted: #666666;
-  --color-hairline: #999999;
-  --color-tint: #d8d4cc;
+/* Components use the semantic Tailwind names mapped in @theme below, never
+   raw values. A new theme is one more block of these variables under its own
+   [data-theme] selector.
 
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
-}
-
+   Each colour has one job. Accent (teal) is for actions: the one filled
+   primary button on a screen, and focus rings. Pink is the user's own marks:
+   where you are, your progress, your last move, your selection. Highlight is
+   its pale shade for large soft areas; mark is the strong shade for fills and
+   lines. Info (blue) is the engine's marks and data display: the eval bar,
+   engine arrows, analysis; info-text is its readable shade for links. Pending
+   is only for things waiting on the user, such as reviews due. */
 :root {
   color-scheme: light;
+
+  --page: #f4f6f7;
+  --surface: #ffffff;
+  --surface-sunk: #eaf0f3;
+  --ink: #102a31;
+  --graphite: #4b5f66;
+  --muted: #627379;
+  --rule: #d9e1e4;
+  --rule-strong: #b7c4c9;
+  --accent: #014552;
+  --accent-hover: #01333d;
+  --accent-tint: #d9e8ec;
+  --on-accent: #ffffff;
+  --highlight: #fac8c0;
+  --mark: #d9707d;
+  --info: #5f8bc1;
+  --info-text: #3f6fa8;
+  --pending: #f8d4bb;
+  --on-pending: #6b3a1e;
+  --board-light: #eef3f6;
+  --board-dark: #9db9cc;
+  --board-last-move: rgba(250, 200, 192, 0.75);
+
+  --eval-best: #3f6fa8;
+  --eval-good: #5c7a3e;
+  --eval-inaccuracy: #b8892e;
+  --eval-mistake: #c66a2b;
+  --eval-blunder: #8a2a24;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --page: #0f1a1e;
+  --surface: #16242a;
+  --surface-sunk: #1d2e35;
+  --ink: #e6eef0;
+  --graphite: #9fb0b6;
+  --muted: #7f9097;
+  --rule: #25363c;
+  --rule-strong: #34484f;
+  --accent: #5fb3c2;
+  --accent-hover: #7fc3cf;
+  --accent-tint: #1a3a42;
+  --on-accent: #0f1a1e;
+  --highlight: #6e4a47;
+  --mark: #e58c97;
+  --info: #7fa6d6;
+  --info-text: #8db3e0;
+  --pending: #5a4232;
+  --on-pending: #f8d4bb;
+  --board-light: #b9ccd8;
+  --board-dark: #5e7f95;
+  --board-last-move: rgba(250, 200, 192, 0.45);
+
+  --eval-best: #8db3e0;
+}
+
+/* Wireframe-era name still read by the move list's classification dots.
+   Removed with the eval colour pass. Declared on [data-theme] too, because a
+   var() alias resolves where it is declared and would otherwise pass the
+   light value down into a dark subtree. */
+:root,
+[data-theme] {
+  --color-hairline: var(--rule-strong);
+}
+
+/* inline so utilities compile to var(--page) rather than a copy resolved on
+   :root. That is what lets a [data-theme] block re-theme its subtree. */
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-sunk: var(--surface-sunk);
+  --color-ink: var(--ink);
+  --color-graphite: var(--graphite);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-tint: var(--accent-tint);
+  --color-on-accent: var(--on-accent);
+  --color-highlight: var(--highlight);
+  --color-mark: var(--mark);
+  --color-info: var(--info);
+  --color-info-text: var(--info-text);
+  --color-pending: var(--pending);
+  --color-on-pending: var(--on-pending);
+  --color-board-light: var(--board-light);
+  --color-board-dark: var(--board-dark);
+  --color-board-last-move: var(--board-last-move);
+
+  --color-eval-best: var(--eval-best);
+  --color-eval-good: var(--eval-good);
+  --color-eval-inaccuracy: var(--eval-inaccuracy);
+  --color-eval-mistake: var(--eval-mistake);
+  --color-eval-blunder: var(--eval-blunder);
+
+  --color-muted: var(--muted);
+
+  /* Wireframe-era names still used by the classification badges. Removed
+     with the eval colour pass. */
+  --color-panel: var(--surface);
+  --color-hairline: var(--rule-strong);
+}
+
+@theme {
+  --radius-sm: 2px;
+  --radius: 4px;
+
+  --default-transition-duration: 150ms;
+  --default-transition-timing-function: ease-out;
+
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-geist), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* In the base layer so a component's own outline utilities still win. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 body {
-  background: var(--color-surface);
-  color: var(--color-ink);
+  background: var(--page);
+  color: var(--ink);
   font-family: var(--font-sans);
 }
 
 ::selection {
-  background: var(--color-ink);
-  color: var(--color-panel);
+  background: var(--highlight);
+  color: var(--ink);
 }

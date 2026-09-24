@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { LessonPlayer, type RunResult } from "@/components/lessons/LessonPlayer";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonClasses } from "@/components/ui/Button";
 import type { Lesson } from "@/lib/lessons/types";
 import { formatDueIn } from "@/lib/srs/format";
 import { GRADES, submitReview, type Grade, type ReviewErrorKind } from "@/lib/srs/review";
@@ -39,9 +39,7 @@ type Phase =
 // Long enough to read one short line, short enough not to feel like a wait.
 const GRADED_PAUSE_MS = 1800;
 
-const NOTE = "mt-2 font-mono text-[10px] leading-relaxed text-muted";
-const PRIMARY_LINK =
-  "block border border-ink bg-ink px-5 py-3.5 text-center text-sm font-semibold leading-none text-panel transition-colors hover:bg-black";
+const NOTE = "mt-2 text-xs leading-relaxed text-graphite";
 
 export function ReviewSession({ items, upcomingNextDueAt }: ReviewSessionProps) {
   const [results, setResults] = useState<Graded[]>([]);
@@ -129,17 +127,17 @@ function SessionHeader({ position, total, context }: { position: number; total: 
   const done = position - 1;
 
   return (
-    <div className="flex shrink-0 items-center justify-between gap-3 border-b border-dashed border-hairline px-4 py-2.5 font-mono text-[11px] text-muted md:px-6">
-      <Link href="/reinforce" className="hover:text-ink">
-        ← quit
+    <div className="flex shrink-0 items-center justify-between gap-3 border-b border-rule px-4 py-3 text-xs text-graphite md:px-6">
+      <Link href="/reinforce" className="transition-colors hover:text-ink">
+        Quit
       </Link>
       <span className="hidden truncate sm:inline">{context}</span>
       <span className="flex items-center gap-3">
-        <span>
+        <span className="font-mono tabular-nums">
           {position} of {total}
         </span>
-        <span aria-hidden className="relative h-1 w-10 bg-hairline md:w-20">
-          <span className="absolute inset-y-0 left-0 bg-ink" style={{ width: `${(done / total) * 100}%` }} />
+        <span aria-hidden className="relative h-1 w-10 overflow-hidden rounded-sm bg-rule md:w-20">
+          <span className="absolute inset-y-0 left-0 bg-mark" style={{ width: `${(done / total) * 100}%` }} />
         </span>
       </span>
     </div>
@@ -176,18 +174,18 @@ function GradeCard({
 
   return (
     <div className="flex flex-1 items-center justify-center p-4">
-      <div className="w-full max-w-sm border border-ink bg-panel p-6">
-        <p className="font-mono text-[11px] text-muted">{title}</p>
-        <h1 className="mt-1 text-lg font-semibold">How well did you remember it?</h1>
+      <div className="w-full max-w-sm rounded border border-rule bg-surface p-6">
+        <p className="text-xs text-graphite">{title}</p>
+        <h1 className="mt-1 font-display text-xl font-medium">How well did you remember it?</h1>
 
-        <dl className="mt-5 border-t border-dashed border-hairline pt-3 font-mono text-[11px]">
+        <dl className="mt-6 border-t border-rule pt-3 text-xs">
           <div className="flex justify-between py-1">
-            <dt className="text-muted">mistakes</dt>
-            <dd>{run.mistakes}</dd>
+            <dt className="text-graphite">Mistakes</dt>
+            <dd className="font-mono tabular-nums">{run.mistakes}</dd>
           </div>
           <div className="flex justify-between py-1">
-            <dt className="text-muted">hints used</dt>
-            <dd>{run.usedHints ? "yes" : "no"}</dd>
+            <dt className="text-graphite">Hints used</dt>
+            <dd>{run.usedHints ? "Yes" : "No"}</dd>
           </div>
         </dl>
 
@@ -251,20 +249,20 @@ function SessionSummary({
 
   return (
     <div className="flex flex-1 items-center justify-center p-4 md:p-12">
-      <div className="w-full max-w-[560px] border border-ink bg-panel p-6 md:p-10">
-        <div className="mb-3 font-mono text-[10px] tracking-[0.1em] text-muted">DONE FOR TODAY</div>
-        <h1 className="mb-1.5 text-2xl font-semibold tracking-[-0.01em] md:text-3xl">
+      <div className="w-full max-w-[560px] rounded border border-rule bg-surface p-6 md:p-8">
+        <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.12em] text-graphite">Done for today</div>
+        <h1 className="mb-2 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">
           {results.length} {results.length === 1 ? "lesson" : "lessons"} reviewed
         </h1>
         {nextReviewAt !== null ? (
-          <p className="text-sm text-muted">Next review {formatDueIn(nextReviewAt, new Date())}.</p>
+          <p className="text-sm text-graphite">Next review {formatDueIn(nextReviewAt, new Date())}.</p>
         ) : null}
 
-        <p className="mt-6 border-t border-dashed border-hairline pt-5 font-mono text-[11px] text-muted">
+        <p className="mt-6 border-t border-rule pt-6 text-xs text-graphite">
           {counts.map(({ label, count }) => `${count} ${label}`).join(" · ")}
         </p>
 
-        <Link href="/reinforce" className={`${PRIMARY_LINK} mt-7`}>
+        <Link href="/reinforce" className={`${buttonClasses("primary")} mt-8 w-full`}>
           Done
         </Link>
       </div>

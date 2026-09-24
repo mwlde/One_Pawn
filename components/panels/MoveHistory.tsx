@@ -78,7 +78,7 @@ export function MoveHistory({ moves, activeIndex, onSelect, classifications }: M
 
   function cell(move: { san: string; index: number } | null) {
     if (move === null) return null;
-    const highlight = move.index === active ? "bg-ink px-1 text-panel" : "";
+    const highlight = move.index === active ? "rounded-sm bg-highlight px-1 text-ink" : "";
     const classification = classifications?.get(move.index);
 
     // The dot sits outside the highlight, so the inverted background of the
@@ -125,9 +125,9 @@ export function MoveHistory({ moves, activeIndex, onSelect, classifications }: M
       className="min-h-0 flex-1 overflow-y-auto px-2 py-3 font-mono text-xs"
     >
       {moves.length === 0 ? (
-        <p className="px-2 text-[11px] text-muted">No moves yet.</p>
+        <p className="px-2 font-sans text-xs text-muted">No moves yet. White to play.</p>
       ) : (
-        <ol className="flex flex-col gap-[3px]">
+        <ol className="flex flex-col gap-1">
           {pairs.map((pair) => (
             <li
               key={pair.number}
@@ -136,7 +136,7 @@ export function MoveHistory({ moves, activeIndex, onSelect, classifications }: M
               }
               className="grid grid-cols-[32px_1fr_1fr] gap-x-2"
             >
-              <span className="text-right text-muted">{pair.number}.</span>
+              <span className="text-right text-graphite">{pair.number}.</span>
               {cell(pair.white)}
               {cell(pair.black)}
             </li>

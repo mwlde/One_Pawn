@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 
+import { buttonClasses } from "@/components/ui/Button";
 import { deletionConfirmationMatches } from "@/lib/auth/account-deletion";
 import { createClient } from "@/lib/supabase/client";
 
@@ -11,7 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 const AFTER_DELETION = "/?deleted=true";
 
 const INLINE_ACTION =
-  "font-mono text-[10px] underline underline-offset-2 text-muted hover:text-ink disabled:no-underline disabled:opacity-50";
+  "text-xs underline underline-offset-2 text-graphite transition-colors hover:text-ink disabled:no-underline disabled:opacity-50";
 
 // Two steps, like the resign button and the per-game delete, rather than a
 // modal. The second step is not another click though: this one cannot be
@@ -71,21 +72,21 @@ export function DeleteAccount({ email }: { email: string }) {
   }
 
   return (
-    <section className="mt-10 border-t border-dashed border-hairline pt-6">
-      <h2 className="text-base font-semibold">Danger zone</h2>
-      <p className="mt-2 max-w-prose text-xs leading-relaxed text-muted">
+    <section className="mt-8 border-t border-rule pt-6">
+      <h2 className="font-display text-xl font-medium">Danger zone</h2>
+      <p className="mt-2 max-w-prose text-xs leading-relaxed text-graphite">
         This will permanently delete your account and all your saved games. This cannot be undone.
       </p>
 
       {armed ? (
-        <div className="mt-4 border border-ink p-4">
+        <div className="mt-4 rounded border border-rule bg-surface p-4">
           <label
             htmlFor={inputId}
-            className="mb-1.5 block font-mono text-[10px] tracking-[0.1em] text-muted"
+            className="mb-2 block text-xs text-graphite"
           >
-            TYPE YOUR EMAIL ADDRESS TO CONFIRM
+            Type your email address to confirm
           </label>
-          <p className="mb-2 font-mono text-[13px] text-ink">{email}</p>
+          <p className="mb-2 text-sm font-medium text-ink">{email}</p>
           <input
             id={inputId}
             name="confirm-email"
@@ -96,7 +97,7 @@ export function DeleteAccount({ email }: { email: string }) {
             autoCapitalize="off"
             spellCheck={false}
             disabled={deleting}
-            className="w-full max-w-sm border border-ink bg-transparent p-3.5 font-mono text-[13px] text-ink focus:outline-none focus:ring-1 focus:ring-ink disabled:opacity-50"
+            className="w-full max-w-sm rounded border border-rule bg-surface p-3 text-sm text-ink transition-colors focus:border-accent focus:outline-none disabled:opacity-50"
           />
 
           <div className="mt-4 flex items-center gap-4">
@@ -104,7 +105,7 @@ export function DeleteAccount({ email }: { email: string }) {
               type="button"
               onClick={() => void handleDelete()}
               disabled={!confirmed || deleting}
-              className="border border-ink bg-ink px-5 py-2.5 text-[13px] font-semibold text-panel hover:bg-black disabled:cursor-not-allowed disabled:border-hairline disabled:bg-hairline"
+              className={buttonClasses("primary")}
             >
               {deleting ? "Deleting…" : "Confirm deletion"}
             </button>
@@ -114,7 +115,7 @@ export function DeleteAccount({ email }: { email: string }) {
           </div>
 
           {failed ? (
-            <p role="alert" className="mt-3 font-mono text-[10px] text-ink">
+            <p role="alert" className="mt-3 text-xs text-ink">
               Your account could not be deleted. It is still here. Try again.
             </p>
           ) : null}
@@ -123,7 +124,7 @@ export function DeleteAccount({ email }: { email: string }) {
         <button
           type="button"
           onClick={() => setArmed(true)}
-          className="mt-4 border border-ink px-5 py-2.5 text-[13px] hover:bg-tint"
+          className={`${buttonClasses("secondary")} mt-4`}
         >
           Delete account
         </button>
@@ -132,9 +133,9 @@ export function DeleteAccount({ email }: { email: string }) {
       {/* An offer, not a step. Somebody deleting an account because something
           is broken should know there is a person to ask, but nothing here
           should read as a reason to pause: the button above is the action. */}
-      <p className="mt-4 font-mono text-[10px] text-muted">
+      <p className="mt-4 text-xs text-graphite">
         Need help? Contact{" "}
-        <a href="mailto:hello@mwlde.com" className="underline underline-offset-2 hover:text-ink">
+        <a href="mailto:hello@mwlde.com" className="text-info-text underline underline-offset-2 transition-colors hover:text-ink">
           hello@mwlde.com
         </a>
       </p>

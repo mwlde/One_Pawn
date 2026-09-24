@@ -18,14 +18,23 @@ type GameBoardProps = {
   animate?: boolean;
   // Arrows drawn over the position. Empty on every screen but the coach view.
   arrows?: readonly BoardArrow[];
+  // The squares the last move left and landed on, tinted over either square
+  // colour. Null before the first move.
+  lastMove?: { from: string; to: string } | null;
 };
 
-// Square corners and the wireframe's two board tones. react-chessboard sizes
-// itself to its container, so the parent owns how big the board gets.
-const BOARD_STYLE = { border: "1px solid var(--color-ink)" };
-const LIGHT_SQUARE_STYLE = { backgroundColor: "var(--color-surface)" };
-const DARK_SQUARE_STYLE = { backgroundColor: "var(--color-tint)" };
-const NOTATION_STYLE = { fontFamily: "var(--font-mono)", fontSize: "9px" };
+// Square corners, a hairline edge and the palette's two board tones.
+// react-chessboard sizes itself to its container, so the parent owns how big
+// the board gets.
+const BOARD_STYLE = { border: "1px solid var(--rule-strong)" };
+const LIGHT_SQUARE_STYLE = { backgroundColor: "var(--board-light)" };
+const DARK_SQUARE_STYLE = { backgroundColor: "var(--board-dark)" };
+const NOTATION_STYLE = { fontFamily: "var(--font-mono)", fontSize: "10px" };
+// The library's defaults assume its own brown board, which left several
+// labels invisible on ours. Each label takes the opposite square's tone.
+const LIGHT_SQUARE_NOTATION_STYLE = { color: "var(--board-dark)" };
+const DARK_SQUARE_NOTATION_STYLE = { color: "var(--board-light)" };
+const LAST_MOVE_STYLE = { backgroundColor: "var(--board-last-move)" };
 
 const NO_ARROWS: readonly BoardArrow[] = [];
 
@@ -60,6 +69,7 @@ export function GameBoard({
   onDrop,
   animate = true,
   arrows = NO_ARROWS,
+  lastMove = null,
 }: GameBoardProps) {
   const options = useMemo(
     () => ({
@@ -75,6 +85,10 @@ export function GameBoard({
       boardStyle: BOARD_STYLE,
       lightSquareStyle: LIGHT_SQUARE_STYLE,
       darkSquareStyle: DARK_SQUARE_STYLE,
+      squareStyles:
+        lastMove === null ? {} : { [lastMove.from]: LAST_MOVE_STYLE, [lastMove.to]: LAST_MOVE_STYLE },
+      lightSquareNotationStyle: LIGHT_SQUARE_NOTATION_STYLE,
+      darkSquareNotationStyle: DARK_SQUARE_NOTATION_STYLE,
       alphaNotationStyle: NOTATION_STYLE,
       numericNotationStyle: NOTATION_STYLE,
       canDragPiece: ({ piece }: { piece: { pieceType: string } }) =>
@@ -89,7 +103,7 @@ export function GameBoard({
         targetSquare: string | null;
       }) => (targetSquare === null ? false : onDrop(sourceSquare, targetSquare)),
     }),
-    [fen, orientation, movableColor, onDrop, animate, arrows],
+    [fen, orientation, movableColor, onDrop, animate, arrows, lastMove],
   );
 
   return <Chessboard options={options} />;

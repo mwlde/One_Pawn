@@ -80,22 +80,22 @@ export default async function GamePage({ params }: { params: Promise<{ id: strin
   }
 
   const meta: readonly MetaItem[] = [
-    { label: "result", value: resultLabel(data.result, data.user_color) },
-    { label: "opponent", value: describeOpponent(data.difficulty) },
-    { label: "difficulty", value: describeDifficulty(data.difficulty) },
-    { label: "time control", value: TIME_CONTROLS[data.time_control]?.label ?? data.time_control },
-    { label: "played as", value: data.user_color },
-    { label: "length", value: formatMoveCount(data.move_count) },
-    { label: "date", value: formatPlayedAt(data.played_at) },
+    { label: "Result", value: resultLabel(data.result, data.user_color) },
+    { label: "Opponent", value: describeOpponent(data.difficulty) },
+    { label: "Difficulty", value: describeDifficulty(data.difficulty) },
+    { label: "Time control", value: TIME_CONTROLS[data.time_control]?.label ?? data.time_control },
+    { label: "Played as", value: data.user_color },
+    { label: "Length", value: formatMoveCount(data.move_count) },
+    { label: "Date", value: formatPlayedAt(data.played_at) },
   ];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex shrink-0 items-center justify-between border-b border-dashed border-hairline px-4 py-3 md:px-6">
-        <Link href="/profile" className="font-mono text-[11px] text-muted hover:text-ink">
-          &larr; Back to profile
+      <div className="flex shrink-0 items-center justify-between border-b border-rule px-4 py-3 md:px-6">
+        <Link href="/profile" className="text-xs text-graphite transition-colors hover:text-ink">
+          Back to profile
         </Link>
-        <span className="font-mono text-[11px] text-muted">
+        <span className="text-xs text-graphite">
           Replay · {formatPlayedAt(data.played_at)}
         </span>
       </div>

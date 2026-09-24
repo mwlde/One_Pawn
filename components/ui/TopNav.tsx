@@ -42,6 +42,11 @@ const MOBILE_NAV_HEIGHT = "h-11";
 // finished utility name to emit it.
 export const MOBILE_NAV_CLEARANCE = "bottom-11";
 
+// The current page is underlined with a highlighter stroke rather than boxed.
+// Pink is the user's own marks, and "where you are" is one of them.
+const HIGHLIGHTER =
+  "bg-[linear-gradient(transparent_58%,var(--highlight)_58%,var(--highlight)_92%,transparent_92%)] px-0.5";
+
 // A tab owns its subtree, so /profile/games/<id> keeps Profile marked as the
 // current page. The trailing slash matters: without it /profiles would match.
 function isActive(pathname: string, href: string): boolean {
@@ -91,10 +96,10 @@ function EngineStatus() {
   const { isReady } = useEngineContext();
 
   return (
-    <span className="flex items-center gap-2 font-mono text-[11px] text-muted">
+    <span className="flex items-center gap-2 text-xs text-graphite">
       <span
         aria-hidden
-        className={`h-1.5 w-1.5 ${isReady ? "bg-ink" : "bg-hairline"}`}
+        className={`h-2 w-2 rounded-full ${isReady ? "bg-ink" : "bg-rule-strong"}`}
       />
       {isReady ? "Engine ready" : "Engine loading..."}
     </span>
@@ -139,7 +144,7 @@ function AuthControl({ initialEmail }: { initialEmail: string | null }) {
 
   if (email === null) {
     return (
-      <Link href="/login" className="font-mono text-[11px] text-muted hover:text-ink">
+      <Link href="/login" className="text-xs text-graphite transition-colors hover:text-ink">
         Log in
       </Link>
     );
@@ -159,7 +164,7 @@ function AuthControl({ initialEmail }: { initialEmail: string | null }) {
     <div className="flex items-center gap-2">
       <span
         title={email}
-        className="max-w-[9ch] truncate font-mono text-[11px] text-muted sm:max-w-[22ch]"
+        className="max-w-[9ch] truncate text-xs text-graphite sm:max-w-[22ch]"
       >
         {email}
       </span>
@@ -167,7 +172,7 @@ function AuthControl({ initialEmail }: { initialEmail: string | null }) {
         type="button"
         onClick={handleSignOut}
         disabled={signingOut}
-        className="border border-hairline px-2 py-1 font-mono text-[10px] text-muted transition-colors hover:border-ink hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded border border-rule px-2 py-1 text-xs text-graphite transition-colors hover:border-rule-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
       >
         Log out
       </button>
@@ -180,7 +185,7 @@ function TabLabel({ tab, active }: { tab: Tab; active: boolean }) {
     <Link
       href={tab.href}
       aria-current={active ? "page" : undefined}
-      className={active ? "font-semibold text-ink" : "text-muted hover:text-ink"}
+      className={`transition-colors ${active ? `font-medium text-ink ${HIGHLIGHTER}` : "text-graphite hover:text-ink"}`}
     >
       {tab.label}
     </Link>
@@ -196,20 +201,20 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
   return (
     <>
       <header
-        className={`${mobileClass} h-11 shrink-0 items-center justify-between border-b border-dashed border-hairline px-4 md:h-14 md:px-6`}
+        className={`${mobileClass} h-11 shrink-0 items-center justify-between border-b border-rule px-4 md:h-14 md:px-6`}
       >
-        <div className="flex items-center gap-7 text-[13px]">
-          <Link href="/" className="font-mono text-sm font-semibold">
+        <div className="flex items-center gap-8 text-sm">
+          <Link href="/" className="font-display text-lg font-bold tracking-[-0.02em]">
             One Pawn
           </Link>
           {/* Desktop carries the tabs inline; mobile gets them along the bottom. */}
-          <nav aria-label="Main" className="hidden gap-7 md:flex">
+          <nav aria-label="Main" className="hidden gap-8 md:flex">
             {TABS.map((tab) => (
               <TabLabel key={tab.label} tab={tab} active={isActive(pathname, tab.href)} />
             ))}
           </nav>
         </div>
-        <div className="flex items-center gap-3 md:gap-5">
+        <div className="flex items-center gap-3 md:gap-6">
           <EngineStatus />
           <AuthControl initialEmail={initialEmail} />
         </div>
@@ -226,7 +231,7 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
           which covers the screen on purpose. */}
       <nav
         aria-label="Main"
-        className={`${mobileNavHidden ? "hidden" : "grid"} fixed inset-x-0 bottom-0 z-10 ${MOBILE_NAV_HEIGHT} grid-cols-5 border-t border-ink bg-surface text-center font-mono text-[10px] md:hidden`}
+        className={`${mobileNavHidden ? "hidden" : "grid"} fixed inset-x-0 bottom-0 z-10 ${MOBILE_NAV_HEIGHT} grid-cols-5 border-t border-rule bg-surface text-center text-xs md:hidden`}
       >
         {TABS.map((tab) => {
           const active = isActive(pathname, tab.href);
@@ -235,9 +240,9 @@ export function TopNav({ initialEmail }: { initialEmail: string | null }) {
               key={tab.label}
               href={tab.href}
               aria-current={active ? "page" : undefined}
-              className={`flex items-center justify-center ${active ? "bg-ink text-panel" : "text-muted"}`}
+              className={`flex items-center justify-center ${active ? "font-medium text-ink" : "text-graphite"}`}
             >
-              {tab.label}
+              <span className={active ? HIGHLIGHTER : undefined}>{tab.label}</span>
             </Link>
           );
         })}

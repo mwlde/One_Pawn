@@ -9,16 +9,18 @@ import { DemoBoard } from "@/components/board/DemoBoard";
 // the panel leads with the product line and a real, movable demo board instead.
 export function AuthPanel() {
   return (
-    <div className="hidden flex-col gap-8 border-r border-ink p-12 md:flex">
-      <div>
-        <div className="font-mono text-[11px] tracking-[0.1em] text-muted">ONE PAWN</div>
-        <p className="mt-4 max-w-[14ch] text-3xl font-bold leading-[1.1] tracking-tight">
-          Play a real engine in your browser. Learn from every game.
-        </p>
-      </div>
+    <div className="hidden items-center justify-center border-r border-rule p-12 md:flex">
+      {/* Headline and board as one group, centred together: side by side once
+          the column is wide enough for both, stacked below that. */}
+      <div className="flex w-full flex-col items-center gap-8 xl:flex-row xl:justify-center xl:gap-12">
+        <div className="xl:shrink-0">
+          <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-graphite">One Pawn</div>
+          <p className="mt-4 max-w-[14ch] font-display text-4xl font-bold leading-[1.1] tracking-[-0.02em]">
+            Play a real engine in your browser. Learn from <span className="bg-highlight box-decoration-clone px-1">every game</span>.
+          </p>
+        </div>
 
-      <div className="flex flex-1 items-center justify-center">
-        <div className="w-full max-w-[420px]">
+        <div className="w-full min-w-0 max-w-[420px]">
           <DemoBoard />
         </div>
       </div>

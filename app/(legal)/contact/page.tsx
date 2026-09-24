@@ -46,7 +46,7 @@ export default function ContactPage() {
           <Li>
             <strong>Security disclosure:</strong> <Contact address="hello@mwlde.com" />. Use
             this to report a vulnerability. Machine-readable details are published at{" "}
-            <a href="/.well-known/security.txt" className="font-mono text-[13px] underline hover:text-muted">
+            <a href="/.well-known/security.txt" className="text-info-text font-mono text-sm underline transition-colors hover:text-ink">
               /.well-known/security.txt
             </a>
             .
@@ -70,13 +70,13 @@ export default function ContactPage() {
       <Section number={4} title="The documents">
         <Ul>
           <Li>
-            <a href="/terms" className="underline hover:text-muted">
+            <a href="/terms" className="text-info-text underline transition-colors hover:text-ink">
               Terms of Service
             </a>{" "}
             covers what you agree to by using the site.
           </Li>
           <Li>
-            <a href="/privacy" className="underline hover:text-muted">
+            <a href="/privacy" className="text-info-text underline transition-colors hover:text-ink">
               Privacy Policy
             </a>{" "}
             covers what data is collected and what you can do about it. The cookie policy is

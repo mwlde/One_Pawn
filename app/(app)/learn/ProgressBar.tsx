@@ -4,8 +4,8 @@ export function ProgressBar({ done, total }: { done: number; total: number }) {
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
   return (
-    <div aria-hidden className="relative h-1 bg-tint">
-      <div className="absolute inset-y-0 left-0 bg-ink" style={{ width: `${percent}%` }} />
+    <div aria-hidden className="relative h-1 overflow-hidden rounded-sm bg-rule">
+      <div className="absolute inset-y-0 left-0 bg-mark" style={{ width: `${percent}%` }} />
     </div>
   );
 }

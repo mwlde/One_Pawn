@@ -17,11 +17,11 @@ export function DocHeader({
   updated: string;
 }) {
   return (
-    <header className="border-b border-ink pb-6">
-      <h1 className="text-[32px] font-semibold leading-tight tracking-[-0.01em] md:text-[40px]">
+    <header className="border-b border-rule pb-6">
+      <h1 className="font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl leading-tight">
         {title}
       </h1>
-      <p className="mt-4 font-mono text-[11px] tracking-[0.06em] text-muted">
+      <p className="mt-4 font-mono text-xs text-graphite">
         Version {version} &middot; Last updated {updated}
       </p>
     </header>
@@ -39,9 +39,9 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="mt-10">
-      <h2 className="text-lg font-semibold tracking-[-0.01em]">
-        <span className="mr-3 font-mono text-[13px] font-normal text-muted">{number}.</span>
+    <section className="mt-8">
+      <h2 className="font-display text-xl font-medium">
+        <span className="mr-3 font-mono text-sm font-normal tabular-nums text-graphite">{number}.</span>
         {title}
       </h2>
       <div className="mt-3">{children}</div>
@@ -50,19 +50,19 @@ export function Section({
 }
 
 export function P({ children }: { children: ReactNode }) {
-  return <p className="mt-3 text-[15px] leading-relaxed text-ink first:mt-0">{children}</p>;
+  return <p className="mt-3 text-sm leading-relaxed text-ink first:mt-0">{children}</p>;
 }
 
 export function Ul({ children }: { children: ReactNode }) {
   return (
-    <ul className="mt-3 flex flex-col gap-2 text-[15px] leading-relaxed text-ink">{children}</ul>
+    <ul className="mt-3 flex flex-col gap-2 text-sm leading-relaxed text-ink">{children}</ul>
   );
 }
 
 export function Li({ children }: { children: ReactNode }) {
   return (
     <li className="flex gap-3">
-      <span aria-hidden className="mt-[0.55em] h-px w-3 shrink-0 bg-hairline" />
+      <span aria-hidden className="mt-[0.55em] h-px w-3 shrink-0 bg-rule-strong" />
       <span>{children}</span>
     </li>
   );
@@ -72,17 +72,17 @@ export function Li({ children }: { children: ReactNode }) {
 // these inline keeps the documents honest about what is live today without
 // splitting every section into a "now" and "later" half.
 export function Future({ children }: { children: ReactNode }) {
-  return <span className="font-mono text-[11px] tracking-[0.06em] text-muted">[{children}]</span>;
+  return <span className="text-xs text-graphite">[{children}]</span>;
 }
 
 export function Contact({ address }: { address: string }) {
   return (
-    <a href={`mailto:${address}`} className="font-mono text-[13px] underline hover:text-muted">
+    <a href={`mailto:${address}`} className="text-info-text text-sm underline transition-colors hover:text-ink">
       {address}
     </a>
   );
 }
 
 export function Code({ children }: { children: ReactNode }) {
-  return <span className="font-mono text-[13px]">{children}</span>;
+  return <span className="font-mono text-sm">{children}</span>;
 }

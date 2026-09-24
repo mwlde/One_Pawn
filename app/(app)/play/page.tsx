@@ -49,14 +49,17 @@ type Snapshot = {
   turn: Side;
   moves: string[];
   balance: number;
+  lastMove: { from: string; to: string } | null;
 };
 
 function snapshotOf(chess: Chess): Snapshot {
+  const last = chess.history({ verbose: true }).at(-1);
   return {
     fen: chess.fen(),
     turn: fromChessColor(chess.turn()),
     moves: chess.history(),
     balance: materialBalance(chess),
+    lastMove: last === undefined ? null : { from: last.from, to: last.to },
   };
 }
 
@@ -67,7 +70,7 @@ function snapshotOf(chess: Chess): Snapshot {
 const BOARD_SIZE = "min(100%, calc(100dvh - 16rem))";
 
 function describeLastMove(moves: string[]): string {
-  if (moves.length === 0) return "no moves yet";
+  if (moves.length === 0) return "No moves yet";
   const moveNumber = Math.ceil(moves.length / 2);
   const separator = moves.length % 2 === 1 ? "." : "...";
   return `${moveNumber}${separator} ${moves[moves.length - 1]}`;
@@ -294,24 +297,24 @@ export default function PlayPage() {
       <div className="flex min-h-0 flex-1 flex-col">
         {/* Mobile takes an in-context header instead of the app nav, so a tab
             cannot be tapped by accident during a game. Wireframe 02m. */}
-        <div className="flex h-11 shrink-0 items-center justify-between border-b border-dashed border-hairline px-4 text-xs md:hidden">
-          <button type="button" onClick={() => setPhase("setup")} className="text-muted">
-            &larr; Leave
+        <div className="flex h-11 shrink-0 items-center justify-between border-b border-rule px-4 text-xs md:hidden">
+          <button type="button" onClick={() => setPhase("setup")} className="text-graphite transition-colors hover:text-ink">
+            Leave
           </button>
-          <span className="font-mono text-[11px] text-muted">
+          <span className="text-xs text-graphite">
             {isReady ? timeControl.label : "Engine loading..."}
           </span>
-          <span className="font-mono text-[11px] text-muted">
+          <span className="text-xs text-graphite">
             {DIFFICULTY_LABELS[settings.difficulty]}
           </span>
         </div>
 
         {/* Desktop keeps the app nav, so the game's own context sits here as a
             slim row rather than in the shared top bar. */}
-        <div className="hidden shrink-0 items-center gap-2 px-5 pt-4 font-mono text-[11px] text-muted md:flex">
-          <span className="border border-ink px-2 py-1">{timeControl.label}</span>
-          <span className="border border-ink bg-panel px-2 py-1">
-            difficulty · {DIFFICULTY_LABELS[settings.difficulty]} · depth {engineDepth}
+        <div className="hidden shrink-0 items-center gap-2 px-6 pt-4 text-xs text-graphite md:flex">
+          <span className="rounded-sm border border-rule px-2 py-1">{timeControl.label}</span>
+          <span className="rounded-sm border border-rule px-2 py-1">
+            Difficulty · {DIFFICULTY_LABELS[settings.difficulty]} · depth {engineDepth}
           </span>
         </div>
 
@@ -320,7 +323,7 @@ export default function PlayPage() {
             keeps them together rather than stranding the clocks at opposite
             ends of the screen. Desktop has the opposite problem and lets the
             board row take all the slack instead. */}
-        <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 p-2 md:justify-normal md:gap-3 md:px-5 md:pb-5 md:pt-3">
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 p-2 md:justify-normal md:gap-3 md:px-6 md:pb-6 md:pt-3">
           <PlayerStrip
             variant="opponent"
             name={`Engine (depth ${engineDepth})`}
@@ -346,6 +349,7 @@ export default function PlayPage() {
                   orientation={settings.side}
                   movableColor={running && playerToMove ? toChessColor(settings.side) : null}
                   onDrop={handleDrop}
+                  lastMove={snapshot.lastMove}
                 />
               </div>
             </div>
@@ -362,24 +366,24 @@ export default function PlayPage() {
 
         <MobileDrawer summary={describeLastMove(snapshot.moves)}>
           {historyPanel}
-          <div className="shrink-0 border-t border-dashed border-hairline p-3">
+          <div className="shrink-0 border-t border-rule p-3">
             {gameActions}
           </div>
         </MobileDrawer>
       </div>
 
-      <aside className="hidden min-h-0 border-l border-dashed border-hairline md:flex md:flex-col">
+      <aside className="hidden min-h-0 border-l border-rule md:flex md:flex-col">
         {/* One tab for now. Chat and Settings are later phases. */}
-        <div className="shrink-0 border-b border-dashed border-hairline px-4 py-3.5 text-center text-xs font-semibold">
+        <div className="shrink-0 border-b border-rule px-4 py-3 text-center text-xs font-medium">
           Moves
         </div>
         {historyPanel}
         {engineError === null ? null : (
-          <p className="shrink-0 border-t border-ink bg-tint px-4 py-3 text-[11px] leading-relaxed">
+          <p className="shrink-0 border-t border-rule bg-surface-sunk px-4 py-3 text-xs leading-relaxed">
             {engineError}
           </p>
         )}
-        <div className="shrink-0 border-t border-dashed border-hairline p-3.5">
+        <div className="shrink-0 border-t border-rule p-3">
           {gameActions}
         </div>
       </aside>

@@ -39,7 +39,7 @@ function ClassificationBadge({ classification }: { classification: NotableDispla
   const style = CLASSIFICATION_DISPLAY[classification];
   return (
     <span
-      className={`shrink-0 border px-1.5 py-0.5 text-[9px] uppercase tracking-wide ${style.badge}`}
+      className={`shrink-0 border px-2 py-1 text-xs uppercase tracking-wide ${style.badge}`}
     >
       {style.label}
     </span>
@@ -63,36 +63,40 @@ function NotableRow({
   onKeyDown: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
 }) {
   return (
-    <li className="border-b border-dashed border-hairline last:border-b-0">
+    <li className="border-b border-rule last:border-b-0">
       <button
         ref={buttonRef}
         type="button"
         aria-expanded={isOpen}
         onClick={onToggle}
         onKeyDown={onKeyDown}
-        className={`w-full border-l-2 p-3 text-left hover:bg-tint ${
-          isOpen ? "border-l-ink bg-tint" : "border-l-transparent"
+        className={`w-full border-l-2 p-3 text-left transition-colors hover:bg-surface-sunk ${
+          isOpen ? "border-l-ink bg-highlight" : "border-l-transparent"
         }`}
       >
         <div className="flex items-center justify-between gap-2">
-          <span className="font-mono text-[11px]">
+          <span className="font-mono text-xs">
             {move.label}
             {reasonAddsHeading(move.reason) ? (
-              <span className="ml-2 text-muted">{REASON_DISPLAY[move.reason]}</span>
+              <span className="ml-2 font-sans text-graphite">{REASON_DISPLAY[move.reason]}</span>
             ) : null}
           </span>
           <ClassificationBadge classification={move.classification} />
         </div>
 
-        <p className={`mt-1.5 text-xs leading-relaxed ${isOpen ? "" : "text-muted"}`}>
+        <p className={`mt-2 text-xs leading-relaxed ${isOpen ? "" : "text-graphite"}`}>
           {isOpen ? move.commentary : firstSentence(move.commentary)}
         </p>
 
         {isOpen ? (
-          <p className="mt-1.5 font-mono text-[10px] text-muted">
-            {move.bestSan === null
-              ? "engine agreed with this move"
-              : `engine preferred ${move.bestSan}`}
+          <p className="mt-2 text-xs text-graphite">
+            {move.bestSan === null ? (
+              "Engine agreed with this move"
+            ) : (
+              <>
+                Engine preferred <span className="font-mono">{move.bestSan}</span>
+              </>
+            )}
           </p>
         ) : null}
       </button>
@@ -108,17 +112,17 @@ function FallbackRow({
   onSelect: (ply: number) => void;
 }) {
   return (
-    <li className="border-b border-dashed border-hairline last:border-b-0">
+    <li className="border-b border-rule last:border-b-0">
       <button
         type="button"
         onClick={() => onSelect(move.ply)}
-        className="w-full px-3 py-2 text-left hover:bg-tint"
+        className="w-full px-3 py-2 text-left transition-colors hover:bg-surface-sunk"
       >
         <div className="flex items-center justify-between gap-2">
-          <span className="font-mono text-[11px]">{move.label}</span>
+          <span className="font-mono text-xs">{move.label}</span>
           <ClassificationBadge classification={move.classification} />
         </div>
-        <div className="mt-1 flex items-center justify-between gap-2 font-mono text-[10px] text-muted">
+        <div className="mt-1 flex items-center justify-between gap-2 font-mono text-xs text-graphite">
           <span>{move.bestSan === null ? "engine's choice" : `best ${move.bestSan}`}</span>
           <span>{move.evalLoss > 0 ? `-${move.evalLoss} cp` : "0 cp"}</span>
         </div>
@@ -149,7 +153,7 @@ export function RetryButton({
       disabled={pending || onClick === null}
       aria-busy={pending}
       onClick={onClick ?? undefined}
-      className={`border border-ink px-3 py-1 font-mono text-[11px] hover:bg-tint disabled:cursor-not-allowed disabled:border-hairline disabled:text-hairline disabled:hover:bg-transparent ${className}`}
+      className={`rounded border border-rule-strong px-3 py-1 text-xs transition-colors hover:bg-surface-sunk disabled:cursor-not-allowed disabled:border-rule disabled:text-muted disabled:hover:bg-transparent ${className}`}
     >
       Try again
     </button>
@@ -158,7 +162,7 @@ export function RetryButton({
 
 function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <p className="shrink-0 border-b border-dashed border-hairline px-3 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+    <p className="shrink-0 border-b border-rule px-3 py-2 text-xs text-graphite">
       {children}
     </p>
   );
@@ -193,14 +197,14 @@ export function CoachView({
   if (commentaryUnavailable) {
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        <div className="shrink-0 border-b border-dashed border-hairline px-3 py-2.5">
+        <div className="shrink-0 border-b border-rule px-3 py-3">
           <p className="text-xs leading-relaxed">
             {retryPending
               ? "Coach analysis in progress. The analysis is below while you wait."
               : `${unavailableMessage ?? "Coach commentary unavailable."} The analysis is below.`}
           </p>
           {onRetryCommentary === null || onRetryCommentary === undefined ? null : (
-            <RetryButton onClick={onRetryCommentary} pending={retryPending} className="mt-1.5" />
+            <RetryButton onClick={onRetryCommentary} pending={retryPending} className="mt-2" />
           )}
         </div>
         {fallbackMoves.length === 0 ? null : (
@@ -218,7 +222,7 @@ export function CoachView({
     return (
       <div className="flex min-h-0 flex-1 flex-col">
         <Heading>Coach&apos;s notes</Heading>
-        <p className="p-4 text-center text-xs leading-relaxed text-muted">
+        <p className="p-4 text-center text-xs leading-relaxed text-graphite">
           No moves stood out for comment. The engine agreed with most of your play.
         </p>
       </div>

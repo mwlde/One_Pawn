@@ -13,20 +13,20 @@ const NAV_LINKS: readonly { label: string; href: string }[] = [
 
 export function SiteHeader() {
   return (
-    <header className="flex h-11 shrink-0 items-center justify-between border-b border-dashed border-hairline px-4 md:h-14 md:px-6">
-      <div className="flex items-center gap-5 text-[13px] md:gap-7">
-        <Link href="/" className="font-mono text-sm font-semibold">
+    <header className="flex h-11 shrink-0 items-center justify-between border-b border-rule px-4 md:h-14 md:px-6">
+      <div className="flex items-center gap-6 text-sm md:gap-8">
+        <Link href="/" className="font-display text-lg font-bold tracking-[-0.02em]">
           One Pawn
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-4 md:gap-7">
+        <nav aria-label="Main" className="flex items-center gap-4 md:gap-8">
           {NAV_LINKS.map((link) => (
-            <Link key={link.label} href={link.href} className="text-muted hover:text-ink">
+            <Link key={link.label} href={link.href} className="text-graphite transition-colors hover:text-ink">
               {link.label}
             </Link>
           ))}
         </nav>
       </div>
-      <Link href="/login" className="font-mono text-[11px] text-muted hover:text-ink">
+      <Link href="/login" className="text-xs text-graphite transition-colors hover:text-ink">
         Log in
       </Link>
     </header>

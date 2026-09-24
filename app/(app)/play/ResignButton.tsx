@@ -33,7 +33,7 @@ export function ResignButton({ onResign }: { onResign: () => void }) {
       <button
         type="button"
         onClick={() => setArmed(false)}
-        className="shrink-0 font-mono text-[10px] text-muted underline underline-offset-2 hover:text-ink"
+        className="shrink-0 text-xs text-graphite underline underline-offset-2 transition-colors hover:text-ink"
       >
         Cancel
       </button>

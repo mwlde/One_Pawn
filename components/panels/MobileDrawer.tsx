@@ -50,14 +50,14 @@ export function MobileDrawer({ summary, children }: MobileDrawerProps) {
   };
 
   return (
-    <div className="relative shrink-0 border-t-2 border-ink bg-panel md:hidden">
+    <div className="relative shrink-0 border-t border-rule bg-surface md:hidden">
       {/* Expands upward over the board rather than pushing the layout down.
           Growing in flow would shove the buttons past the bottom of a 375px
           screen, and a sheet is meant to cover content anyway. One fixed snap
           height rather than a natural one, so it always covers the player
           strip outright instead of slicing a clock in half. */}
       {expanded ? (
-        <div className="absolute inset-x-0 bottom-full z-10 flex h-[45vh] flex-col border-t-2 border-ink bg-panel">
+        <div className="absolute inset-x-0 bottom-full z-10 flex h-[45vh] flex-col border-t border-rule bg-surface">
           {children}
         </div>
       ) : null}
@@ -67,13 +67,13 @@ export function MobileDrawer({ summary, children }: MobileDrawerProps) {
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onClick={handleClick}
-        className="w-full touch-none px-3.5 pb-2 pt-2.5 text-left"
+        className="w-full touch-none px-3 pb-2 pt-3 text-left"
       >
-        <span aria-hidden className="mx-auto mb-2 block h-[3px] w-9 bg-ink" />
-        <span className="flex items-baseline justify-between font-mono text-[11px]">
-          <span className="font-semibold">Moves</span>
-          <span className="text-muted">
-            {expanded ? "close ↓" : `${summary} · swipe up ↑`}
+        <span aria-hidden className="mx-auto mb-2 block h-1 w-8 rounded-full bg-rule-strong" />
+        <span className="flex items-baseline justify-between text-xs">
+          <span className="font-medium">Moves</span>
+          <span className="text-graphite">
+            {expanded ? "Close" : `${summary} · Swipe up`}
           </span>
         </span>
       </button>

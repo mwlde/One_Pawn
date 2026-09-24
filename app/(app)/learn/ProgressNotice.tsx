@@ -7,8 +7,8 @@ import type { ProgressRead } from "@/lib/lessons/completions";
 export function ProgressNotice({ progress }: { progress: ProgressRead }) {
   if (progress.status === "logged_out") {
     return (
-      <p className="font-mono text-[10px] leading-relaxed text-muted">
-        <Link href="/login" className="underline underline-offset-2 hover:text-ink">
+      <p className="text-xs leading-relaxed text-graphite">
+        <Link href="/login" className="text-info-text underline underline-offset-2 transition-colors hover:text-ink">
           Log in
         </Link>{" "}
         to track your progress.
@@ -18,7 +18,7 @@ export function ProgressNotice({ progress }: { progress: ProgressRead }) {
 
   if (progress.status === "failed") {
     return (
-      <p className="font-mono text-[10px] leading-relaxed text-muted">
+      <p className="text-xs leading-relaxed text-graphite">
         Your progress could not be loaded. Refresh the page to try again.
       </p>
     );

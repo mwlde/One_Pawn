@@ -6,6 +6,7 @@ import { Suspense } from "react";
 
 import { AuthForm } from "@/app/(auth)/AuthForm";
 import { AuthPanel } from "@/app/(auth)/AuthPanel";
+import { buttonClasses } from "@/components/ui/Button";
 import { DeletedNotice } from "@/components/ui/DeletedNotice";
 import { SiteFooter } from "@/components/ui/SiteFooter";
 import { SiteHeader } from "@/components/ui/SiteHeader";
@@ -60,28 +61,29 @@ export default async function Home() {
       {/* Mobile: no board, just the name, the line under it, and the two ways
           in. Log in leads to the full form on /login, which keeps its own guest
           option below it. */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-10 px-6 py-12 text-center md:hidden">
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-12 text-center md:hidden">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">One Pawn</h1>
-          <p className="mt-4 text-base leading-relaxed text-muted">
-            Play a real engine in your browser. Learn from every game.
+          <h1 className="font-display text-4xl font-bold tracking-[-0.02em]">One Pawn</h1>
+          <p className="mt-4 text-sm leading-relaxed text-graphite">
+            Play a real engine in your browser. Learn from{" "}
+            <span className="bg-highlight box-decoration-clone px-1 text-ink">every game</span>.
           </p>
         </div>
 
         <div className="flex w-full max-w-xs flex-col gap-3">
           <Link
             href="/login"
-            className="block border border-ink bg-ink px-5 py-4 text-center text-sm font-semibold text-panel transition-colors hover:bg-black"
+            className={`${buttonClasses("primary")} w-full`}
           >
             Log in or register
           </Link>
           <Link
             href="/play"
-            className="block border border-ink px-5 py-4 text-center text-sm transition-colors hover:bg-tint"
+            className={`${buttonClasses("secondary")} w-full`}
           >
             Play as guest
           </Link>
-          <p className="text-[11px] text-muted">No account needed to play.</p>
+          <p className="text-xs text-graphite">No account needed to play.</p>
         </div>
       </div>
 

@@ -9,14 +9,14 @@ export const metadata: Metadata = {
 };
 
 function Heading({ children }: { children: ReactNode }) {
-  return <h2 className="mt-10 text-lg font-semibold tracking-[-0.01em]">{children}</h2>;
+  return <h2 className="mt-8 font-display text-xl font-medium">{children}</h2>;
 }
 
 export default function AboutPage() {
   return (
     <>
-      <header className="border-b border-ink pb-6">
-        <h1 className="text-[32px] font-semibold leading-tight tracking-[-0.01em] md:text-[40px]">
+      <header className="border-b border-rule pb-6">
+        <h1 className="font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl leading-tight">
           About One Pawn
         </h1>
       </header>

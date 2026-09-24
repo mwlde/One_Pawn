@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { buttonClasses } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/server";
 
 import { UpdatePasswordForm } from "./UpdatePasswordForm";
@@ -26,21 +27,21 @@ export default async function UpdatePasswordPage() {
   if (user === null) {
     return (
       <div className="w-full max-w-[360px]">
-        <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">
+        <h1 className="mb-2 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">
           That link has expired
         </h1>
-        <p className="mb-6 text-sm text-muted">
+        <p className="mb-6 text-sm text-graphite">
           Reset links work once, and only in the browser that asked for them. Ask for a new one and
           open it on this device.
         </p>
         <Link
           href="/auth/reset-password"
-          className="block border border-ink bg-ink px-5 py-3.5 text-center text-sm font-semibold text-panel hover:bg-black"
+          className={`${buttonClasses("primary")} w-full`}
         >
-          Send a new link →
+          Send a new link
         </Link>
-        <p className="mt-5 text-center text-xs text-muted">
-          <Link href="/login" className="underline hover:text-ink">
+        <p className="mt-6 text-center text-xs text-graphite">
+          <Link href="/login" className="text-info-text underline transition-colors hover:text-ink">
             Back to log in
           </Link>
         </p>

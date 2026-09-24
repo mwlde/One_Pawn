@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { RetryButton } from "@/components/coach/CoachView";
 import { RateLimitNotice } from "@/components/coach/RateLimitNotice";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonClasses } from "@/components/ui/Button";
 import { isRetriableFailure } from "@/lib/coach/client";
 import { COMMENTARY_FAILURE_MESSAGE, firstSentence } from "@/lib/coach/display";
 import type { GameMode } from "@/lib/game/mode";
@@ -38,13 +38,13 @@ type PostGameProps = {
 // later phase fills them. Coach mode replaces this block with one sentence and
 // a way into the coach view.
 const STATS: readonly { label: string; value: string }[] = [
-  { label: "accuracy", value: "--" },
-  { label: "blunders", value: "--" },
-  { label: "best moves", value: "--" },
+  { label: "Accuracy", value: "--" },
+  { label: "Blunders", value: "--" },
+  { label: "Best moves", value: "--" },
 ];
 
-const NOTE = "mt-2 font-mono text-[10px] leading-relaxed text-muted";
-const INLINE_ACTION = "underline underline-offset-2 hover:text-ink";
+const NOTE = "mt-2 text-xs leading-relaxed text-graphite";
+const INLINE_ACTION = "underline underline-offset-2 transition-colors hover:text-ink";
 
 function SaveIndicator({
   saveState,
@@ -113,7 +113,7 @@ function CoachSection({
   onRetryAnalysis: (() => void) | null;
 }) {
   const heading = (
-    <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted">Coach</p>
+    <p className="text-xs text-graphite">Coach</p>
   );
 
   if (coach.phase === "idle") {
@@ -133,11 +133,11 @@ function CoachSection({
     return (
       <div className="mt-6 md:mt-8">
         {heading}
-        <p className="mt-2 text-center font-mono text-[11px] text-muted">
+        <p className="mt-2 text-center text-xs text-graphite">
           Analysing move {coach.progress.completed} of {coach.progress.total}
         </p>
-        <div className="mt-2 h-2 w-full border border-hairline">
-          <div className="h-full bg-ink" style={{ width: `${percent}%` }} />
+        <div className="mt-2 h-1 w-full overflow-hidden rounded-sm bg-rule">
+          <div className="h-full bg-info" style={{ width: `${percent}%` }} />
         </div>
       </div>
     );
@@ -150,7 +150,7 @@ function CoachSection({
     return (
       <div className="mt-6 md:mt-8">
         {heading}
-        <p className="mt-2 text-center font-mono text-[11px] text-muted">Coach is thinking...</p>
+        <p className="mt-2 text-center text-xs text-graphite">Coach is thinking...</p>
         <div className="mt-2 flex justify-center">
           <RetryButton onClick={null} pending />
         </div>
@@ -190,7 +190,7 @@ function CoachSection({
           <button
             type="button"
             onClick={onRetryAnalysis}
-            className="mt-2 border border-ink px-3 py-1 font-mono text-[11px] hover:bg-tint"
+            className="mt-2 rounded border border-rule-strong px-3 py-1 text-xs transition-colors hover:bg-surface-sunk"
           >
             Try again
           </button>
@@ -204,7 +204,7 @@ function CoachSection({
     return (
       <div className="mt-6 md:mt-8">
         {heading}
-        <p className="mt-2 text-xs leading-relaxed text-muted">
+        <p className="mt-2 text-xs leading-relaxed text-graphite">
           None of your moves were available to analyse.
         </p>
       </div>
@@ -215,7 +215,7 @@ function CoachSection({
   const failure = coach.commentaryFailure;
 
   return (
-    <div className="mt-6 border border-ink p-4 md:mt-8 md:p-5">
+    <div className="mt-6 rounded border border-rule p-4 md:mt-8 md:p-6">
       {heading}
       <p className="mt-2 text-sm leading-relaxed">
         {failure === null && summary !== null
@@ -236,7 +236,7 @@ function CoachSection({
       ) : (
         <Link
           href={`/profile/games/${gameId}`}
-          className="mt-3 block border border-ink bg-ink py-3 text-center text-sm font-semibold text-panel hover:bg-transparent hover:text-ink"
+          className={`${buttonClasses("secondary")} mt-3 w-full`}
         >
           Open coach view
         </Link>
@@ -268,17 +268,17 @@ export function PostGame({
       role="dialog"
       aria-modal="true"
       aria-label="Game result"
-      className="fixed inset-0 z-20 flex items-end justify-center bg-ink/40 md:items-center"
+      className="fixed inset-0 z-20 flex items-end justify-center bg-page/80 md:items-center"
     >
-      <div className="flex max-h-[92vh] w-full flex-col overflow-y-auto border-t-2 border-ink bg-panel p-5 md:w-[560px] md:border md:p-10">
+      <div className="flex max-h-[92vh] w-full flex-col overflow-y-auto border-t border-rule bg-surface p-6 md:w-[560px] md:rounded md:border md:p-8">
         <div className="flex items-center justify-between gap-2">
-          <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted">Result</div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-graphite">Result</div>
           {mode === "coach" ? (
-            <span className="border border-ink px-2 py-0.5 font-mono text-[10px]">Coach mode</span>
+            <span className="rounded-sm border border-rule px-2 py-1 text-xs text-graphite">Coach mode</span>
           ) : null}
         </div>
-        <h2 className="mt-1 text-3xl font-bold tracking-tight md:text-5xl">{end.headline}</h2>
-        <p className="mt-1 text-sm text-muted">
+        <h2 className="mt-1 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">{end.headline}</h2>
+        <p className="mt-1 text-sm text-graphite">
           {end.reason} in {moveCount} {moveCount === 1 ? "move" : "moves"}
         </p>
 
@@ -292,14 +292,14 @@ export function PostGame({
           />
         ) : (
           <>
-            <div className="mt-6 grid grid-cols-3 border border-ink md:mt-8">
+            <div className="mt-6 grid grid-cols-3 rounded border border-rule md:mt-8">
               {STATS.map((stat, index) => (
                 <div
                   key={stat.label}
-                  className={`p-3 md:p-5 ${index < STATS.length - 1 ? "border-r border-ink" : ""}`}
+                  className={`p-3 md:p-6 ${index < STATS.length - 1 ? "border-r border-rule" : ""}`}
                 >
-                  <div className="text-xl font-semibold tracking-tight md:text-4xl">{stat.value}</div>
-                  <div className="mt-1 font-mono text-[10px] tracking-[0.08em] text-muted md:mt-1.5">
+                  <div className="font-mono text-xl font-medium tabular-nums">{stat.value}</div>
+                  <div className="mt-1 text-xs text-graphite">
                     {stat.label}
                   </div>
                 </div>
@@ -321,7 +321,7 @@ export function PostGame({
             New game
           </Button>
         </div>
-        <p className="mt-3 text-center text-xs text-muted">
+        <p className="mt-3 text-center text-xs text-graphite">
           Rematch keeps the same settings and swaps colours.
         </p>
 
@@ -329,12 +329,12 @@ export function PostGame({
             game actions rather than a third button in the row, so it does not
             compete with them for the primary action or crowd them at 375px.
             Home for a signed-in player, the landing page for a guest. */}
-        <div className="mt-4 border-t border-dashed border-hairline pt-4 text-center">
+        <div className="mt-4 border-t border-rule pt-4 text-center">
           <Link
             href={isLoggedIn ? "/dashboard" : "/"}
-            className="font-mono text-[11px] text-muted underline underline-offset-2 hover:text-ink"
+            className="text-info-text text-xs underline underline-offset-2 transition-colors hover:text-ink"
           >
-            &larr; Back to menu
+            Back to menu
           </Link>
         </div>
       </div>

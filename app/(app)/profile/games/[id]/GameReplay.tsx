@@ -116,7 +116,7 @@ function ControlButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="flex-1 border border-ink py-2 font-mono text-xs hover:bg-tint disabled:cursor-not-allowed disabled:border-hairline disabled:text-hairline disabled:hover:bg-transparent"
+      className="flex-1 rounded border border-rule-strong py-2 text-xs transition-colors hover:bg-surface-sunk disabled:cursor-not-allowed disabled:border-rule disabled:text-muted disabled:hover:bg-transparent"
     >
       {symbol}
     </button>
@@ -228,7 +228,7 @@ export function GameReplay({
 
   if (replay === null) {
     return (
-      <p className="border border-ink bg-panel px-4 py-3 text-xs">
+      <p className="rounded border border-rule bg-surface px-4 py-3 text-sm">
         This game&apos;s moves could not be read, so it cannot be replayed.
       </p>
     );
@@ -248,20 +248,20 @@ export function GameReplay({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {isCoachView && commentary.summary !== null ? (
-        <section className="shrink-0 border-b border-dashed border-hairline px-4 py-4 md:px-6 md:py-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+        <section className="shrink-0 border-b border-rule px-4 py-4 md:px-6 md:py-6">
+          <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-graphite">
             Coach
           </p>
-          <h1 className="mt-1 text-xl font-bold tracking-tight md:text-2xl">{resultHeading}</h1>
+          <h1 className="mt-1 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">{resultHeading}</h1>
           {/* Wider leading and a measure capped in characters, not pixels: this
               is the one paragraph on the page meant to be read rather than
               scanned, and it has to survive a 375px screen at the same size. */}
-          <p className="mt-2 max-w-[68ch] text-[15px] leading-relaxed">{commentary.summary}</p>
+          <p className="mt-2 max-w-[68ch] text-sm leading-relaxed">{commentary.summary}</p>
         </section>
       ) : null}
 
       <div className="flex min-h-0 flex-1 flex-col md:grid md:grid-cols-[1fr_340px]">
-        <div className="flex min-h-0 flex-col gap-3 p-3 md:p-5">
+        <div className="flex min-h-0 flex-col gap-3 p-3 md:p-6">
           <div className="flex justify-center">
             <div className="aspect-square" style={{ width: boardSize }}>
               <GameBoard
@@ -275,14 +275,21 @@ export function GameReplay({
           </div>
 
           <div
-            className="mx-auto w-full border border-ink bg-panel p-3.5"
+            className="mx-auto w-full rounded border border-rule bg-surface p-3"
             style={{ maxWidth: boardSize }}
           >
-            <div className="mb-2 flex justify-between font-mono text-[10px] text-muted">
+            <div className="mb-2 flex justify-between text-xs text-graphite">
               <span>
-                MOVE {ply} / {lastPly}
+                Move{" "}
+                <span className="font-mono tabular-nums">
+                  {ply} / {lastPly}
+                </span>
               </span>
-              <span>{atStart ? "starting position" : replay.moves[ply - 1]}</span>
+              {atStart ? (
+                <span>Starting position</span>
+              ) : (
+                <span className="font-mono">{replay.moves[ply - 1]}</span>
+              )}
             </div>
 
             <input
@@ -293,7 +300,7 @@ export function GameReplay({
               disabled={lastPly === 0}
               aria-label="Move"
               onChange={(event) => setPly(Number(event.target.value))}
-              className="w-full accent-ink"
+              className="w-full accent-accent"
             />
 
             <div className="mt-3 flex gap-2">
@@ -322,23 +329,23 @@ export function GameReplay({
                 its colour from the arrow it describes, so the legend cannot
                 drift from what is drawn. */}
             {arrows.length > 0 && selectedArrowColor !== null ? (
-              <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-dashed border-hairline pt-2.5 font-mono text-[10px] text-muted">
-                <span className="flex items-center gap-1.5">
+              <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-rule pt-3 text-xs text-graphite">
+                <span className="flex items-center gap-2">
                   <span
                     aria-hidden
                     className="h-[3px] w-4"
                     style={{ backgroundColor: selectedArrowColor }}
                   />
-                  you played
+                  You played
                 </span>
                 {arrows.length > 1 ? (
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex items-center gap-2">
                     <span
                       aria-hidden
                       className="h-[3px] w-4"
                       style={{ backgroundColor: ENGINE_ARROW_COLOR }}
                     />
-                    engine preferred
+                    Engine preferred
                   </span>
                 ) : null}
               </p>
@@ -347,14 +354,14 @@ export function GameReplay({
         </div>
 
         <aside
-          className={`flex min-h-0 flex-col border-t border-dashed border-hairline md:border-l md:border-t-0 ${
+          className={`flex min-h-0 flex-col border-t border-rule md:border-l md:border-t-0 ${
             isCoachView ? "min-h-[20rem] md:min-h-0" : ""
           }`}
         >
-          <dl className="shrink-0 border-b border-dashed border-hairline px-4 py-3.5 font-mono text-[11px]">
+          <dl className="shrink-0 border-b border-rule px-4 py-3 text-xs">
             {meta.map((item) => (
               <div key={item.label} className="flex justify-between py-1">
-                <dt className="text-muted">{item.label}</dt>
+                <dt className="text-graphite">{item.label}</dt>
                 <dd>{item.value}</dd>
               </div>
             ))}
@@ -364,7 +371,7 @@ export function GameReplay({
               340px of width can hold one scrolling list well and two badly, and
               both are lists of the same moves, so a tab reads as two ways of
               looking at the game rather than as something being hidden. */}
-          <div className="flex shrink-0 border-b border-dashed border-hairline text-xs font-semibold">
+          <div className="flex shrink-0 border-b border-rule text-xs">
             {isCoachView ? (
               <TabButton active={tab === "side"} onClick={() => setTab("side")}>
                 Notes
@@ -445,7 +452,11 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 py-3 ${active ? "bg-ink text-panel" : "text-muted hover:text-ink"}`}
+      className={`flex-1 py-3 transition-colors ${
+        active
+          ? "-mb-px border-b-[3px] border-mark font-medium text-ink"
+          : "-mb-px border-b-[3px] border-transparent text-graphite hover:text-ink"
+      }`}
     >
       {children}
     </button>

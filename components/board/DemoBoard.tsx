@@ -109,14 +109,14 @@ export function DemoBoard() {
           onDrop={handleDrop}
         />
       </div>
-      <p className="text-center font-mono text-[11px] text-muted">
+      <p className="text-center text-xs text-graphite">
         {gameOver ? (
           <>
             Game over.{" "}
             <button
               type="button"
               onClick={reset}
-              className="underline underline-offset-2 hover:text-ink"
+              className="underline underline-offset-2 transition-colors hover:text-ink"
             >
               Play again
             </button>

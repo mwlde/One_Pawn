@@ -177,7 +177,7 @@ export function CoachPanel({
   if (status === "prompt") {
     if (totalUserMoves === 0) {
       return (
-        <p className="p-4 text-center text-xs leading-relaxed text-muted">
+        <p className="p-4 text-center text-xs leading-relaxed text-graphite">
           This game has none of your moves to analyse.
         </p>
       );
@@ -188,14 +188,14 @@ export function CoachPanel({
       rateLimit === null ? "" : ` (${rateLimit.used} of ${rateLimit.limit} used today)`;
     return (
       <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 p-4 text-center">
-        <p className="text-xs leading-relaxed text-muted">
+        <p className="text-xs leading-relaxed text-graphite">
           Generate the coach summary and commentary for this game. It stays saved, so this runs once.
         </p>
         <button
           type="button"
           disabled={!engine.isReady}
           onClick={generate}
-          className="mx-auto border border-ink px-4 py-2 font-mono text-xs hover:bg-tint disabled:cursor-not-allowed disabled:border-hairline disabled:text-hairline disabled:hover:bg-transparent"
+          className="mx-auto rounded border border-rule-strong px-4 py-2 text-xs transition-colors hover:bg-surface-sunk disabled:cursor-not-allowed disabled:border-rule disabled:text-muted disabled:hover:bg-transparent"
         >
           {engine.isReady ? `Generate coach commentary${countSuffix}` : "Engine loading..."}
         </button>
@@ -208,11 +208,11 @@ export function CoachPanel({
       progress.total === 0 ? 0 : Math.round((progress.completed / progress.total) * 100);
     return (
       <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 p-4">
-        <p className="text-center font-mono text-[11px] text-muted">
+        <p className="text-center text-xs text-graphite">
           Analysing move {progress.completed} of {progress.total}
         </p>
-        <div className="h-2 w-full border border-hairline">
-          <div className="h-full bg-ink" style={{ width: `${percent}%` }} />
+        <div className="h-1 w-full overflow-hidden rounded-sm bg-rule">
+          <div className="h-full bg-info" style={{ width: `${percent}%` }} />
         </div>
       </div>
     );

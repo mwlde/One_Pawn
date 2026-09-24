@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
+import { buttonClasses } from "@/components/ui/Button";
 import { AuthErrorBanner } from "@/app/(auth)/AuthErrorBanner";
 import { Field } from "@/app/(auth)/AuthField";
 import { createClient } from "@/lib/supabase/client";
@@ -54,18 +55,18 @@ export function ResetPasswordForm() {
   if (sent) {
     return (
       <div className="w-full max-w-[360px]">
-        <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">Check your email</h1>
-        <p className="mb-6 text-sm text-muted">
+        <h1 className="mb-2 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">Check your email</h1>
+        <p className="mb-6 text-sm text-graphite">
           Check your email for a link to reset your password. If you don&apos;t see it, check your
           spam folder.
         </p>
-        <p className="mb-6 border border-dashed border-hairline p-3.5 text-xs leading-relaxed text-muted">
+        <p className="mb-6 rounded border border-rule bg-surface p-3 text-xs leading-relaxed text-graphite">
           The link works once and then expires. If it stops working, come back here and ask for a
           new one.
         </p>
         <Link
           href="/login"
-          className="block border border-ink px-5 py-3.5 text-center text-sm hover:bg-tint"
+          className={`${buttonClasses("secondary")} w-full`}
         >
           Back to log in
         </Link>
@@ -75,18 +76,18 @@ export function ResetPasswordForm() {
 
   return (
     <div className="w-full max-w-[360px]">
-      <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">Reset your password</h1>
-      <p className="mb-8 text-sm text-muted">
+      <h1 className="mb-2 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">Reset your password</h1>
+      <p className="mb-8 text-sm text-graphite">
         Enter the address on your account. We will email you a link to set a new password.
       </p>
 
-      {error !== null && <AuthErrorBanner label="RESET FAILED" message={error} />}
+      {error !== null && <AuthErrorBanner label="Reset failed" message={error} />}
 
       <form onSubmit={handleSubmit} noValidate>
         <div className="mb-6">
           <Field
             id="email"
-            label="EMAIL"
+            label="Email"
             type="email"
             value={email}
             autoComplete="email"
@@ -98,15 +99,15 @@ export function ResetPasswordForm() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full border border-ink bg-ink px-5 py-4 text-sm font-semibold text-panel transition-colors hover:bg-black disabled:cursor-not-allowed disabled:border-hairline disabled:bg-hairline"
+          className={`${buttonClasses("primary")} w-full`}
         >
-          {pending ? "Working..." : "Send reset link →"}
+          {pending ? "Working..." : "Send reset link"}
         </button>
       </form>
 
-      <p className="mt-5 text-center text-xs text-muted">
+      <p className="mt-6 text-center text-xs text-graphite">
         Remembered it?{" "}
-        <Link href="/login" className="underline hover:text-ink">
+        <Link href="/login" className="text-info-text underline transition-colors hover:text-ink">
           Log in
         </Link>
       </p>

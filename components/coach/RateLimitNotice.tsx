@@ -32,9 +32,9 @@ export function RateLimitNotice({
         You&apos;ve used your {rateLimit.limit} coach {analyses} today. Next reset: {reset}.
         {extra === undefined ? null : ` ${extra}`}
       </p>
-      <p className="mt-2 font-mono text-[10px] leading-relaxed text-muted">
+      <p className="mt-2 text-xs leading-relaxed text-graphite">
         The coach runs on paid compute, so it&apos;s capped while One Pawn is in alpha.{" "}
-        <Link href="/about" className="underline underline-offset-2 hover:text-ink">
+        <Link href="/about" className="text-info-text underline underline-offset-2 transition-colors hover:text-ink">
           More about One Pawn
         </Link>
       </p>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { buttonClasses } from "@/components/ui/Button";
 import { AuthErrorBanner } from "@/app/(auth)/AuthErrorBanner";
 import { Field } from "@/app/(auth)/AuthField";
 import { createClient } from "@/lib/supabase/client";
@@ -28,13 +29,13 @@ const COPY: Record<Mode, { heading: string; subheading: string; cta: string; fai
     heading: "Log in",
     subheading: "Sign in to save games and track progress.",
     cta: "Log in",
-    failure: "SIGN-IN FAILED",
+    failure: "Sign-in failed",
   },
   register: {
     heading: "Create an account",
     subheading: "Save your games and pick up where you left off.",
     cta: "Create account",
-    failure: "REGISTRATION FAILED",
+    failure: "Registration failed",
   },
 };
 
@@ -49,12 +50,12 @@ function Toggle({ mode }: { mode: Mode }) {
   // Wireframe 04 draws this as a stateful segmented control on a single auth
   // page. Stage E1 is scoped to two routes, so the halves are links and the
   // active half is whichever route is rendering.
-  const base = "px-5 py-2.5 text-[13px] transition-colors";
-  const active = "bg-ink font-semibold text-panel";
-  const inactive = "text-muted hover:bg-tint";
+  const base = "px-1 py-3 text-sm transition-colors";
+  const active = "-mb-px border-b-[3px] border-mark font-medium text-ink";
+  const inactive = "-mb-px border-b-[3px] border-transparent text-graphite hover:text-ink";
 
   return (
-    <div className="mb-8 inline-flex border border-ink">
+    <div className="mb-8 flex gap-6 border-b border-rule">
       <Link href="/login" aria-current={mode === "login" ? "page" : undefined} className={`${base} ${mode === "login" ? active : inactive}`}>
         Log in
       </Link>
@@ -211,27 +212,27 @@ export function AuthForm({
     return (
       <div className="w-full max-w-[360px]">
         <Toggle mode={mode} />
-        <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">Check your email</h1>
-        <p className="mb-4 text-sm text-muted">
+        <h1 className="mb-2 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">Check your email</h1>
+        <p className="mb-4 text-sm text-graphite">
           We sent a verification link to{" "}
-          <span className="font-mono text-[13px] text-ink">{email}</span>. Opening it finishes
+          <span className="font-medium text-ink">{email}</span>. Opening it finishes
           setting up your account and signs you in.
         </p>
 
         {/* Verification is a step people resent when nobody tells them what it
             buys them. It buys them account recovery, so the note says that. */}
-        <p className="mb-6 border border-dashed border-hairline p-3.5 text-xs leading-relaxed text-muted">
+        <p className="mb-6 rounded border border-rule bg-surface p-3 text-xs leading-relaxed text-graphite">
           Confirming the address proves it is yours. That is what lets us get you back into your
           account if you forget your password, and it keeps the site free of spam registrations.
         </p>
 
-        <div className="mb-6 border-t border-dashed border-hairline pt-4">
-          <p className="font-mono text-[10px] text-muted">Nothing in your inbox?</p>
-          <p className="mt-1.5 text-xs leading-relaxed text-muted">
+        <div className="mb-6 border-t border-rule pt-4">
+          <p className="text-xs font-medium text-ink">Nothing in your inbox?</p>
+          <p className="mt-2 text-xs leading-relaxed text-graphite">
             Check the spam folder first. The link can take a minute to arrive.
           </p>
           {resent ? (
-            <p className="mt-3 font-mono text-[10px] text-ink">
+            <p className="mt-3 text-xs text-ink">
               Sent again to {email}.
             </p>
           ) : (
@@ -239,13 +240,13 @@ export function AuthForm({
               type="button"
               onClick={() => void handleResend()}
               disabled={resending}
-              className="mt-3 border border-ink px-4 py-2.5 text-[13px] hover:bg-tint disabled:cursor-not-allowed disabled:border-hairline disabled:text-muted"
+              className={`${buttonClasses("secondary")} mt-3`}
             >
               {resending ? "Sending..." : "Send it again"}
             </button>
           )}
           {resendFailure === null ? null : (
-            <p role="alert" className="mt-3 font-mono text-[10px] text-ink">
+            <p role="alert" className="mt-3 text-xs text-ink">
               ✕ {resendFailure}
             </p>
           )}
@@ -253,7 +254,7 @@ export function AuthForm({
 
         <Link
           href="/login"
-          className="block border border-ink px-5 py-3.5 text-center text-sm hover:bg-tint"
+          className={`${buttonClasses("secondary")} w-full`}
         >
           Back to log in
         </Link>
@@ -265,8 +266,8 @@ export function AuthForm({
     <div className="w-full max-w-[360px]">
       <Toggle mode={mode} />
 
-      <h1 className="mb-2 text-[32px] font-semibold tracking-[-0.01em]">{heading}</h1>
-      <p className="mb-8 text-sm text-muted">{copy.subheading}</p>
+      <h1 className="mb-2 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">{heading}</h1>
+      <p className="mb-8 text-sm text-graphite">{copy.subheading}</p>
 
       {error !== null && <AuthErrorBanner label={copy.failure} message={error} />}
 
@@ -274,7 +275,7 @@ export function AuthForm({
         <div className="mb-6 flex flex-col gap-4">
           <Field
             id="email"
-            label="EMAIL"
+            label="Email"
             type="email"
             value={email}
             autoComplete="email"
@@ -285,7 +286,7 @@ export function AuthForm({
           <div>
             <Field
               id="password"
-              label="PASSWORD"
+              label="Password"
               type="password"
               value={password}
               autoComplete={mode === "login" ? "current-password" : "new-password"}
@@ -299,15 +300,15 @@ export function AuthForm({
               }}
             />
             {mode === "register" && (
-              <p className="mt-1.5 font-mono text-[10px] text-muted">
+              <p className="mt-2 text-xs text-graphite">
                 {PASSWORD_MIN_LENGTH} characters minimum.
               </p>
             )}
             {mode === "login" && (
-              <p className="mt-1.5 text-right">
+              <p className="mt-2 text-right">
                 <Link
                   href="/auth/reset-password"
-                  className="font-mono text-[10px] text-muted underline underline-offset-2 hover:text-ink"
+                  className="text-info-text text-xs underline underline-offset-2 transition-colors hover:text-ink"
                 >
                   Forgot password?
                 </Link>
@@ -323,7 +324,7 @@ export function AuthForm({
           {mode === "register" && (
             <Field
               id="confirm-password"
-              label="CONFIRM PASSWORD"
+              label="Confirm password"
               type="password"
               value={confirmPassword}
               autoComplete="new-password"
@@ -347,7 +348,7 @@ export function AuthForm({
             leaves the user guessing, whereas submitting and being told why is
             unambiguous. */}
         {mode === "register" && (
-          <div className="mb-6 border border-dashed border-hairline p-3.5">
+          <div className="mb-6 rounded border border-rule bg-surface p-3">
             <label htmlFor="age-confirmed" className="flex cursor-pointer items-start gap-3">
               <input
                 id="age-confirmed"
@@ -356,14 +357,14 @@ export function AuthForm({
                 checked={ageConfirmed}
                 onChange={(event) => setAgeConfirmed(event.target.checked)}
                 aria-describedby="age-requirement"
-                className="mt-0.5 h-4 w-4 shrink-0 accent-ink"
+                className="mt-1 h-4 w-4 shrink-0 accent-accent"
               />
-              <span className="text-[13px] leading-snug text-ink">
+              <span className="text-sm leading-snug text-ink">
                 I confirm I am at least {MINIMUM_AGE} years old.{" "}
-                <span className="text-muted">(required)</span>
+                <span className="text-graphite">(required)</span>
               </span>
             </label>
-            <p id="age-requirement" className="mt-2 pl-7 font-mono text-[10px] text-muted">
+            <p id="age-requirement" className="mt-2 pl-8 text-xs text-graphite">
               One Pawn requires users to be {MINIMUM_AGE} or older.
             </p>
           </div>
@@ -372,24 +373,24 @@ export function AuthForm({
         <button
           type="submit"
           disabled={pending}
-          className="w-full border border-ink bg-ink px-5 py-4 text-sm font-semibold text-panel transition-colors hover:bg-black disabled:cursor-not-allowed disabled:border-hairline disabled:bg-hairline"
+          className={`${buttonClasses("primary")} w-full`}
         >
-          {pending ? "Working..." : `${copy.cta} →`}
+          {pending ? "Working..." : copy.cta}
         </button>
       </form>
 
-      <p className="mt-5 text-center text-xs text-muted">
+      <p className="mt-6 text-center text-xs text-graphite">
         {mode === "login" ? (
           <>
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline hover:text-ink">
+            <Link href="/register" className="text-info-text underline transition-colors hover:text-ink">
               Register
             </Link>
           </>
         ) : (
           <>
             Already have an account?{" "}
-            <Link href="/login" className="underline hover:text-ink">
+            <Link href="/login" className="text-info-text underline transition-colors hover:text-ink">
               Log in
             </Link>
           </>
@@ -399,14 +400,14 @@ export function AuthForm({
       {/* The wireframe's guest escape hatch, as a button below the sign-in so it
           reads as a real second way in rather than an afterthought. Phase 1
           plays without an account anyway, so it is a live route, not a promise. */}
-      <div className="mt-6 border-t border-dashed border-hairline pt-5">
+      <div className="mt-6 border-t border-rule pt-6">
         <Link
           href="/play"
-          className="block border border-ink px-5 py-3.5 text-center text-sm transition-colors hover:bg-tint"
+          className={`${buttonClasses("secondary")} w-full`}
         >
           Play as guest
         </Link>
-        <p className="mt-2 text-center text-[11px] text-muted">No account needed to play.</p>
+        <p className="mt-2 text-center text-xs text-graphite">No account needed to play.</p>
       </div>
     </div>
   );

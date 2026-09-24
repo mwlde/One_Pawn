@@ -11,6 +11,7 @@ const GUARDRAILS = [
   "Do not describe or refer to any move the engine did not evaluate",
   "You cannot see the board",
   "Do not invent variations",
+  "Address the player directly as you. Never refer to them in the third person.",
 ];
 
 describe("buildSummaryPrompt", () => {
@@ -27,6 +28,11 @@ describe("buildSummaryPrompt", () => {
   it("keeps the guardrails in the system prompt", () => {
     const { system } = buildSummaryPrompt(input);
     for (const rule of GUARDRAILS) expect(system).toContain(rule);
+  });
+
+  it("never calls the player a student", () => {
+    const { system, user } = buildSummaryPrompt(input);
+    expect(`${system}\n${user}`.toLowerCase()).not.toContain("student");
   });
 
   it("asks for a short summary in British English without em-dashes", () => {
@@ -66,6 +72,11 @@ describe("buildMoveCommentaryPrompt", () => {
     evalLossCp: 420,
     reason: "blunder" as const,
   };
+
+  it("never calls the player a student", () => {
+    const { system, user } = buildMoveCommentaryPrompt(input);
+    expect(`${system}\n${user}`.toLowerCase()).not.toContain("student");
+  });
 
   it("keeps the guardrails and a short length in the system prompt", () => {
     const { system } = buildMoveCommentaryPrompt(input);

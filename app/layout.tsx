@@ -7,9 +7,14 @@ const geist = Geist({
   subsets: ["latin"],
 });
 
+// Next's generated fallback for this font is metric-matched Arial, which would
+// turn clocks and notation proportional if the file failed to load. Switched
+// off so a failed load falls through to a real monospace instead.
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
+  adjustFontFallback: false,
 });
 
 // Variable with the optical-size axis, so a 36px title gets display shapes

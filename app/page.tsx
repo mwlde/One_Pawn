@@ -6,6 +6,7 @@ import { Suspense } from "react";
 
 import { AuthForm } from "@/app/(auth)/AuthForm";
 import { AuthPanel } from "@/app/(auth)/AuthPanel";
+import { StaticBoard } from "@/components/board/StaticBoard";
 import { buttonClasses } from "@/components/ui/Button";
 import { DeletedNotice } from "@/components/ui/DeletedNotice";
 import { SiteFooter } from "@/components/ui/SiteFooter";
@@ -20,9 +21,9 @@ export const metadata: Metadata = {
 // The front door. On desktop it is the auth screen: the same split (product line
 // and a movable demo board on the left, the log in / register form on the right)
 // the /login and /register routes render, so pressing the logo lands on a board
-// and a way in. On mobile the board does not fit, so it is dropped for a plain
-// hero: the name, the one line under it, and two buttons (log in / register, or
-// play as guest). Both carry the full site header.
+// and a way in. On mobile the playable board does not fit, so it becomes a plain
+// hero: the name, the one line under it, a small static board, and two buttons
+// (log in / register, or play as guest). Both carry the full site header.
 export default async function Home() {
   // A signed-in visitor has no use for a login form, and the app's own logo
   // points here, so they are sent on to their dashboard rather than shown one.
@@ -58,9 +59,10 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Mobile: no board, just the name, the line under it, and the two ways
-          in. Log in leads to the full form on /login, which keeps its own guest
-          option below it. */}
+      {/* Mobile: the name, the line under it, a small static board, and the two
+          ways in. The board is the product, so it shows at every width, but
+          here it is a picture rather than a game. Log in leads to the full form
+          on /login, which keeps its own guest option below it. */}
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-12 text-center md:hidden">
         <div>
           <h1 className="font-display text-4xl font-bold tracking-[-0.02em]">One Pawn</h1>
@@ -68,6 +70,10 @@ export default async function Home() {
             Play a real engine in your browser. Learn from{" "}
             <span className="bg-highlight box-decoration-clone px-1 text-ink">every game</span>.
           </p>
+        </div>
+
+        <div className="w-full max-w-[240px]">
+          <StaticBoard />
         </div>
 
         <div className="flex w-full max-w-xs flex-col gap-3">

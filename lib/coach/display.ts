@@ -42,11 +42,29 @@ export function reasonAddsHeading(reason: CommentaryReason): boolean {
   return reason === "best_move" || reason === "critical_moment";
 }
 
+// Words that end in a full stop without ending the sentence.
+const ABBREVIATIONS = new Set(["e.g", "i.e", "vs", "cf"]);
+
+// A move number with its dots so far: "12", "1..".
+const MOVE_NUMBER = /^\d+\.*$/;
+
+// A move in SAN, with any check, mate or annotation marks already read.
+const SAN_MOVE = /^(?:[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?|O-O(?:-O)?)[+#]?[!?]*$/;
+
+// The word that ends just before `index`, back to the previous whitespace.
+function wordBefore(text: string, index: number): string {
+  let start = index;
+  while (start > 0 && !/\s/.test(text[start - 1])) start -= 1;
+  return text.slice(start, index);
+}
+
 // The opening sentence of a note, for the collapsed row in the coach's notes.
-// Splitting on a full stop alone would cut "12. Nxd4" in half, so a stop that
-// follows a digit or another stop is read as move notation ("12." and "1...")
-// rather than the end of a sentence. Written as a scan rather than a lookbehind
-// regex, which older Safari cannot parse at all.
+// A full stop ends the sentence unless the word before it is a move number
+// ("12. Nxd4", "1... e5") or an abbreviation ("e.g."). A move before it does
+// end the sentence: "The best move was Nf3." An exclamation or question mark
+// straight after a move is an annotation ("Nf3!", "e4?!"), not an ending.
+// Written as a scan rather than a lookbehind regex, which older Safari cannot
+// parse at all.
 //
 // Text with no sentence end this can find comes back whole. A slightly long
 // excerpt is a better failure than an empty one.
@@ -57,8 +75,13 @@ export function firstSentence(text: string): string {
     const char = trimmed[index];
     if (char !== "." && char !== "!" && char !== "?") continue;
 
-    const before = trimmed[index - 1];
-    if (before !== undefined && (before === "." || (before >= "0" && before <= "9"))) continue;
+    const word = wordBefore(trimmed, index);
+    if (char === ".") {
+      if (MOVE_NUMBER.test(word)) continue;
+      if (ABBREVIATIONS.has(word.toLowerCase())) continue;
+    } else if (SAN_MOVE.test(word)) {
+      continue;
+    }
 
     const after = trimmed[index + 1];
     if (after === undefined) return trimmed;

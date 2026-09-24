@@ -97,7 +97,7 @@ export default async function TrackPage({ params }: { params: Promise<{ track: s
   const done = countCompleted(completions, lessons);
 
   return (
-    <div className="flex w-full max-w-2xl flex-col px-4 py-6 md:px-8 md:py-8">
+    <div className="mx-auto flex w-full max-w-2xl flex-col px-4 py-6 md:px-8 md:py-8">
       <Link href="/learn" className="self-start text-xs text-graphite transition-colors hover:text-ink">
         All tracks
       </Link>

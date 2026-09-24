@@ -13,6 +13,7 @@ import { MoveHistory } from "@/components/panels/MoveHistory";
 import { Button } from "@/components/ui/Button";
 import { useHideMobileNav } from "@/components/ui/TopNav";
 import { parseEngineMove } from "@/lib/game/engine-move";
+import { timeUsed } from "@/lib/game/clock";
 import { formatBalance, materialBalance } from "@/lib/game/evaluation";
 import {
   describeEnd,
@@ -38,6 +39,7 @@ import { PostGame } from "./PostGame";
 import { ResignButton } from "./ResignButton";
 import { useCoachAnalysis } from "./useCoachAnalysis";
 import { useGameClock } from "./useGameClock";
+import { usePlayStats } from "./usePlayStats";
 
 type Phase = "setup" | "playing" | "over";
 
@@ -96,6 +98,10 @@ export default function PlayPage() {
   // starts it for a saved Coach-mode game.
   const coach = useCoachAnalysis();
   const { start: startCoach } = coach;
+
+  // Play mode's post-game counts. Runs off the finished game's payload, so it
+  // needs no account and no save.
+  const playStats = usePlayStats(savePayload, phase === "over" && settings.mode === "play");
 
   // Bumped whenever the game the engine was asked about stops being the game on
   // the board. A search already in flight cannot be cancelled (see
@@ -281,6 +287,11 @@ export default function PlayPage() {
   }
 
   const moveCount = Math.ceil(snapshot.moves.length / 2);
+  // White makes the odd plies, so an odd total means White moved last.
+  const userMoveCount =
+    settings.side === "white"
+      ? Math.ceil(snapshot.moves.length / 2)
+      : Math.floor(snapshot.moves.length / 2);
   const playerToMove = snapshot.turn === settings.side;
   const historyPanel = <MoveHistory moves={snapshot.moves} />;
   const gameActions = (
@@ -402,6 +413,13 @@ export default function PlayPage() {
           gameId={saveState.status === "saved" ? saveState.id : null}
           pgn={savePayload?.pgn ?? null}
           userColor={settings.side}
+          playStats={playStats}
+          timeUsedMs={timeUsed(
+            timeControl.baseSeconds,
+            timeControl.incrementSeconds,
+            userMoveCount,
+            clock.clocks[settings.side],
+          )}
         />
       ) : null}
     </div>

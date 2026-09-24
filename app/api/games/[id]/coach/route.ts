@@ -260,7 +260,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
         classification: move.classification,
       })),
     });
-    summary = await callGroq(summaryPrompt.system, summaryPrompt.user);
+    summary = await callGroq(summaryPrompt.system, summaryPrompt.user, { logLabel: "summary" });
   } catch (cause) {
     logGroqFailure("summary", cause);
     return NextResponse.json({ summary: null, moves: [], failed: true }, { status: 200 });

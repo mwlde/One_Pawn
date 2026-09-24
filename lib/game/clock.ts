@@ -27,3 +27,16 @@ export function applyIncrement(clocks: Clocks, side: Side, incrementSeconds: num
 export function deduct(clocks: Clocks, side: Side, elapsedMilliseconds: number): Clocks {
   return { ...clocks, [side]: Math.max(0, clocks[side] - elapsedMilliseconds) };
 }
+
+// How much of their own clock a side spent over the game. The increment is
+// paid after each of that side's moves, so it is added back to what they
+// started with before the remaining time is taken off.
+export function timeUsed(
+  baseSeconds: number,
+  incrementSeconds: number,
+  movesPlayed: number,
+  remainingMilliseconds: number,
+): number {
+  const available = (baseSeconds + incrementSeconds * movesPlayed) * 1000;
+  return Math.max(0, available - remainingMilliseconds);
+}

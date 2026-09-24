@@ -7,12 +7,15 @@ import { RateLimitNotice } from "@/components/coach/RateLimitNotice";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { isRetriableFailure } from "@/lib/coach/client";
 import { COMMENTARY_FAILURE_MESSAGE, firstSentence } from "@/lib/coach/display";
+import type { GameStatsSummary } from "@/lib/analysis/summary";
+import { formatClock } from "@/lib/game/clock";
 import type { GameMode } from "@/lib/game/mode";
 import type { GameEnd } from "@/lib/game/result";
 import type { SaveState } from "@/lib/game/save";
 import type { Side } from "@/lib/game/settings";
 
 import type { CoachAnalysis } from "./useCoachAnalysis";
+import type { PlayStats } from "./usePlayStats";
 
 type PostGameProps = {
   end: GameEnd;
@@ -32,16 +35,29 @@ type PostGameProps = {
   gameId: string | null;
   pgn: string | null;
   userColor: Side;
+  // Play mode only.
+  playStats: PlayStats;
+  timeUsedMs: number;
 };
 
-// Play mode's three stubs, unchanged: they still read as placeholders until a
-// later phase fills them. Coach mode replaces this block with one sentence and
-// a way into the coach view.
-const STATS: readonly { label: string; value: string }[] = [
-  { label: "Accuracy", value: "--" },
-  { label: "Blunders", value: "--" },
-  { label: "Best moves", value: "--" },
-];
+// Play mode's three figures. The two counts come from the local engine pass
+// and read as an ellipsis while it runs; time used is known the moment the game
+// ends. Coach mode replaces this block with one sentence and a way into the
+// coach view.
+function statTiles(playStats: PlayStats, timeUsedMs: number): readonly { label: string; value: string }[] {
+  const count = (pick: (stats: GameStatsSummary) => number): string =>
+    playStats.status === "ready"
+      ? String(pick(playStats.stats))
+      : playStats.status === "analyzing"
+        ? "…"
+        : "--";
+
+  return [
+    { label: "Blunders", value: count((stats) => stats.blunders) },
+    { label: "Best moves", value: count((stats) => stats.bestMoves) },
+    { label: "Time used", value: formatClock(timeUsedMs) },
+  ];
+}
 
 const NOTE = "mt-2 text-xs leading-relaxed text-graphite";
 const INLINE_ACTION = "underline underline-offset-2 transition-colors hover:text-ink";
@@ -260,8 +276,11 @@ export function PostGame({
   gameId,
   pgn,
   userColor,
+  playStats,
+  timeUsedMs,
 }: PostGameProps) {
   const isCoach = mode === "coach" && coach !== null;
+  const stats = statTiles(playStats, timeUsedMs);
 
   return (
     <div
@@ -293,10 +312,10 @@ export function PostGame({
         ) : (
           <>
             <div className="mt-6 grid grid-cols-3 rounded border border-rule md:mt-8">
-              {STATS.map((stat, index) => (
+              {stats.map((stat, index) => (
                 <div
                   key={stat.label}
-                  className={`p-3 md:p-6 ${index < STATS.length - 1 ? "border-r border-rule" : ""}`}
+                  className={`p-3 md:p-6 ${index < stats.length - 1 ? "border-r border-rule" : ""}`}
                 >
                   <div className="font-mono text-xl font-medium tabular-nums">{stat.value}</div>
                   <div className="mt-1 text-xs text-graphite">
@@ -305,7 +324,11 @@ export function PostGame({
                 </div>
               ))}
             </div>
-            <p className={NOTE}>Analysis arrives in Phase 4.</p>
+            {playStats.status === "analyzing" ? (
+              <p className={NOTE}>Analysing your moves...</p>
+            ) : playStats.status === "error" ? (
+              <p className={NOTE}>Your moves could not be analysed.</p>
+            ) : null}
           </>
         )}
 

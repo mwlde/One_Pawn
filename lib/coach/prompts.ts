@@ -36,7 +36,8 @@ export type Prompt = {
 // The shared persona. Both prompts open with this so the coach reads the same
 // whether it is summing up a game or explaining one move.
 const PERSONA = [
-  "You are a chess coach giving feedback on a game a student has just finished against a computer opponent.",
+  "You are a chess coach giving feedback on a game the player has just finished against a computer opponent.",
+  "Address the player directly as you. Never refer to them in the third person.",
   "You are patient and direct. You do not flatter. You do not open with praise like \"great game\" or \"well played\".",
   "A chess engine has already analysed the game. Its assessment is the ground truth. Never disagree with the engine.",
   "",
@@ -51,7 +52,7 @@ const PERSONA = [
 // Centipawns are the engine's unit. A short gloss keeps the model from
 // misreading the number as anything else without inviting it to theorise.
 const CP_NOTE =
-  "Evaluations are in centipawns from the student's point of view: 100 centipawns is roughly the value of a pawn. A larger eval loss means a worse move.";
+  "Evaluations are in centipawns from the player's point of view: 100 centipawns is roughly the value of a pawn. A larger eval loss means a worse move.";
 
 function colorName(side: Side): string {
   return side === "white" ? "White" : "Black";
@@ -77,24 +78,24 @@ export function buildSummaryPrompt(input: SummaryInput): Prompt {
   const system = [
     PERSONA,
     "",
-    "Task: write a short summary of how the student played.",
+    "Task: write a short summary of how the player played.",
     "Length: 2 to 4 sentences. No more.",
-    "Cover the shape of the game: where the student played well, where it went wrong, and one concrete takeaway.",
+    "Cover the shape of the game: where the player played well, where it went wrong, and one concrete takeaway.",
     "Do not list every move. Do not give a move-by-move account. Do not end with a cheerful sign-off.",
     CP_NOTE,
   ].join("\n");
 
   const moveList =
     input.moves.length === 0
-      ? "(no moves by the student were analysed)"
+      ? "(no moves by the player were analysed)"
       : input.moves
           .map((move) => summaryMoveLine(move.ply, move.san, move.classification))
           .join("\n");
 
   const user = [
-    `The student played ${colorName(input.userColor)} against the computer on ${input.difficulty}.`,
+    `The player played ${colorName(input.userColor)} against the computer on ${input.difficulty}.`,
     "",
-    "The student's moves, with the engine's classification of each:",
+    "The player's moves, with the engine's classification of each:",
     moveList,
     "",
     "Full game in PGN, for context only. Do not quote moves from it that are not in the list above:",
@@ -115,7 +116,7 @@ const REASON_TASK: Record<CommentaryReason, string> = {
   inaccuracy:
     "This move is an inaccuracy: it gave up a little evaluation. Explain briefly what the engine's suggested move would have kept.",
   best_move:
-    "This was the student's best move of the game: it matched or nearly matched the engine. Explain what the move achieves.",
+    "This was the player's best move of the game: it matched or nearly matched the engine. Explain what the move achieves.",
   critical_moment:
     "This was the turning point of the game, where the evaluation swung the most. Explain what was at stake in this position, using only the evaluation change as evidence.",
 };
@@ -126,7 +127,7 @@ export type MoveCommentaryInput = {
   // FEN of the position the move was played from. Given so the model knows whose
   // turn it was and roughly where the game stood, not so it reads the board.
   fenBefore: string;
-  // SAN of the move the student played, and the move the engine preferred. SAN,
+  // SAN of the move the player played, and the move the engine preferred. SAN,
   // not UCI, so the model writes moves the way a player reads them.
   playedMove: string;
   engineBestMove: string;
@@ -139,14 +140,14 @@ export function buildMoveCommentaryPrompt(input: MoveCommentaryInput): Prompt {
   const system = [
     PERSONA,
     "",
-    "Task: explain one move to the student.",
+    "Task: explain one move to the player.",
     "Length: 2 to 3 sentences. No more.",
     "Do not re-analyse the position or offer your own evaluation. Use the engine's assessment as given.",
     CP_NOTE,
   ].join("\n");
 
   // "the engine agreed with this move" reads better than naming the same move
-  // twice when the student found the top choice.
+  // twice when the player found the top choice.
   const engineLine =
     input.engineBestMove === input.playedMove
       ? "The engine agreed with this move."
@@ -154,7 +155,7 @@ export function buildMoveCommentaryPrompt(input: MoveCommentaryInput): Prompt {
 
   const user = [
     `Position (FEN, for turn and context only): ${input.fenBefore}`,
-    `Student is playing: ${colorName(input.userColor)}`,
+    `The player is playing: ${colorName(input.userColor)}`,
     `Move played: ${formatMoveLabel(input.ply, input.playedMove)}`,
     engineLine,
     `Engine classification: ${input.classification}`,

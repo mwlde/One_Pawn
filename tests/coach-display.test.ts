@@ -122,4 +122,26 @@ describe("firstSentence", () => {
   it("returns the whole note when it finds no sentence end", () => {
     expect(firstSentence("  Solid development  ")).toBe("Solid development");
   });
+
+  it("does not end the sentence at an abbreviation", () => {
+    expect(firstSentence("Develop first, e.g. Nf3, then castle. Then attack.")).toBe(
+      "Develop first, e.g. Nf3, then castle.",
+    );
+    expect(firstSentence("Trade pieces, i.e. simplify. Then push.")).toBe(
+      "Trade pieces, i.e. simplify.",
+    );
+  });
+
+  it("ends the sentence at a move that finishes it", () => {
+    expect(firstSentence("The best move was Nf3. Then castle.")).toBe("The best move was Nf3.");
+    expect(firstSentence("You should have played e4. It frees the bishop.")).toBe(
+      "You should have played e4.",
+    );
+    expect(firstSentence("It ends with Qh4#. A quick mate.")).toBe("It ends with Qh4#.");
+  });
+
+  it("reads annotation marks after a move as notation", () => {
+    expect(firstSentence("e4?! weakens d4. Consider Nf3.")).toBe("e4?! weakens d4.");
+    expect(firstSentence("Bxf7+! wins material. Well spotted.")).toBe("Bxf7+! wins material.");
+  });
 });

@@ -89,12 +89,20 @@ export class GroqNetworkError extends GroqError {
 type CallOptions = {
   maxTokens?: number;
   temperature?: number;
+  // When set, the call's finish reason and token usage are logged under this
+  // label. A reasoning model spends hidden tokens against max_tokens, so a
+  // "length" finish with little visible text means the ceiling ate the answer.
+  logLabel?: string;
 };
 
 // The slice of Groq's OpenAI-compatible response we read. Everything else in
 // the body is ignored.
 type ChatCompletion = {
-  choices?: { message?: { content?: string } }[];
+  choices?: { message?: { content?: string }; finish_reason?: string }[];
+  usage?: {
+    completion_tokens?: number;
+    completion_tokens_details?: { reasoning_tokens?: number };
+  };
 };
 
 export async function callGroq(
@@ -166,6 +174,15 @@ export async function callGroq(
     body = (await response.json()) as ChatCompletion;
   } catch {
     throw new GroqServerError(response.status, "Groq returned a response that was not JSON.");
+  }
+
+  if (options.logLabel !== undefined) {
+    console.info(
+      `[groq] ${options.logLabel}: finish_reason=${body.choices?.[0]?.finish_reason ?? "unknown"}` +
+        ` completion_tokens=${body.usage?.completion_tokens ?? "unknown"}` +
+        ` reasoning_tokens=${body.usage?.completion_tokens_details?.reasoning_tokens ?? "unknown"}` +
+        ` max_tokens=${options.maxTokens ?? DEFAULT_MAX_TOKENS}`,
+    );
   }
 
   const content = body.choices?.[0]?.message?.content;

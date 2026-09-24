@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { applyIncrement, deduct, formatClock, initialClocks } from "@/lib/game/clock";
+import { applyIncrement, deduct, formatClock, initialClocks, timeUsed } from "@/lib/game/clock";
 
 describe("formatClock", () => {
   it("formats minutes and zero-padded seconds", () => {
@@ -76,5 +76,24 @@ describe("a move's worth of clock arithmetic", () => {
   it("cannot revive a flagged clock with an increment it never earned", () => {
     const flagged = deduct(initialClocks(1), "white", 1_000);
     expect(flagged.white).toBe(0);
+  });
+});
+
+describe("timeUsed", () => {
+  it("is the base time minus what is left when there is no increment", () => {
+    expect(timeUsed(600, 0, 8, 560_000)).toBe(40_000);
+  });
+
+  it("adds back the increment earned on each move", () => {
+    // 3+2, five moves: 180s + 10s available, 150s left.
+    expect(timeUsed(180, 2, 5, 150_000)).toBe(40_000);
+  });
+
+  it("is everything available when the side flagged", () => {
+    expect(timeUsed(300, 0, 20, 0)).toBe(300_000);
+  });
+
+  it("never goes negative", () => {
+    expect(timeUsed(60, 0, 0, 61_000)).toBe(0);
   });
 });

@@ -58,9 +58,9 @@ export default async function Home() {
       </Suspense>
 
       {/* Desktop: the split auth screen. */}
-      <div className="hidden flex-1 grid-cols-[1fr_520px] md:grid">
+      <div className="hidden flex-1 grid-cols-[minmax(0,1fr)_440px] md:grid lg:grid-cols-[minmax(0,1fr)_520px]">
         <AuthPanel />
-        <div className="flex flex-col p-12">
+        <div className="flex flex-col p-10 lg:p-12">
           <div className="flex flex-1 flex-col justify-start">
             <AuthForm mode="login" returning={returning} />
           </div>
@@ -76,10 +76,13 @@ export default async function Home() {
         {/* inline-block with leading-none sizes the marker's box to the letters,
             so the band covers their lower part as in the nav; inline, the box
             is Bricolage's tall ascent-to-descent and the band sat under the
-            text. The non-breaking space and clone guard against a split. */}
+            text. The non-breaking space and clone guard against a split, and
+            the nowrap keeps the full stop from breaking off after the block. */}
         <h1 className="font-display text-[28px] font-bold leading-[1.15] tracking-[-0.02em]">
           Play a real engine in your browser. Learn from{" "}
-          <span className={`${HIGHLIGHTER} inline-block box-decoration-clone leading-none`}>every&nbsp;game</span>.
+          <span className="whitespace-nowrap">
+            <span className={`${HIGHLIGHTER} inline-block box-decoration-clone leading-none`}>every&nbsp;game</span>.
+          </span>
         </h1>
 
         <div className="aspect-square w-[min(78vw,320px)] self-center">

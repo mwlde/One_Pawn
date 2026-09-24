@@ -30,12 +30,14 @@ const BOARD_STYLE = { border: "1px solid var(--rule-strong)" };
 const LIGHT_SQUARE_STYLE = { backgroundColor: "var(--board-light)" };
 const DARK_SQUARE_STYLE = { backgroundColor: "var(--board-dark)" };
 // Small enough to sit in a square's corner without reaching the piece, which on
-// ranks 1 and 8 fills the square. Scales with the viewport so a phone-sized
-// board gets 8px and a desktop one keeps 10px. Ranks sit top-left and files
-// bottom-right, the library's own corners, pulled in tighter.
+// ranks 1 and 8 fills the square. Sized from the board's own width (cqw, via the
+// container wrapper below) rather than the window's, so a board squeezed small
+// on a wide window shrinks its labels too: a fifth of a square, 7px to 10px.
+// Ranks sit top-left and files bottom-right, the library's own corners, pulled
+// in tighter.
 const NOTATION_BASE = {
   fontFamily: "var(--font-mono)",
-  fontSize: "clamp(8px, 2vw, 10px)",
+  fontSize: "clamp(7px, 2.5cqw, 10px)",
   lineHeight: 1,
 };
 const NUMERIC_NOTATION_STYLE = { ...NOTATION_BASE, top: 2, left: 2 };
@@ -116,5 +118,9 @@ export function GameBoard({
     [fen, orientation, movableColor, onDrop, animate, arrows, lastMove],
   );
 
-  return <Chessboard options={options} />;
+  return (
+    <div className="@container w-full">
+      <Chessboard options={options} />
+    </div>
+  );
 }

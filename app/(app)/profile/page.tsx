@@ -16,6 +16,7 @@ import {
 } from "@/lib/game/history";
 import { createClient } from "@/lib/supabase/server";
 
+import { AboutAndLegal } from "./AboutAndLegal";
 import { DeleteAccount } from "./DeleteAccount";
 import { GamesList, type GameRow } from "./GamesList";
 
@@ -133,6 +134,7 @@ export default async function ProfilePage() {
           <p className="rounded border border-rule bg-surface px-4 py-3 text-sm">
             Your games could not be loaded. Refresh the page to try again.
           </p>
+          <AboutAndLegal />
         </div>
       </div>
     );
@@ -154,6 +156,8 @@ export default async function ProfilePage() {
             an account without one cannot confirm a deletion this way, so the
             section is left out rather than shown with nothing to type. */}
         {user.email ? <DeleteAccount email={user.email} /> : null}
+
+        <AboutAndLegal />
       </div>
     </div>
   );

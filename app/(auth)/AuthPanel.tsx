@@ -1,4 +1,5 @@
 import { DemoBoard } from "@/components/board/DemoBoard";
+import { HIGHLIGHTER } from "@/components/ui/highlighter";
 
 // The left column of wireframe screen 04, shared by the landing page and the
 // auth routes. Desktop only; mobile drops it, which is what the wireframe's own
@@ -16,7 +17,7 @@ export function AuthPanel() {
         <div className="xl:shrink-0">
           <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-graphite">One Pawn</div>
           <p className="mt-4 max-w-[14ch] font-display text-4xl font-bold leading-[1.1] tracking-[-0.02em]">
-            Play a real engine in your browser. Learn from <span className="bg-highlight box-decoration-clone px-1">every game</span>.
+            Play a real engine in your browser. Learn from <span className={`${HIGHLIGHTER} inline-block box-decoration-clone leading-none`}>every&nbsp;game</span>.
           </p>
         </div>
 

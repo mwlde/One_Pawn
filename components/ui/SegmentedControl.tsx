@@ -23,7 +23,7 @@ export function SegmentedControl<T extends string>({
 }: SegmentedControlProps<T>) {
   return (
     <div>
-      <div className="mb-2 text-xs text-graphite">{label}</div>
+      <div className="mb-1.5 text-xs text-graphite md:mb-2">{label}</div>
       <div
         role="radiogroup"
         aria-label={label}
@@ -38,7 +38,7 @@ export function SegmentedControl<T extends string>({
               role="radio"
               aria-checked={selected}
               onClick={() => onChange(option.value)}
-              className={`flex-1 whitespace-nowrap px-2 py-3 text-sm transition-colors ${
+              className={`flex-1 whitespace-nowrap px-2 py-2.5 text-sm transition-colors md:py-3 ${
                 index > 0 ? "border-l border-rule" : ""
               } ${
                 // An inset outline rather than a border, so the selected edge

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { MobileTabBar } from "@/components/ui/MobileTabBar";
 import { SiteFooter } from "@/components/ui/SiteFooter";
 
 // Marketing pages sit outside the (app) group for the same reason as the legal
@@ -13,10 +14,12 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         <Link href="/" className="font-display text-lg font-bold tracking-[-0.02em]">
           One Pawn
         </Link>
-        <Link href="/" className="text-sm text-graphite transition-colors hover:text-ink">
+        {/* Desktop only; on mobile the tab bar is the navigation. */}
+        <Link href="/" className="hidden text-sm text-graphite transition-colors hover:text-ink md:inline">
           Back
         </Link>
       </header>
+      <MobileTabBar />
 
       <main className="flex-1 px-6 py-12 md:px-8">
         <article className="mx-auto w-full max-w-[680px] pb-8">{children}</article>

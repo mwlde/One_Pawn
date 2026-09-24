@@ -76,18 +76,20 @@ export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupPro
       : `plus ${timeControl.incrementSeconds} seconds added after each move`;
 
   return (
-    <div className="flex flex-1 items-start justify-center overflow-y-auto px-4 py-6 md:items-center md:py-8">
-      <div className="w-full max-w-md shrink-0 rounded border border-rule bg-surface p-6 md:p-8">
+    // Mobile spacing is tighter throughout so the whole card, button included,
+    // fits between the header and the tab bar on a phone without scrolling.
+    <div className="flex flex-1 items-start justify-center overflow-y-auto px-4 py-3 md:items-center md:py-8">
+      <div className="w-full max-w-md shrink-0 rounded border border-rule bg-surface p-4 md:p-8">
         <div className="mb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-graphite">
           New game
         </div>
-        <h1 className="mb-6 font-display text-3xl font-bold tracking-[-0.02em] md:mb-8 md:text-4xl">
+        <h1 className="mb-4 font-display text-2xl font-bold tracking-[-0.02em] md:mb-8 md:text-4xl">
           Play the engine
         </h1>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3.5 md:gap-6">
           <div>
-            <div className="mb-2 text-xs text-graphite">
+            <div className="mb-1.5 text-xs text-graphite md:mb-2">
               Mode
             </div>
             <div role="radiogroup" aria-label="Mode" className="flex flex-col gap-2">
@@ -105,7 +107,7 @@ export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupPro
                       onClick={() => {
                         if (!locked) writePreferredMode(mode);
                       }}
-                      className={`w-full rounded border p-3 text-left transition-colors ${
+                      className={`w-full rounded border px-3 py-2 text-left transition-colors md:py-3 ${
                         locked
                           ? "cursor-not-allowed border-rule opacity-50"
                           : selected
@@ -124,7 +126,7 @@ export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupPro
                           }`}
                         />
                       </div>
-                      <p className="mt-1 text-xs leading-relaxed text-graphite">
+                      <p className="mt-0.5 text-xs leading-snug text-graphite md:mt-1 md:leading-relaxed">
                         {MODE_DESCRIPTIONS[mode]}
                       </p>
                     </button>
@@ -167,7 +169,7 @@ export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupPro
           />
         </div>
 
-        <p className="mt-6 text-xs leading-relaxed text-graphite">
+        <p className="mt-3 text-xs leading-snug text-graphite md:mt-6 md:leading-relaxed">
           {timeControl.category} &middot; {timeControl.baseSeconds / 60} minutes each side,{" "}
           {incrementNote}.
           <br />
@@ -179,7 +181,7 @@ export function GameSetup({ initialSettings, isLoggedIn, onStart }: GameSetupPro
             simply waits on the engine's first move rather than failing. */}
         <Button
           variant="primary"
-          className="mt-6 w-full md:mt-8"
+          className="mt-3 w-full md:mt-8"
           onClick={() => onStart({ ...settings, mode: effectiveMode })}
         >
           New game

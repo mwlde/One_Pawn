@@ -66,10 +66,13 @@ function snapshotOf(chess: Chess): Snapshot {
 }
 
 // Keeps the board square without measuring anything. min() means the board is
-// capped by whichever runs out first, the column's width or the viewport's
-// height, so it can never force a horizontal scrollbar. The 16rem is the
-// chrome above and below it: nav, player strips, padding and gaps.
-const BOARD_SIZE = "min(100%, calc(100dvh - 16rem))";
+// capped by whichever runs out first, so it can never force a horizontal
+// scrollbar. The 16rem is the chrome above and below it: nav, player strips,
+// padding and gaps. On mobile the board runs nearly full width, a 16px
+// gutter either side up to 480px, with the height cap kept so the clocks stay
+// on screen.
+const BOARD_SIZE =
+  "w-[min(calc(100vw-32px),480px,calc(100dvh-16rem))] md:w-[min(100%,calc(100dvh-16rem))]";
 
 function describeLastMove(moves: string[]): string {
   if (moves.length === 0) return "No moves yet";
@@ -348,7 +351,7 @@ export default function PlayPage() {
           />
 
           <div className="flex min-h-0 items-center justify-center md:flex-1">
-            <div className="flex items-stretch gap-3" style={{ width: BOARD_SIZE }}>
+            <div className={`flex items-stretch gap-3 ${BOARD_SIZE}`}>
               {/* Glued to the board's left edge, never its own panel. Dropped
                   on mobile, where the number moves onto the player strip. */}
               <div className="hidden md:flex">

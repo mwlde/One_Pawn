@@ -29,7 +29,17 @@ type GameBoardProps = {
 const BOARD_STYLE = { border: "1px solid var(--rule-strong)" };
 const LIGHT_SQUARE_STYLE = { backgroundColor: "var(--board-light)" };
 const DARK_SQUARE_STYLE = { backgroundColor: "var(--board-dark)" };
-const NOTATION_STYLE = { fontFamily: "var(--font-mono)", fontSize: "10px" };
+// Small enough to sit in a square's corner without reaching the piece, which on
+// ranks 1 and 8 fills the square. Scales with the viewport so a phone-sized
+// board gets 8px and a desktop one keeps 10px. Ranks sit top-left and files
+// bottom-right, the library's own corners, pulled in tighter.
+const NOTATION_BASE = {
+  fontFamily: "var(--font-mono)",
+  fontSize: "clamp(8px, 2vw, 10px)",
+  lineHeight: 1,
+};
+const NUMERIC_NOTATION_STYLE = { ...NOTATION_BASE, top: 2, left: 2 };
+const ALPHA_NOTATION_STYLE = { ...NOTATION_BASE, bottom: 2, right: 2 };
 // The library's defaults assume its own brown board, which left several
 // labels invisible on ours. Each label takes the opposite square's tone.
 const LIGHT_SQUARE_NOTATION_STYLE = { color: "var(--board-dark)" };
@@ -89,8 +99,8 @@ export function GameBoard({
         lastMove === null ? {} : { [lastMove.from]: LAST_MOVE_STYLE, [lastMove.to]: LAST_MOVE_STYLE },
       lightSquareNotationStyle: LIGHT_SQUARE_NOTATION_STYLE,
       darkSquareNotationStyle: DARK_SQUARE_NOTATION_STYLE,
-      alphaNotationStyle: NOTATION_STYLE,
-      numericNotationStyle: NOTATION_STYLE,
+      alphaNotationStyle: ALPHA_NOTATION_STYLE,
+      numericNotationStyle: NUMERIC_NOTATION_STYLE,
       canDragPiece: ({ piece }: { piece: { pieceType: string } }) =>
         movableColor !== null && piece.pieceType[0] === movableColor,
       // Returning false tells react-chessboard to snap the piece back, which is

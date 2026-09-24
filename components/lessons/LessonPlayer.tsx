@@ -6,7 +6,7 @@ import { useCallback, useRef, useState } from "react";
 import { GameBoard } from "@/components/board/GameBoard";
 import { useSessionUserId } from "@/components/SessionProvider";
 import { Button, buttonClasses } from "@/components/ui/Button";
-import { MOBILE_NAV_CLEARANCE } from "@/components/ui/TopNav";
+import { MOBILE_NAV_CLEARANCE } from "@/components/ui/MobileTabBar";
 import { judgeMove } from "@/lib/lessons/judge-move";
 import {
   buildProgressPayload,

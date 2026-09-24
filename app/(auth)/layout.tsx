@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { AuthPanel } from "@/app/(auth)/AuthPanel";
+import { MobileTabBar } from "@/components/ui/MobileTabBar";
 import { SiteFooter } from "@/components/ui/SiteFooter";
 import { SiteHeader } from "@/components/ui/SiteHeader";
 
@@ -16,6 +17,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <SiteHeader />
+      <MobileTabBar />
 
       <div className="grid flex-1 grid-cols-1 md:grid-cols-[1fr_520px]">
         <AuthPanel />

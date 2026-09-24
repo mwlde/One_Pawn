@@ -9,8 +9,10 @@ import { AuthPanel } from "@/app/(auth)/AuthPanel";
 import { StaticBoard } from "@/components/board/StaticBoard";
 import { buttonClasses } from "@/components/ui/Button";
 import { DeletedNotice } from "@/components/ui/DeletedNotice";
+import { MobileTabBar } from "@/components/ui/MobileTabBar";
 import { SiteFooter } from "@/components/ui/SiteFooter";
 import { SiteHeader } from "@/components/ui/SiteHeader";
+import { HIGHLIGHTER } from "@/components/ui/highlighter";
 import { RETURNING_VISITOR_COOKIE } from "@/lib/auth/returning-visitor";
 import { createClient } from "@/lib/supabase/server";
 
@@ -22,8 +24,9 @@ export const metadata: Metadata = {
 // and a movable demo board on the left, the log in / register form on the right)
 // the /login and /register routes render, so pressing the logo lands on a board
 // and a way in. On mobile the playable board does not fit, so it becomes a plain
-// hero: the name, the one line under it, a small static board, and two buttons
-// (log in / register, or play as guest). Both carry the full site header.
+// hero: the product line, a small static board, and two buttons (log in /
+// register, or play now as a guest). Both carry the site header; on mobile it
+// is only the logo, with the tab bar along the bottom.
 export default async function Home() {
   // A signed-in visitor has no use for a login form, and the app's own logo
   // points here, so they are sent on to their dashboard rather than shown one.
@@ -40,11 +43,16 @@ export default async function Home() {
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <SiteHeader />
+      {/* Only a guest ever sees this page, so the tabs point Home here and
+          Profile at log in. */}
+      <MobileTabBar loggedIn={false} />
 
       {/* The deletion confirmation, shown once after the account-delete
           redirect. Null the rest of the time, so it costs no layout. */}
       <Suspense fallback={null}>
-        <div className="px-6 pt-6 md:px-12">
+        {/* Collapsed on mobile when there is no notice, so its padding does
+            not push the hero down on every visit. */}
+        <div className="px-6 pt-6 max-md:empty:hidden md:px-12">
           <DeletedNotice />
         </div>
       </Suspense>
@@ -59,37 +67,38 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Mobile: the name, the line under it, a small static board, and the two
-          ways in. The board is the product, so it shows at every width, but
-          here it is a picture rather than a game. Log in leads to the full form
-          on /login, which keeps its own guest option below it. */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-12 text-center md:hidden">
-        <div>
-          <h1 className="font-display text-4xl font-bold tracking-[-0.02em]">One Pawn</h1>
-          <p className="mt-4 text-sm leading-relaxed text-graphite">
-            Play a real engine in your browser. Learn from{" "}
-            <span className="bg-highlight box-decoration-clone px-1 text-ink">every game</span>.
-          </p>
-        </div>
+      {/* Mobile: the product line as the headline (the nav already carries the
+          name), a small static preview board, and the ways in. The board is
+          the product, so it shows at every width, but here it is a picture
+          rather than a game; the full-size board is one tap away on /play.
+          The headline lines up with the nav logo on the 16px gutter. */}
+      <div className="flex flex-1 flex-col gap-6 px-4 pb-12 pt-8 md:hidden">
+        {/* inline-block with leading-none sizes the marker's box to the letters,
+            so the band covers their lower part as in the nav; inline, the box
+            is Bricolage's tall ascent-to-descent and the band sat under the
+            text. The non-breaking space and clone guard against a split. */}
+        <h1 className="font-display text-[28px] font-bold leading-[1.15] tracking-[-0.02em]">
+          Play a real engine in your browser. Learn from{" "}
+          <span className={`${HIGHLIGHTER} inline-block box-decoration-clone leading-none`}>every&nbsp;game</span>.
+        </h1>
 
-        <div className="w-full max-w-[240px]">
+        <div className="aspect-square w-[min(78vw,320px)] self-center">
           <StaticBoard />
         </div>
 
-        <div className="flex w-full max-w-xs flex-col gap-3">
-          <Link
-            href="/login"
-            className={`${buttonClasses("primary")} w-full`}
-          >
+        {/* Log in or register leads. Play now goes to /play, which opens on
+            the new game setup, and the caption under it says a guest can play
+            without an account. */}
+        <div className="flex flex-col">
+          <Link href="/login" className={`${buttonClasses("primary")} w-full`}>
             Log in or register
           </Link>
-          <Link
-            href="/play"
-            className={`${buttonClasses("secondary")} w-full`}
-          >
-            Play as guest
+          <Link href="/play" className={`${buttonClasses("secondary")} mt-3 w-full`}>
+            Play now
           </Link>
-          <p className="text-xs text-graphite">No account needed to play.</p>
+          <p className="mt-2 text-center text-xs text-muted">
+            Play as a guest. No account needed to play.
+          </p>
         </div>
       </div>
 
